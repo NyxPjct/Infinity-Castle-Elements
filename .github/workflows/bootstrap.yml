@@ -29,9 +29,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rsync -a --delete             --exclude='.git/'             --exclude='.bootstrap/'             --exclude='.github/workflows/bootstrap.yml'             /tmp/terra-ar-release/ ./
+          rsync -a --delete             --exclude='.git/'             --exclude='.bootstrap/'             --exclude='.github/workflows/bootstrap.yml'             --exclude='.github/workflows/audit.yml'             /tmp/terra-ar-release/ ./
           rm -rf .bootstrap
-          rm -f .github/workflows/bootstrap.yml
 
       - name: Commit Terra & Ar 3.3
         shell: bash
