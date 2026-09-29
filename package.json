@@ -1,0 +1,19 @@
+{
+  "name": "terra-ar-castelo-infinito",
+  "version": "3.3.0",
+  "private": true,
+  "description": "Terra & Ar: Castelo Infinito — plataforma troll solo/co-op com 1000 salas, 10 regioes do castelo, armadilhas-surpresa, validacao anti-fase-impossivel e chefes.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test:levels": "node tools/audit-levels.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

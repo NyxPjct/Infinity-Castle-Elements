@@ -1,0 +1,84 @@
+TERRA & AR — CASTELO INFINITO 3.3 — DEVIL MODE / AUDITORIA 1000 FASES
+
+INICIAR
+1. No Windows, clique duas vezes em INICIAR_JOGO.bat.
+2. Na primeira execução, o projeto instala automaticamente as dependências.
+3. O navegador abre em http://localhost:3000.
+
+A IDEIA DESTA VERSÃO
+O castelo continua sendo um plataforma troll completo: o cenário tenta fazer você confiar em algo e depois muda a regra. A 3.3 acrescenta auditoria completa das 1000 fases e validação anti-fase-impossível: morrer deve ensinar a pegadinha, nunca revelar que a sala estava quebrada.
+
+AS 10 REGIÕES DO CASTELO
+001–100   Portão e Pátio Real
+101–200   Galeria Nobre
+201–300   Masmorras Profundas
+301–400   Torre do Relógio
+401–500   Biblioteca Viva
+501–600   Capela Assombrada
+601–700   Jardins Suspensos
+701–800   Muralhas da Tempestade
+801–900   Trono Rubro
+901–1000  Coração Impossível
+
+Cada região possui fundo, arquitetura, iluminação, títulos de salas e conjunto de armadilhas próprios. A cada 100 fases existe um chefe cooperativo.
+
+PEGADINHAS / MECÂNICAS
+- Espinhos que surgem somente depois de cruzar o gatilho.
+- Chão falso que começa a cair quando você se aproxima.
+- Pontes que quebram depois de pisar.
+- Plataformas extras que desaparecem.
+- Lustres que despencam.
+- Blocos de pedra que caem do teto.
+- Paredes que avançam de surpresa e depois recuam.
+- Portas falsas e saídas-isca.
+- Saída que foge quando o jogador chega perto.
+- Controles invertidos em salas avançadas.
+- Ventania nas muralhas.
+- Fantasmas, armaduras vivas, esmagadores e dragões.
+- Combinações cada vez mais cruéis nas últimas 200 fases.
+
+MODO SINGLEPLAYER
+- Clique em NOVA AVENTURA SOLO.
+- Q ou TAB = alternar entre Terra e Ar.
+- F = segurar/liberar a posição do personagem ativo quando estiver no chão.
+- O personagem parado continua pressionando placas e runas.
+- Terra e Ar precisam chegar juntos à saída.
+- O progresso fica salvo automaticamente no navegador.
+
+MODO MULTIPLAYER
+1. Jogador 1 cria uma sala privada.
+2. Envia o código de 6 caracteres.
+3. Jogador 2 entra com o código.
+4. Cada jogador controla um personagem.
+
+CONTROLES
+A/D ou setas = mover
+W / seta para cima / espaço = pular
+E = habilidade especial
+Q / TAB = trocar personagem no singleplayer
+F = segurar posição no singleplayer
+R = reiniciar a sala
+
+TERRA
+- Mais pesado.
+- Resiste a raízes.
+- E = impacto sísmico, que pode atordoar armaduras vivas ao contato.
+
+AR
+- Mais leve e rápido.
+- Não é empurrado pelas rajadas das muralhas.
+- E = impulso aéreo, aumentando velocidade e sustentação por alguns instantes.
+
+PORTÕES DE PRESSÃO
+Quando aparecer um portão, existe uma placa de cada lado. A placa é automática: basta ficar em cima dela. No solo: deixe um personagem na placa 1 com F, atravesse com o outro, segure a placa 2, volte para o primeiro e atravesse. No multiplayer, façam o mesmo revezamento.
+
+A versão 3.3 reserva o espaço ao redor das placas e remove qualquer geometria procedural que pudesse bloqueá-las.
+
+A campanha só termina depois que a fase 1000 for realmente vencida.
+
+
+TELA CHEIA (v3.3)
+- Durante a partida, clique em “⛶ Tela cheia” no HUD.
+- Pressione Esc para sair da tela cheia.
+- F11 continua disponível para o modo de tela cheia do próprio navegador.
+- O canvas se redimensiona automaticamente, mantendo a proporção 16:9.

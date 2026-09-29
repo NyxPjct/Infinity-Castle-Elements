@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#090b12" />
+  <title>Terra & Ar — Castelo Infinito</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="ambient"></div>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div>
+          <h1>TERRA <span>&</span> AR</h1>
+          <p>CASTELO INFINITO · DEVIL MODE 3.3 · 1000 FASES AUDITADAS · SOLO + CO-OP</p>
+        </div>
+      </div>
+      <div class="pill" id="connectionPill">● Conectando</div>
+    </header>
+
+    <section id="lobby" class="panel lobby-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">1000 FASES · 10 REGIÕES · TROLL, NÃO QUEBRADO</p>
+        <h2>Mil salas. Dez regiões.<br><em>Nenhuma delas joga limpo.</em></h2>
+        <p class="lead">Plataforma troll cooperativa dentro de um castelo colossal. Chão falso, saídas mentirosas, espinhos que aparecem depois do salto, paredes que atacam e cenários totalmente diferentes conforme vocês avançam. Jogue em dupla online ou controle Terra e Ar sozinho.</p>
+        <div class="difficulty-strip">
+          <span>1</span><div class="bar"><i></i></div><span>1000</span>
+        </div>
+        <div class="mini-cards">
+          <div><b>🪨 Terra</b><small>Resiste às raízes · E = impacto sísmico</small></div>
+          <div><b>💨 Ar</b><small>Atravessa ventos · E = impulso aéreo</small></div>
+          <div><b>☠️ Ambos</b><small>Caem para maldições e armadilhas</small></div>
+        </div>
+      </div>
+
+      <div class="join-card">
+        <p class="mode-title">MODO SINGLEPLAYER</p>
+        <button id="soloBtn" class="primary solo-primary">▶ Nova aventura solo</button>
+        <button id="continueSoloBtn" class="ghost hidden">↻ Continuar solo</button>
+        <p class="fine">No solo, pressione <b>Q/Tab</b> para alternar entre Terra e Ar. O progresso fica salvo neste navegador.</p>
+        <div class="or"><span>multiplayer online</span></div>
+        <label>Seu nome</label>
+        <input id="playerName" maxlength="18" placeholder="Ex.: Leonardo" autocomplete="nickname" />
+        <button id="createBtn" class="primary">Criar sala privada</button>
+        <div class="or"><span>ou</span></div>
+        <label>Código da sala</label>
+        <div class="join-row">
+          <input id="roomCodeInput" maxlength="6" placeholder="ABC123" />
+          <button id="joinBtn">Entrar</button>
+        </div>
+        <button id="chatgptBtn" class="ghost" title="Disponível quando o app tiver credenciais aprovadas">◉ Vincular conta ChatGPT</button>
+        <p class="fine">O jogo funciona normalmente com código de sala. O botão de ChatGPT fica preparado para autenticação oficial quando habilitada para o app.</p>
+        <p id="errorText" class="error"></p>
+      </div>
+    </section>
+
+    <section id="room" class="panel hidden room-panel">
+      <div class="room-head">
+        <div>
+          <p class="eyebrow">SALA PRIVADA</p>
+          <h2 id="roomCode">------</h2>
+          <button id="copyCode" class="small">Copiar código</button>
+        </div>
+        <div class="room-stats">
+          <div><small>FASE</small><b id="roomLevel">1</b></div>
+          <div><small>MORTES</small><b id="roomDeaths">0</b></div>
+        </div>
+      </div>
+      <div id="players" class="players"></div>
+      <button id="readyBtn" class="primary big">Estou pronto</button>
+      <p class="fine center">A fase começa quando os dois estiverem prontos.</p>
+    </section>
+
+    <section id="gameWrap" class="game-wrap hidden">
+      <div class="hud">
+        <div class="hud-left">
+          <span id="hudRole">🪨 TERRA</span>
+          <span>FASE <b id="hudLevel">1</b>/1000</span>
+          <span>MORTES <b id="hudDeaths">0</b></span>
+        </div>
+        <div class="hud-right">
+          <span id="difficultyLabel">PORTÃO REAL</span>
+          <span id="mechanicLabel">PORTAS • PRESSÃO</span>
+          <button id="fullscreenBtn" class="small fullscreen-btn" type="button" title="Colocar o jogo em tela cheia">⛶ Tela cheia</button>
+          <button id="restartBtn" class="small">↻ Reiniciar</button>
+        </div>
+      </div>
+      <div class="canvas-shell">
+        <canvas id="game" width="1600" height="900"></canvas>
+        <div id="overlay" class="overlay hidden"><div><h2 id="overlayTitle"></h2><p id="overlayText"></p></div></div>
+      </div>
+      <div class="controls">
+        <span>← → / A D mover</span>
+        <span>↑ / W pular</span>
+        <span>E habilidade</span>
+        <span id="soloControls" class="hidden">Q/Tab trocar · F segurar posição</span>
+        <span>R reiniciar</span>
+        <span>⛶ botão Tela cheia · F11 também funciona no navegador</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/game.js"></script>
+</body>
+</html>

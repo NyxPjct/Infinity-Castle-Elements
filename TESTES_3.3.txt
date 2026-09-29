@@ -1,0 +1,35 @@
+
+> terra-ar-castelo-infinito@3.3.0 test:levels
+> node tools/audit-levels.js
+
+{
+  "checked": 1000,
+  "bosses": 10,
+  "doors": 240,
+  "archetypes": 12,
+  "regions": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+  ],
+  "rendered": 1000,
+  "failures": 0
+}
+
+OK: as 1000 fases passaram pela auditoria estrutural e de runtime definida nesta build.
+
+VERIFICAÇÕES ADICIONAIS
+- node --check public/game.js: OK
+- node --check server.js: OK
+- CSS fullscreen sem sequências literais \\n inválidas: OK
+- chefes redesenhados para respeitar o salto da Terra: OK
+- ritual de chefe multiplayer autoritativo no servidor: OK
+- proteção contra morte duplicada no mesmo frame: OK
+- sincronização de Terra/Ar após desconexão: OK
