@@ -4,24 +4,39 @@ const lobby = $('#lobby'), roomEl = $('#room'), gameWrap = $('#gameWrap');
 const canvas = $('#game'), ctx = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 
+const ELEMENTS = {
+  earth: {name:'Terra',icon:'🪨',color:'#a8c66c',accent:'#6f5139',accel:1450,max:330,gravity:1580,jump:-595,ability:'Impacto sísmico'},
+  air: {name:'Ar',icon:'💨',color:'#9bdcff',accent:'#e9f8ff',accel:1620,max:365,gravity:1240,jump:-645,ability:'Impulso aéreo'},
+  light: {name:'Luz',icon:'☀️',color:'#ffe477',accent:'#fff8d0',accel:1520,max:350,gravity:1450,jump:-620,ability:'Clarão protetor'},
+  darkness: {name:'Escuridão',icon:'🌑',color:'#a46cff',accent:'#241233',accel:1540,max:345,gravity:1480,jump:-615,ability:'Passo sombrio'}
+};
+const SHOP_ITEMS = {
+  shield:{cost:12,type:'boost'}, speed:{cost:10,type:'boost'}, jump:{cost:10,type:'boost'},
+  crown:{cost:40,type:'cosmetic'}, aura:{cost:60,type:'cosmetic'}
+};
+
 const state = {
-  id: null, roomCode: null, role: 'earth', ready: false, level: 1, deaths: 0,
-  mode: 'menu', soloActiveRole: 'earth', soloResetPending: false, soloTransition: false,
+  id: null, roomCode: null, role: 'earth', selectedRole: 'earth', slot: 0, ready: false, level: 1, deaths: 0,
+  mode: 'menu', soloResetPending: false, soloTransition: false,
   running: false, room: null, remote: null, lastNet: 0, lastGoalSent: false,
   levelData: null, trapState: new Map(), particles: [], levelStart: 0,
   bossCharge: 0, bossDefeated: false, lastRuneSent: null, lastAbility: 0, abilityUntil: 0,
-  levelAttempts: new Map(), attempt: 1, screenShake: 0
+  invulnUntil: 0, levelAttempts: new Map(), attempt: 1, screenShake: 0,
+  activeBoosts:{shield:false,speed:false,jump:false}, shopOpen:false, shopTimer:null, lastRewardedLevel:0
 };
 
-const SOLO_SAVE_KEY = 'terra-ar-castelo-infinito-solo-v1';
+const SOLO_SAVE_KEY = 'infinity-castle-elements-solo-v1';
+const LEGACY_SOLO_SAVE_KEY = 'terra-ar-castelo-infinito-solo-v1';
+const PROFILE_KEY = 'infinity-castle-elements-profile-v1';
 
 socket.on('connect', () => { $('#connectionPill').textContent = '● Online'; $('#connectionPill').style.color = '#55e6a5'; });
 socket.on('disconnect', () => { $('#connectionPill').textContent = '● Offline'; $('#connectionPill').style.color = '#ff7893'; });
 
+document.querySelectorAll('.element-card').forEach(btn=>btn.addEventListener('click',()=>selectElement(btn.dataset.element)));
 $('#soloBtn').onclick = () => startSolo(false);
 $('#continueSoloBtn').onclick = () => startSolo(true);
-$('#createBtn').onclick = () => { state.mode='multiplayer'; socket.emit('create-room', { name: playerName() }, handleJoin); };
-$('#joinBtn').onclick = () => { state.mode='multiplayer'; socket.emit('join-room', { code: $('#roomCodeInput').value, name: playerName() }, handleJoin); };
+$('#createBtn').onclick = () => { state.mode='multiplayer'; socket.emit('create-room', { name: playerName(), element: state.selectedRole }, handleJoin); };
+$('#joinBtn').onclick = () => { state.mode='multiplayer'; socket.emit('join-room', { code: $('#roomCodeInput').value, name: playerName(), element: state.selectedRole }, handleJoin); };
 $('#roomCodeInput').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
 $('#copyCode').onclick = async () => { try { await navigator.clipboard.writeText(state.roomCode); $('#copyCode').textContent='Copiado!'; setTimeout(()=>$('#copyCode').textContent='Copiar código',900); } catch{} };
 $('#readyBtn').onclick = () => { state.ready = !state.ready; socket.emit('ready', { ready: state.ready }); $('#readyBtn').textContent = state.ready ? 'Cancelar pronto' : 'Estou pronto'; };
@@ -66,12 +81,63 @@ $('#chatgptBtn').onclick = async () => {
 
 function playerName(){ return ($('#playerName').value || 'Jogador').trim().slice(0,18); }
 
+function defaultProfile(){return {coins:25,selectedRole:'earth',boosts:{shield:0,speed:0,jump:0},owned:{crown:false,aura:false}};}
+function loadProfile(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null'),base=defaultProfile();
+    if(!raw)return base;
+    return {...base,...raw,boosts:{...base.boosts,...(raw.boosts||{})},owned:{...base.owned,...(raw.owned||{})}};
+  }catch{return defaultProfile();}
+}
+let profile=loadProfile();
+function saveProfile(){profile.selectedRole=state.selectedRole;localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));refreshEconomyUI();}
+function addCoins(n){profile.coins=Math.max(0,(profile.coins||0)+Math.max(0,Math.floor(n)));saveProfile();}
+function spendCoins(n){if(profile.coins<n)return false;profile.coins-=n;saveProfile();return true;}
+function rewardLevel(level){
+  const lv=Math.max(1,Math.min(1000,Number(level)||1));if(state.lastRewardedLevel===lv)return;
+  state.lastRewardedLevel=lv;addCoins(4+Math.floor(lv/100));
+}
+function refreshEconomyUI(){
+  for(const id of ['#lobbyCoins','#hudCoins','#shopCoins']){const el=$(id);if(el)el.textContent=profile.coins||0;}
+  document.querySelectorAll('.shop-item').forEach(btn=>{const k=btn.dataset.item,it=SHOP_ITEMS[k];if(!it)return;const owned=it.type==='cosmetic'&&profile.owned[k];btn.classList.toggle('owned',!!owned);btn.disabled=owned;});
+}
+function selectElement(role){
+  if(!ELEMENTS[role])return;state.selectedRole=role;profile.selectedRole=role;saveProfile();
+  document.querySelectorAll('.element-card').forEach(b=>b.classList.toggle('selected',b.dataset.element===role));
+  const e=ELEMENTS[role];$('#selectedElementIcon').textContent=e.icon;$('#selectedElementName').textContent=e.name;
+}
+function applyAttemptBoosts(){
+  state.activeBoosts={shield:false,speed:false,jump:false};
+  for(const k of ['shield','speed','jump'])if((profile.boosts[k]||0)>0){profile.boosts[k]-=1;state.activeBoosts[k]=true;}
+  state.invulnUntil=0;saveProfile();
+}
+function buyShopItem(key){
+  const item=SHOP_ITEMS[key];if(!item||!spendCoins(item.cost)){if($('#shopMessage'))$('#shopMessage').textContent='Moedas insuficientes.';return;}
+  if(item.type==='boost')profile.boosts[key]=(profile.boosts[key]||0)+1;else profile.owned[key]=true;
+  saveProfile();if($('#shopMessage'))$('#shopMessage').textContent=item.type==='boost'?'Comprado. O boost entra na próxima tentativa.':'Item permanente desbloqueado para seu personagem.';
+}
+function openShop({death=false,multiplayer=false}={}){
+  state.shopOpen=true;$('#shopModal').classList.remove('hidden');$('#shopTitle').textContent=death?'☠️ Morreu. Quer trapacear de volta?':'Loja Arcana';
+  $('#retryBtn').textContent=multiplayer?'Recomeçando...':death?'Tentar novamente':'Voltar ao jogo';$('#retryBtn').disabled=multiplayer;
+  $('#shopCountdown').textContent=multiplayer?'A dupla retorna em 5 segundos. Aproveite a lojinha.':'';refreshEconomyUI();
+}
+function closeShop(){state.shopOpen=false;$('#shopModal').classList.add('hidden');$('#shopCountdown').textContent='';}
+document.querySelectorAll('.shop-item').forEach(btn=>btn.onclick=()=>buyShopItem(btn.dataset.item));
+$('#shopBtnLobby').onclick=()=>openShop();$('#shopBtnHud').onclick=()=>openShop();
+$('#closeShopBtn').onclick=()=>{if(!$('#retryBtn').disabled)closeShop();};
+$('#retryBtn').onclick=()=>{if($('#retryBtn').disabled)return;const wasRunning=state.running;closeShop();if(state.mode==='singleplayer'&&!wasRunning)startLevel(state.level);};
+profile.selectedRole=ELEMENTS[profile.selectedRole]?profile.selectedRole:'earth';state.selectedRole=profile.selectedRole;selectElement(state.selectedRole);refreshEconomyUI();
+
 function loadSoloSave(){
-  try { return JSON.parse(localStorage.getItem(SOLO_SAVE_KEY) || 'null'); } catch { return null; }
+  try {
+    const current=JSON.parse(localStorage.getItem(SOLO_SAVE_KEY)||'null');if(current)return current;
+    const legacy=JSON.parse(localStorage.getItem(LEGACY_SOLO_SAVE_KEY)||'null');
+    return legacy?{...legacy,role:'earth'}:null;
+  } catch { return null; }
 }
 function saveSoloProgress(completed=false){
   if(state.mode!=='singleplayer') return;
-  localStorage.setItem(SOLO_SAVE_KEY, JSON.stringify({level:state.level,deaths:state.deaths,completed,updatedAt:Date.now()}));
+  localStorage.setItem(SOLO_SAVE_KEY, JSON.stringify({level:state.level,deaths:state.deaths,role:state.role,completed,updatedAt:Date.now()}));
   refreshSoloSaveButton();
 }
 function refreshSoloSaveButton(){
@@ -84,11 +150,10 @@ function refreshSoloSaveButton(){
 }
 function startSolo(useSave){
   const save=useSave?loadSoloSave():null;
-  state.mode='singleplayer'; state.id='solo'; state.roomCode=null; state.room=null; state.remote=null;
-  state.level=save?.level||1; state.deaths=save?.deaths||0; state.soloActiveRole='earth'; state.role='earth';
+  state.mode='singleplayer'; state.id='solo'; state.roomCode=null; state.room=null; state.remote=null;state.slot=0;
+  state.level=save?.level||1; state.deaths=save?.deaths||0; state.role=ELEMENTS[save?.role]?save.role:state.selectedRole;
   if(!useSave) saveSoloProgress(false);
   lobby.classList.add('hidden'); roomEl.classList.add('hidden');
-  $('#soloControls').classList.remove('hidden');
   startLevel(state.level);
 }
 function restartGame(){
@@ -101,29 +166,36 @@ function restartGame(){
 refreshSoloSaveButton();
 function handleJoin(res){
   if(!res?.ok){ $('#errorText').textContent = res?.error || 'Não foi possível entrar.'; return; }
-  state.mode='multiplayer'; state.id=res.id; state.roomCode=res.code; state.role=res.role; state.level=res.level;
-  $('#soloControls').classList.add('hidden');
+  state.mode='multiplayer'; state.id=res.id; state.roomCode=res.code; state.role=res.role; state.slot=res.slot||0; state.level=res.level;
   $('#errorText').textContent=''; lobby.classList.add('hidden'); roomEl.classList.remove('hidden');
   $('#roomCode').textContent=res.code; updateHud();
 }
 
 socket.on('room-state', room => {
   state.room=room; state.level=room.level; state.deaths=room.deaths;
-  const me=room.players.find(p=>p.id===state.id);if(me)state.role=me.role;
+  const me=room.players.find(p=>p.id===state.id);if(me){state.role=me.role;state.slot=me.slot||0;}
   $('#roomLevel').textContent=room.level; $('#roomDeaths').textContent=room.deaths;
   const players=$('#players'); players.innerHTML='';
   room.players.forEach(p=>{
-    const div=document.createElement('div'); div.className=`player-card ${p.role}`;
-    div.innerHTML=`<span class="ready-dot">${p.ready?'● PRONTO':'○'}</span><div class="avatar">${p.role==='earth'?'🪨':'💨'}</div><h3>${escapeHtml(p.name)}${p.id===state.id?' (você)':''}</h3><p>${p.role==='earth'?'TERRA · impacto sísmico':'AR · impulso aéreo'}</p>`;
+    const e=ELEMENTS[p.role]||ELEMENTS.earth,div=document.createElement('div');div.className=`player-card ${p.role}`;
+    div.innerHTML=`<span class="ready-dot">${p.ready?'● PRONTO':'○'}</span><div class="avatar">${e.icon}</div><h3>${escapeHtml(p.name)}${p.id===state.id?' (você)':''}</h3><p>${e.name.toUpperCase()} · ${e.ability}</p>`;
     players.appendChild(div);
   });
   updateHud();
 });
 
 socket.on('start-level', ({level,deaths}) => { state.level=level; state.deaths=deaths; startLevel(level); });
-socket.on('reset-level', ({deaths}) => { state.deaths=deaths; showOverlay('☠️ PEGADINHA DO CASTELO', deathLine(), 550); setTimeout(()=>startLevel(state.level),560); });
-socket.on('level-complete', ({level,finished}) => { state.level=level; showOverlay(finished?'🏆 CASTELO CONQUISTADO':'✓ SALA SUPERADA', finished?'Vocês conquistaram as 1000 salas do Castelo Infinito.':`Próxima: fase ${level}`, finished?0:700); });
-socket.on('game-finished', ({deaths}) => { state.running=false; state.deaths=deaths; updateHud(); showOverlay('🏆 1000/1000', `O Castelo Infinito caiu após ${deaths} mortes compartilhadas.`, 0); });
+socket.on('reset-level', ({deaths,manual}={}) => {
+  state.deaths=deaths;state.running=false;
+  if(manual){showOverlay('↻ SALA REINICIADA','Tentem uma rota diferente.',320);setTimeout(()=>startLevel(state.level),340);return;}
+  showOverlay('☠️ O CASTELO COBROU OUTRA ALMA',deathLine(),520);openShop({death:true,multiplayer:true});
+  clearTimeout(state.shopTimer);state.shopTimer=setTimeout(()=>{closeShop();startLevel(state.level);},5000);
+});
+socket.on('level-complete', ({level,finished,completedLevel}) => {
+  rewardLevel(completedLevel||Math.max(1,(finished?1000:level-1)));state.level=level;
+  showOverlay(finished?'🏆 INFINITY CASTLE CONQUISTADO':'✓ SALA SUPERADA', finished?'Vocês conquistaram as 1000 salas de Infinity Castle Elements.':`Próxima: fase ${level}`, finished?0:700);
+});
+socket.on('game-finished', ({deaths}) => { state.running=false; state.deaths=deaths; updateHud(); showOverlay('🏆 1000/1000', `Infinity Castle caiu após ${deaths} mortes compartilhadas.`, 0); });
 socket.on('partner-left', () => { if(state.mode!=='multiplayer')return; state.running=false; showOverlay('Parceiro desconectou', 'Aguardando alguém entrar novamente na sala.', 0); gameWrap.classList.add('hidden'); roomEl.classList.remove('hidden'); state.ready=false; $('#readyBtn').textContent='Estou pronto'; });
 socket.on('remote-state', data => { if(state.mode==='multiplayer'&&data.id!==state.id) state.remote=data; });
 socket.on('boss-defeated', ({level}={}) => {
@@ -139,20 +211,18 @@ function startLevel(level){
   state.bossCharge=0; state.bossDefeated=false; state.lastRuneSent=null; state.levelStart=performance.now();
   state.soloResetPending=false; state.soloTransition=false;
   state.attempt=(state.levelAttempts.get(level)||0)+1; state.levelAttempts.set(level,state.attempt);
-  state.levelData=generateLevel(level);
-  if(state.mode==='singleplayer'){
-    resetSoloHeroes(); state.soloActiveRole='earth'; state.role='earth'; $('#soloControls').classList.remove('hidden');
-  } else { player.reset(); $('#soloControls').classList.add('hidden'); }
+  state.levelData=generateLevel(level);applyAttemptBoosts();closeShop();
+  player.reset();
   updateHud();
   const enteringZone=((level-1)%100===0)&&state.attempt===1;
-  if (state.levelData.boss) showOverlay(`👑 ${state.levelData.boss.name}`, state.mode==='singleplayer'?'Alterne entre Terra e Ar e mantenha cada um em sua runa.':'Ativem as duas runas ao mesmo tempo e sobrevivam.', 1350);
+  if (state.levelData.boss) showOverlay(`👑 ${state.levelData.boss.name}`, state.mode==='singleplayer'?'Mantenha seu elemento em uma runa e sobreviva ao ritual.':'Cada jogador segura uma runa enquanto o chefe ataca.', 1350);
   else if(enteringZone){const z=castleRegion(level);showOverlay(`🏰 ${z.name}`,`${z.subtitle} · O castelo mudou as regras.`,1250);}
 }
 
 function updateHud(){
-  const roleText=state.role==='earth'?'🪨 TERRA':'💨 AR';
+  const e=ELEMENTS[state.role]||ELEMENTS.earth,roleText=`${e.icon} ${e.name.toUpperCase()}`;
   $('#hudRole').textContent = state.mode==='singleplayer'?`SOLO · ${roleText}`:roleText;
-  $('#hudLevel').textContent=state.level; $('#hudDeaths').textContent=state.deaths;
+  $('#hudLevel').textContent=state.level; $('#hudDeaths').textContent=state.deaths;refreshEconomyUI();
   $('#difficultyLabel').textContent=difficultyName(state.level);
   const mechanic=$('#mechanicLabel'); if(mechanic) mechanic.textContent=mechanicName(state.level);
 }
@@ -163,8 +233,6 @@ function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':
 const keys={};
 addEventListener('keydown',e=>{
   const k=e.key.toLowerCase(); keys[k]=true;
-  if((k==='tab'||k==='q')&&state.mode==='singleplayer'&&!e.repeat){e.preventDefault();switchSoloRole();}
-  if(k==='f'&&state.mode==='singleplayer'&&!e.repeat){e.preventDefault();toggleSoloAnchor();}
   if(k==='r'&&!e.repeat)restartGame();
   if(k==='e'&&!e.repeat)activateAbility();
 });
@@ -172,36 +240,33 @@ addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 
 function activateAbility(){
   if(!state.running) return;
-  const now=performance.now();
-  if(state.mode==='singleplayer'){
-    const h=soloHeroes[state.soloActiveRole]; if(now-h.lastAbility<1700)return;
-    h.lastAbility=now; h.abilityUntil=now+420; burst(h.x+21,h.y+28,14); return;
-  }
-  if(now-state.lastAbility<1700)return;
-  state.lastAbility=now; state.abilityUntil=now+420;
-  burst(player.x+21,player.y+28,14);
+  const now=performance.now();if(now-state.lastAbility<1700)return;
+  state.lastAbility=now;
+  const durations={earth:500,air:650,light:900,darkness:760};state.abilityUntil=now+(durations[state.role]||500);
+  if(state.role==='light'||state.role==='darkness')state.invulnUntil=Math.max(state.invulnUntil,state.abilityUntil);
+  burst(player.x+21,player.y+28,18);attackEnemiesAround(player,state.role);
 }
 
 const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,
-  reset(){this.x=state.role==='earth'?90:145;this.y=690;this.vx=this.vy=0;this.dead=false;},
+  reset(){this.x=90;this.y=690;this.vx=this.vy=0;this.dead=false;},
   update(dt){
     if(!state.running||this.dead)return;
-    const ld=state.levelData; let left=keys['arrowleft']||keys['a'], right=keys['arrowright']||keys['d'];
-    const jump=keys['arrowup']||keys['w']||keys[' '];
-    const reversed=ld.reverseZones?.some(z=>overlap(this,z)); if(reversed){const t=left;left=right;right=t;}
-    const isAir=state.role==='air', ability=performance.now()<state.abilityUntil;
-    const accel=isAir?1620:1450, max=isAir?(ability?520:365):330, gravity=isAir?(ability?780:1240):1580, jumpPower=isAir?-645:-595;
+    const ld=state.levelData,cfg=ELEMENTS[state.role]||ELEMENTS.earth;let left=keys['arrowleft']||keys['a'],right=keys['arrowright']||keys['d'];const jump=keys['arrowup']||keys['w']||keys[' '];
+    const reversed=state.role!=='darkness'&&ld.reverseZones?.some(z=>overlap(this,z));if(reversed){const t=left;left=right;right=t;}
+    const ability=performance.now()<state.abilityUntil;let accel=cfg.accel,max=cfg.max,gravity=cfg.gravity,jumpPower=cfg.jump;
+    if(state.role==='air'&&ability){max=520;gravity=780;}if(state.activeBoosts.speed){accel*=1.15;max*=1.2;}if(state.activeBoosts.jump)jumpPower*=1.15;
     if(left)this.vx-=accel*dt;if(right)this.vx+=accel*dt;if(!left&&!right)this.vx*=Math.pow(.001,dt);this.vx=Math.max(-max,Math.min(max,this.vx));
     if(jump&&this.onGround){this.vy=jumpPower;this.onGround=false;}
-    if(isAir&&ability&&jump&&this.vy>0)this.vy-=900*dt;
-    this.vy+=gravity*dt; this.vy=Math.min(this.vy,900);
-    this.x+=this.vx*dt; collideWorld(this,'x'); this.y+=this.vy*dt; this.onGround=false; collideWorld(this,'y');
-    this.x=Math.max(0,Math.min(W-this.w,this.x)); if(this.y>H+100)die();
-    processHazards(this,state.role); processTrolls(this); processSetPieces(this,dt,state.role); processBoss(dt);
+    if(state.role==='air'&&ability&&jump&&this.vy>0)this.vy-=900*dt;
+    this.vy+=gravity*dt;this.vy=Math.min(this.vy,900);
+    this.x+=this.vx*dt;collideWorld(this,'x');this.y+=this.vy*dt;this.onGround=false;collideWorld(this,'y');
+    this.x=Math.max(0,Math.min(W-this.w,this.x));if(this.y>H+100)return die(this);
+    processHazards(this,state.role);processTrolls(this);processSetPieces(this,dt,state.role);processBoss(dt);
     const at=goalAccessible()&&overlap(this,currentGoal());
+    if(state.mode==='singleplayer'){if(at)completeSoloLevel();return;}
     if(at!==state.lastGoalSent){state.lastGoalSent=at;socket.emit('goal-state',{atGoal:at});}
     const now=performance.now();if(now-state.lastNet>32){
-      state.lastNet=now;socket.emit('player-state',{x:this.x,y:this.y,vx:this.vx,vy:this.vy,role:state.role,level:state.level,ability:ability});
+      state.lastNet=now;socket.emit('player-state',{x:this.x,y:this.y,vx:this.vx,vy:this.vy,role:state.role,slot:state.slot,level:state.level,ability,cosmetics:profile.owned});
     }
   }
 };
@@ -241,23 +306,18 @@ function updateSoloHero(h,dt,controlled){
   h.x=Math.max(0,Math.min(W-h.w,h.x));if(h.y>H+100)return die(h);
   processHazards(h,h.role);processTrolls(h);processSetPieces(h,dt,h.role);
 }
-function updateSolo(dt){
-  updateSoloHero(soloHeroes.earth,dt,state.soloActiveRole==='earth');
-  updateSoloHero(soloHeroes.air,dt,state.soloActiveRole==='air');
-  if(state.soloResetPending)return;
-  processBoss(dt);
-  const goal=currentGoal();if(goalAccessible()&&overlap(soloHeroes.earth,goal)&&overlap(soloHeroes.air,goal))completeSoloLevel();
-}
+function updateSolo(dt){player.update(dt);}
 function completeSoloLevel(){
   if(state.soloTransition)return;state.soloTransition=true;
-  if(state.level>=1000){state.running=false;saveSoloProgress(true);showOverlay('🏆 1000/1000',`Você conquistou o Castelo Infinito sozinho após ${state.deaths} mortes.`,0);return;}
-  state.level+=1;saveSoloProgress(false);showOverlay('✓ SALA SUPERADA',`Próxima: fase ${state.level}`,620);setTimeout(()=>startLevel(state.level),650);
+  rewardLevel(state.level);
+  if(state.level>=1000){state.running=false;saveSoloProgress(true);showOverlay('🏆 1000/1000',`Você conquistou Infinity Castle Elements com ${ELEMENTS[state.role].name} após ${state.deaths} mortes.`,0);return;}
+  state.level+=1;saveSoloProgress(false);showOverlay('✓ SALA SUPERADA',`+ moedas · próxima: fase ${state.level}`,620);setTimeout(()=>startLevel(state.level),650);
 }
 
 function elapsed(){return Math.max(0,(performance.now()-state.levelStart)/1000);}
 function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
 function pointInRect(x,y,r){return x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h;}
-function roleImmune(type,role){return (type==='roots'&&role==='earth')||(type==='storm'&&role==='air');}
+function roleImmune(type,role){return (type==='roots'&&role==='earth')||(type==='storm'&&role==='air')||(type==='curse'&&role==='light');}
 
 function dynamicElevator(e){
   const t=elapsed()*e.speed+e.phase; const q=(Math.sin(t)+1)/2;
@@ -300,36 +360,47 @@ function collideWorld(p,axis){
 }
 
 function processHazards(p,role=state.role){
-  const ld=state.levelData;
-  for(const h of ld.hazards){if(overlap(p,h)&&!roleImmune(h.type,role))return die(p);}
-  for(const s of activeSpikes())if(overlap(p,s))return die(p);
+  const ld=state.levelData,now=performance.now();if(now<state.invulnUntil)return;
+  const shadowPhase=role==='darkness'&&abilityActiveFor(p,role);
+  for(const h of ld.hazards){if(overlap(p,h)&&!roleImmune(h.type,role)&&!shadowPhase)return die(p);}
+  for(const sp of activeSpikes())if(overlap(p,sp)&&!shadowPhase)return die(p);
   for(const c of ld.crushers||[])if(overlap(p,dynamicCrusher(c)))return die(p);
   for(const a of ld.armors||[])if(overlap(p,armorRect(a))){
-    if(role==='earth'&&abilityActiveFor(p,role)){state.trapState.set('armor'+a.id,performance.now()+3000);burst(a.x,a.y,9);} else return die(p);
+    if((role==='earth'||role==='light')&&abilityActiveFor(p,role)){state.trapState.set('armor'+a.id,performance.now()+3000);burst(a.x||a.x0,a.y,9);}else if(!shadowPhase)return die(p);
   }
-  for(const g of ld.ghosts||[])if(overlap(p,ghostRect(g)))return die(p);
-  for(const fb of dragonFireballs())if(circleRect(fb,p))return die(p);
-  for(const bf of bossProjectiles())if(circleRect(bf,p))return die(p);
+  for(const g of ld.ghosts||[])if(overlap(p,ghostRect(g))&&!shadowPhase)return die(p);
+  for(const fb of dragonFireballs())if(circleRect(fb,p)&&!shadowPhase)return die(p);
+  for(const bf of bossProjectiles())if(circleRect(bf,p)&&!shadowPhase)return die(p);
   for(const f of dynamicFallingBlocks())if(overlap(p,f))return die(p);
   for(const w of dynamicSlamWalls())if(overlap(p,w))return die(p);
+  processEnemies(p,role);
 }
 function circleRect(c,r){const x=Math.max(r.x,Math.min(c.x,r.x+r.w)),y=Math.max(r.y,Math.min(c.y,r.y+r.h));const dx=c.x-x,dy=c.y-y;return dx*dx+dy*dy<c.r*c.r;}
-function abilityActiveFor(p,role){return state.mode==='singleplayer'?performance.now()<(p.abilityUntil||0):(role===state.role&&performance.now()<state.abilityUntil);}
+function abilityActiveFor(){return performance.now()<state.abilityUntil;}
+function consumeShield(){
+  if(!state.activeBoosts.shield)return false;state.activeBoosts.shield=false;state.invulnUntil=performance.now()+1200;state.screenShake=8;burst(player.x+21,player.y+25,28);showOverlay('🛡️ ESCUDO QUEBRADO','A runa arcana absorveu o golpe fatal.',650);return true;
+}
 function die(p=player){
+  if(performance.now()<state.invulnUntil)return;if(consumeShield())return;
   if(state.mode==='singleplayer'){
     if(state.soloResetPending||p.dead)return;p.dead=true;state.soloResetPending=true;state.deaths+=1;saveSoloProgress(false);burst(p.x+21,p.y+25,18);
-    state.screenShake=18;showOverlay('☠️ PEGADINHA DO CASTELO',deathLine(),520);setTimeout(()=>startLevel(state.level),540);return;
+    state.screenShake=18;state.running=false;showOverlay('☠️ PEGADINHA DO CASTELO',deathLine(),520);openShop({death:true});return;
   }
   if(player.dead)return;player.dead=true;burst(player.x+21,player.y+25,18);socket.emit('player-death');
 }
 function platePressed(plate){
   if(!plate)return false;
-  if(state.mode==='singleplayer')return overlap(soloHeroes.earth,plate)||overlap(soloHeroes.air,plate);
+  if(state.mode==='singleplayer')return overlap(player,plate);
   const remoteRect=state.remote?{x:state.remote.x,y:state.remote.y,w:42,h:56}:null;
   return overlap(player,plate)||(remoteRect&&overlap(remoteRect,plate));
 }
 function doorOpen(){
   const plates=[state.levelData.plate,state.levelData.plate2].filter(Boolean);if(!plates.length)return true;
+  if(state.mode==='singleplayer'){
+    if(state.trapState.get('soloDoorOpen'))return true;
+    if(plates.some(platePressed)){state.trapState.set('soloDoorOpen',true);return true;}
+    return false;
+  }
   return plates.some(platePressed);
 }
 function goalAccessible(){return !state.levelData.boss||state.bossDefeated;}
@@ -382,6 +453,31 @@ function ghostRect(g){
   const t=elapsed()*g.speed+g.phase;
   return {x:g.x+Math.sin(t)*g.rangeX,y:g.y+Math.cos(t*1.3)*g.rangeY,w:g.w,h:g.h};
 }
+function enemyRect(e){
+  const deadUntil=state.trapState.get('enemyDead'+e.id);if(deadUntil)return {x:-9999,y:-9999,w:1,h:1};
+  const t=elapsed()*e.speed+e.phase,q=(Math.sin(t)+1)/2,x=e.x0+(e.x1-e.x0)*q,y=e.y+(e.rangeY?Math.sin(t*1.7)*e.rangeY:0);
+  return {x,y,w:e.w,h:e.h};
+}
+function defeatEnemy(e){
+  const key='enemyDead'+e.id;if(state.trapState.get(key))return;state.trapState.set(key,true);addCoins(2);const r=enemyRect({...e,id:-e.id});burst((e.x0+e.x1)/2,e.y,14);
+}
+function attackEnemiesAround(p,role){
+  const radius=role==='light'?230:role==='earth'?175:0;if(!radius)return;
+  for(const e of state.levelData?.enemies||[]){if(state.trapState.get('enemyDead'+e.id))continue;const r=enemyRect(e),dx=(r.x+r.w/2)-(p.x+p.w/2),dy=(r.y+r.h/2)-(p.y+p.h/2);if(dx*dx+dy*dy<=radius*radius)defeatEnemy(e);}
+}
+function processEnemies(p,role){
+  const phase=role==='darkness'&&abilityActiveFor(p,role);
+  for(const e of state.levelData.enemies||[]){if(state.trapState.get('enemyDead'+e.id))continue;const r=enemyRect(e);if(!overlap(p,r))continue;
+    if((role==='earth'||role==='light')&&abilityActiveFor(p,role)){defeatEnemy(e);continue;}if(!phase)return die(p);
+  }
+}
+function drawEnemy(r,e){
+  if(r.x<-1000)return;ctx.save();const palette={sentinel:'#d06c5d',bat:'#9b83cb',wraith:'#6bc2b6'},c=palette[e.type]||'#d06c5d';ctx.shadowBlur=14;ctx.shadowColor=c;ctx.fillStyle=c;
+  if(e.type==='bat'){ctx.beginPath();ctx.moveTo(r.x+r.w/2,r.y+8);ctx.lineTo(r.x-10,r.y+r.h/2);ctx.lineTo(r.x+8,r.y+r.h);ctx.lineTo(r.x+r.w/2,r.y+20);ctx.lineTo(r.x+r.w-8,r.y+r.h);ctx.lineTo(r.x+r.w+10,r.y+r.h/2);ctx.closePath();ctx.fill();}
+  else if(e.type==='wraith'){ctx.globalAlpha=.75;ctx.beginPath();ctx.roundRect(r.x,r.y,r.w,r.h,14);ctx.fill();ctx.fillStyle='#071115';ctx.fillRect(r.x+9,r.y+14,6,7);ctx.fillRect(r.x+r.w-15,r.y+14,6,7);}
+  else{ctx.beginPath();ctx.roundRect(r.x,r.y,r.w,r.h,9);ctx.fill();ctx.fillStyle='#301414';ctx.fillRect(r.x+9,r.y+12,7,7);ctx.fillRect(r.x+r.w-16,r.y+12,7,7);ctx.fillStyle='#d9b36c';ctx.fillRect(r.x+4,r.y+r.h-8,r.w-8,5);}
+  ctx.restore();
+}
 function dragonFireballs(){
   const out=[]; for(const d of state.levelData.dragons||[]){
     const t=elapsed()+d.phase; const cycle=t%d.interval; if(cycle>d.life)continue;
@@ -402,18 +498,15 @@ function bossProjectiles(){
 
 function processBoss(dt){
   const b=state.levelData.boss;if(!b||state.bossDefeated)return;
-  let both=false;
+  const runes=Object.values(b.runes||{});
   if(state.mode==='singleplayer'){
-    both=overlap(soloHeroes.earth,b.runes.earth)&&overlap(soloHeroes.air,b.runes.air);
-    if(both)state.bossCharge=Math.min(b.required,state.bossCharge+dt);else state.bossCharge=Math.max(0,state.bossCharge-dt*.65);
-    if(state.bossCharge>=b.required){state.bossDefeated=true;burst(b.x+80,b.y+90,42);showOverlay('⚔️ PROTEÇÃO QUEBRADA','Leve Terra e Ar até a saída!',850);}
-    return;
+    const onRune=runes.some(r=>overlap(player,r));if(onRune)state.bossCharge=Math.min(b.required,state.bossCharge+dt);else state.bossCharge=Math.max(0,state.bossCharge-dt*.65);
+    if(state.bossCharge>=b.required){state.bossDefeated=true;burst(b.x+80,b.y+90,42);showOverlay('⚔️ PROTEÇÃO QUEBRADA','Corra para a saída!',850);}return;
   }
-  // No multiplayer o servidor é a autoridade do ritual; isso evita um cliente abrir a barreira antes do outro por lag.
-  const meRune=b.runes[state.role],otherRole=state.role==='earth'?'air':'earth',otherRune=b.runes[otherRole];
-  const me=overlap(player,meRune),remote=state.remote&&state.remote.role===otherRole&&overlap({x:state.remote.x,y:state.remote.y,w:42,h:56},otherRune);both=!!(me&&remote);
+  const myKey=state.slot===0?'left':'right',otherKey=state.slot===0?'right':'left',meRune=b.runes[myKey],otherRune=b.runes[otherKey];
+  const me=!!(meRune&&overlap(player,meRune)),remote=!!(state.remote&&otherRune&&overlap({x:state.remote.x,y:state.remote.y,w:42,h:56},otherRune));
   if(me!==state.lastRuneSent){state.lastRuneSent=me;socket.emit('rune-state',{atRune:me,level:state.level});}
-  if(both)state.bossCharge=Math.min(b.required,state.bossCharge+dt);else state.bossCharge=Math.max(0,state.bossCharge-dt*.65);
+  if(me&&remote)state.bossCharge=Math.min(b.required,state.bossCharge+dt);else state.bossCharge=Math.max(0,state.bossCharge-dt*.65);
 }
 
 function rectIntersects(a,b){return !!(a&&b&&a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y);}
@@ -497,8 +590,8 @@ function protectCriticalLandings(ld){
 function sanitizeBossLevel(ld){
   if(!ld||!ld.boss)return ld;
   const spawnSafe={x:18,y:620,w:210,h:170},goalSafe=rectAround(ld.goal,32,18);clearCriticalZone(ld,spawnSafe);clearCriticalZone(ld,goalSafe);
-  for(const role of ['earth','air']){
-    const rune=ld.boss.runes[role],stand={x:rune.x-12,y:rune.y-66,w:rune.w+24,h:86};
+  for(const rune of Object.values(ld.boss.runes||{})){
+    const stand={x:rune.x-12,y:rune.y-66,w:rune.w+24,h:86};
     // A runa precisa de piso, espaço para um personagem e acesso até ela com o salto da Terra.
     let support=supportPlatformForRect(ld,rune);
     if(!support){const py=rune.y+rune.h+5;support={x:rune.x-30,y:py,w:rune.w+60,h:25,_bossRepair:true};ld.platforms.push(support);}
@@ -512,7 +605,7 @@ function finiteGeometryIssues(ld){
   const issues=[];const walk=(v,path='')=>{if(Array.isArray(v))return v.forEach((x,i)=>walk(x,`${path}[${i}]`));if(!v||typeof v!=='object')return;for(const[k,x]of Object.entries(v)){const p=path?`${path}.${k}`:k;if(typeof x==='number'&&!Number.isFinite(x))issues.push(`número inválido em ${p}`);else if(x&&typeof x==='object')walk(x,p);}};walk(ld);return issues;
 }
 function duplicateTrapIdIssues(ld){
-  const issues=[];for(const key of ['fakeFloors','popTraps','ambushSpikes','elevators','chandeliers','armors','crushers','bookshelves','ghosts','bridgeTiles','dragons','fakeDoors','fakeGoals','fallingBlocks','slamWalls','vanishPlatforms','windGusts']){const seen=new Set();for(const v of ld[key]||[]){if(v.id==null)continue;if(seen.has(v.id))issues.push(`id duplicado em ${key}: ${v.id}`);seen.add(v.id);}}return issues;
+  const issues=[];for(const key of ['fakeFloors','popTraps','ambushSpikes','elevators','chandeliers','armors','crushers','bookshelves','ghosts','bridgeTiles','dragons','fakeDoors','fakeGoals','fallingBlocks','slamWalls','vanishPlatforms','windGusts','enemies']){const seen=new Set();for(const v of ld[key]||[]){if(v.id==null)continue;if(seen.has(v.id))issues.push(`id duplicado em ${key}: ${v.id}`);seen.add(v.id);}}return issues;
 }
 
 function sanitizeGeneratedLevel(ld){
@@ -576,8 +669,20 @@ function sanitizeGeneratedLevel(ld){
     ld.dragons=[];
   }
   protectCriticalLandings(ld);
-  return emergencyRepairLevel(ld);
+  return injectEnemies(emergencyRepairLevel(ld));
 }
+function injectEnemies(ld){
+  ld.enemies=ld.enemies||[];if(!ld||ld.boss)return ld;
+  const rng=mulberry32(ld.level*19087+404),count=Math.min(4,Math.max(1,1+Math.floor((ld.level-1)/260)));
+  const candidates=(ld.platforms||[]).filter(p=>!p._doorBridge&&!p._repairStep&&p.w>=120&&p.x>270&&p.x+p.w<1420&&p.y>=520&&p.y<=790);
+  for(let i=0;i<count&&candidates.length;i++){
+    const p=candidates[Math.floor(rng()*candidates.length)],types=ld.level<180?['sentinel']:ld.level<520?['sentinel','bat']:['sentinel','bat','wraith'],type=types[Math.floor(rng()*types.length)];
+    const w=type==='bat'?38:42,h=type==='bat'?30:46,x0=p.x+18,x1=Math.max(x0+8,p.x+p.w-w-18),baseY=type==='bat'?Math.max(340,p.y-145):p.y-h;
+    ld.enemies.push({id:70000+ld.level*10+i,type,x0,x1,y:baseY,w,h,speed:.8+rng()*.9,phase:rng()*6,rangeY:type==='bat'||type==='wraith'?28+rng()*45:0});
+  }
+  return ld;
+}
+
 function emergencyRepairLevel(ld){
   const floorY=790;
   if(ld.door&&ld.plate&&ld.plate2){
@@ -613,12 +718,12 @@ function levelIntegrityIssues(ld){
   const spawnKillers=[...(ld.hazards||[]),...(ld.spikes||[])];if(spawnKillers.some(r=>rectIntersects(r,spawn)))issues.push('spawn nasce sobre armadilha');
   if(ld.movingExit){const moved={x:ld.movingExit.toX,y:ld.movingExit.toY,w:ld.goal.w,h:ld.goal.h};if(!supportPlatformForRect(ld,moved))issues.push('destino da saída móvel sem piso');}
   if(ld.boss){
-    for(const role of ['earth','air']){
-      const rune=ld.boss.runes?.[role];if(!rune){issues.push(`runa ${role} ausente`);continue;}
-      if(!supportPlatformForRect(ld,rune))issues.push(`runa ${role} sem piso`);
-      if(!earthCanReachSupport(ld,rune))issues.push(`runa ${role} inalcançável por Terra`);
+    for(const [key,rune] of Object.entries(ld.boss.runes||{})){
+      if(!rune){issues.push(`runa ${key} ausente`);continue;}
+      if(!supportPlatformForRect(ld,rune))issues.push(`runa ${key} sem piso`);
+      if(!earthCanReachSupport(ld,rune))issues.push(`runa ${key} inalcançável pelo elemento base`);
       const stand=rectAround({x:rune.x,y:rune.y-56,w:rune.w,h:56},8,6);
-      const killers=[...(ld.hazards||[]),...(ld.spikes||[])];if(killers.some(r=>rectIntersects(r,stand)))issues.push(`runa ${role} nasce em armadilha estática`);
+      const killers=[...(ld.hazards||[]),...(ld.spikes||[])];if(killers.some(r=>rectIntersects(r,stand)))issues.push(`runa ${key} nasce em armadilha estática`);
     }
     if(rectIntersects(ld.boss.barrier,ld.goal))issues.push('barreira do chefe sobre a saída');
   }
@@ -715,7 +820,7 @@ function generateBossLevel(level){
   // A passarela central cria uma rota real por cima da sequência de espinhos dos chefes avançados.
   const platforms=[{x:0,y:floorY,w:1600,h:110},{x:270,y:690,w:240,h:25},{x:1090,y:690,w:250,h:25},{x:650,y:610,w:300,h:24}];
   const bossNames=['O Porteiro de Granito','A Rainha do Vitral','O Carcereiro Sem Rosto','O Rei do Relógio','A Bibliotecária Morta','O Bispo Esquecido','A Fera do Jardim','O Dragão da Tempestade','O Arauto Rubro','O Coração do Castelo'];
-  const boss={name:bossNames[tier-1]||'O Coração do Castelo',x:720,y:265,w:160,h:230,required:2.1+Math.min(1.9,tier*.16),attackInterval:2.15-Math.min(.75,tier*.06),projectileSpeed:370+tier*22,runes:{earth:{x:330,y:665,w:86,h:20},air:{x:1185,y:665,w:86,h:20}},barrier:{x:1450,y:570,w:40,h:220}};
+  const boss={name:bossNames[tier-1]||'O Coração do Castelo',x:720,y:265,w:160,h:230,required:2.1+Math.min(1.9,tier*.16),attackInterval:2.15-Math.min(.75,tier*.06),projectileSpeed:370+tier*22,runes:{left:{x:330,y:665,w:86,h:20},right:{x:1185,y:665,w:86,h:20}},barrier:{x:1450,y:570,w:40,h:220}};
   const hazards=[{x:510,y:790,w:140,h:110,type:'storm'},{x:950,y:790,w:140,h:110,type:'roots'}],spikes=[];
   for(let i=0;i<tier;i++)spikes.push({x:555+i*50,y:772,w:28,h:18,dir:'up'});
   const crushers=[];if(tier>=4){crushers.push({axis:'y',x:525,a:250,b:585,w:50,h:92,speed:1.1,phase:0});crushers.push({axis:'y',x:1025,a:250,b:585,w:50,h:92,speed:1.15,phase:2.2});}
@@ -735,8 +840,10 @@ function render(){
   for(const p of ld.platforms)drawPlatform(p);for(const h of ld.hazards)drawHazard(h);for(const f of ld.fakeFloors||[])drawFakeFloor(f);for(const t of ld.bridgeTiles||[])drawBridgeTile(t);for(const v of ld.vanishPlatforms||[])drawVanishPlatform(v);for(const e of ld.elevators||[])drawElevator(dynamicElevator(e));for(const b of ld.bookshelves||[])drawBookshelf(dynamicBookshelf(b));
   for(const z of ld.windGusts||[])drawWindGust(z);for(const z of ld.reverseZones||[])drawReverseZone(z);if(ld.plate)drawPlate(ld.plate,platePressed(ld.plate));if(ld.plate2)drawPlate(ld.plate2,platePressed(ld.plate2));if(ld.door&&!doorOpen())drawDoor(ld.door);
   for(const ch of ld.chandeliers||[])drawChandelier(chandelierRect(ch),!!state.trapState.get('ch'+ch.id));for(const b of dynamicFallingBlocks())drawFallingBlock(b);for(const w of dynamicSlamWalls())drawSlamWall(w);for(const c of ld.crushers||[])drawCrusher(dynamicCrusher(c));for(const a of ld.armors||[])drawArmor(armorRect(a));for(const g of ld.ghosts||[])drawGhost(ghostRect(g));for(const d of ld.dragons||[])drawDragon(d);for(const fb of dragonFireballs())drawFireball(fb,'#ff8b4b');for(const fd of ld.fakeDoors||[])drawFakeDoor(fd);for(const fg of ld.fakeGoals||[])drawFakeGoal(fg,!!state.trapState.get('fg'+fg.id));for(const sp of activeSpikes())drawSpike(sp);
+  for(const e of ld.enemies||[])drawEnemy(enemyRect(e),e);
   if(ld.boss)drawBoss(ld.boss);for(const bf of bossProjectiles())drawFireball(bf,'#c96cff');drawGoal(currentGoal(),goalAccessible());
-  if(state.mode==='singleplayer'){for(const role of ['earth','air']){const h=soloHeroes[role];drawCharacter(h.x,h.y,role,role===state.soloActiveRole,performance.now()<h.abilityUntil,h.anchored);}}else{if(state.remote&&state.remote.level===state.level)drawCharacter(state.remote.x,state.remote.y,state.remote.role,false,state.remote.ability);drawCharacter(player.x,player.y,state.role,true,performance.now()<state.abilityUntil);}
+  if(state.mode==='singleplayer')drawCharacter(player.x,player.y,state.role,true,performance.now()<state.abilityUntil,false,profile.owned);
+  else{if(state.remote&&state.remote.level===state.level)drawCharacter(state.remote.x,state.remote.y,state.remote.role,false,state.remote.ability,false,state.remote.cosmetics||{});drawCharacter(player.x,player.y,state.role,true,performance.now()<state.abilityUntil,false,profile.owned);}
   drawParticles();drawLevelTitle();ctx.restore();
 }
 function castleRegion(level){
@@ -800,20 +907,27 @@ function drawDragon(d){ctx.save();ctx.translate(d.x,d.y);ctx.scale(d.fromRight?-
 function drawFireball(f,c){ctx.save();ctx.shadowBlur=22;ctx.shadowColor=c;ctx.fillStyle=c;ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.fill();ctx.restore();}
 function drawBoss(b){
   ctx.save();ctx.fillStyle='#2b2033';ctx.fillRect(b.x,b.y,b.w,b.h);ctx.strokeStyle='#a66ee0';ctx.lineWidth=5;ctx.strokeRect(b.x,b.y,b.w,b.h);ctx.fillStyle='#d0b5ef';ctx.beginPath();ctx.arc(b.x+b.w/2,b.y+55,36,0,Math.PI*2);ctx.fill();ctx.fillStyle='#231829';ctx.fillRect(b.x+46,b.y+45,18,8);ctx.fillRect(b.x+96,b.y+45,18,8);
-  for(const [role,r] of Object.entries(b.runes)){ctx.fillStyle=role==='earth'?'rgba(168,198,108,.38)':'rgba(155,220,255,.38)';ctx.fillRect(r.x,r.y,r.w,r.h);ctx.strokeStyle=role==='earth'?'#a8c66c':'#9bdcff';ctx.strokeRect(r.x,r.y,r.w,r.h);}
-  const pct=Math.min(1,state.bossCharge/b.required);ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(610,190,380,14);ctx.fillStyle='#d7b56d';ctx.fillRect(610,190,380*pct,14);ctx.font='700 18px sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.75)';ctx.fillText(state.bossDefeated?'CHEFE DERROTADO':'RITUAL COOPERATIVO',800,178);ctx.textAlign='left';
+  let ri=0;for(const [key,r] of Object.entries(b.runes||{})){const colors=['#ffe477','#a46cff'];ctx.fillStyle=colors[ri%2]+'66';ctx.fillRect(r.x,r.y,r.w,r.h);ctx.strokeStyle=colors[ri%2];ctx.strokeRect(r.x,r.y,r.w,r.h);ctx.fillStyle=colors[ri%2];ctx.font='700 13px sans-serif';ctx.fillText(key==='left'?'RUNA I':'RUNA II',r.x+10,r.y-8);ri++;}
+  const pct=Math.min(1,state.bossCharge/b.required);ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(610,190,380,14);ctx.fillStyle='#d7b56d';ctx.fillRect(610,190,380*pct,14);ctx.font='700 18px sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.75)';ctx.fillText(state.bossDefeated?'CHEFE DERROTADO':state.mode==='singleplayer'?'RITUAL ELEMENTAL':'RITUAL COOPERATIVO',800,178);ctx.textAlign='left';
   if(!state.bossDefeated){ctx.fillStyle='rgba(170,70,210,.2)';ctx.fillRect(b.barrier.x,b.barrier.y,b.barrier.w,b.barrier.h);ctx.strokeStyle='#b75be1';ctx.strokeRect(b.barrier.x,b.barrier.y,b.barrier.w,b.barrier.h);}ctx.restore();
 }
-function drawCharacter(x,y,role,me,ability=false,anchored=false){
-  const earth=role==='earth',c=earth?'#a8c66c':'#9bdcff',accent=earth?'#6f5139':'#e9f8ff';ctx.save();ctx.shadowBlur=ability?38:(me?24:12);ctx.shadowColor=c;ctx.fillStyle=c;ctx.beginPath();ctx.roundRect(x,y,42,56,12);ctx.fill();ctx.shadowBlur=0;
-  ctx.fillStyle=accent;if(earth){ctx.fillRect(x+5,y+40,32,8);ctx.beginPath();ctx.arc(x+21,y+8,9,0,Math.PI*2);ctx.fill();}else{ctx.beginPath();ctx.moveTo(x+5,y+42);ctx.quadraticCurveTo(x+21,y+32,x+37,y+42);ctx.lineTo(x+37,y+49);ctx.quadraticCurveTo(x+21,y+39,x+5,y+49);ctx.fill();}
-  ctx.fillStyle='#0b0d10';ctx.fillRect(x+9,y+18,7,7);ctx.fillRect(x+26,y+18,7,7);ctx.fillStyle='#fff';ctx.globalAlpha=.8;ctx.fillRect(x+10,y+19,2,2);ctx.fillRect(x+27,y+19,2,2);if(ability){ctx.globalAlpha=.35;ctx.strokeStyle=c;ctx.lineWidth=4;ctx.strokeRect(x-8,y-8,58,72);}if(anchored){ctx.globalAlpha=.9;ctx.fillStyle='#d7b56d';ctx.font='18px sans-serif';ctx.fillText('◆',x+12,y-8);}ctx.restore();
+function drawCharacter(x,y,role,me,ability=false,anchored=false,cosmetics={}){
+  const e=ELEMENTS[role]||ELEMENTS.earth,c=e.color,accent=e.accent;ctx.save();
+  if(cosmetics.aura){ctx.globalAlpha=.22;ctx.fillStyle=c;ctx.beginPath();ctx.arc(x+21,y+28,39+Math.sin(elapsed()*5)*4,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}
+  ctx.shadowBlur=ability?38:(me?24:12);ctx.shadowColor=c;ctx.fillStyle=c;ctx.beginPath();ctx.roundRect(x,y,42,56,12);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle=accent;
+  if(role==='earth'){ctx.fillRect(x+5,y+40,32,8);ctx.beginPath();ctx.arc(x+21,y+8,9,0,Math.PI*2);ctx.fill();}
+  else if(role==='air'){ctx.beginPath();ctx.moveTo(x+5,y+42);ctx.quadraticCurveTo(x+21,y+32,x+37,y+42);ctx.lineTo(x+37,y+49);ctx.quadraticCurveTo(x+21,y+39,x+5,y+49);ctx.fill();}
+  else if(role==='light'){ctx.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4,r=i%2?8:14,px=x+21+Math.cos(a)*r,py=y+43+Math.sin(a)*r;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}ctx.closePath();ctx.fill();}
+  else{ctx.beginPath();ctx.arc(x+21,y+43,12,Math.PI*.15,Math.PI*1.85);ctx.lineTo(x+21,y+43);ctx.fill();}
+  ctx.fillStyle='#0b0d10';ctx.fillRect(x+9,y+18,7,7);ctx.fillRect(x+26,y+18,7,7);ctx.fillStyle='#fff';ctx.globalAlpha=.8;ctx.fillRect(x+10,y+19,2,2);ctx.fillRect(x+27,y+19,2,2);
+  if(cosmetics.crown){ctx.globalAlpha=1;ctx.fillStyle='#ffd95a';ctx.beginPath();ctx.moveTo(x+8,y-4);ctx.lineTo(x+12,y-17);ctx.lineTo(x+20,y-8);ctx.lineTo(x+28,y-18);ctx.lineTo(x+35,y-4);ctx.closePath();ctx.fill();}
+  if(ability){ctx.globalAlpha=.35;ctx.strokeStyle=c;ctx.lineWidth=4;ctx.strokeRect(x-8,y-8,58,72);}if(anchored){ctx.globalAlpha=.9;ctx.fillStyle='#d7b56d';ctx.font='18px sans-serif';ctx.fillText('◆',x+12,y-8);}ctx.restore();
 }
 function drawLevelTitle(){const ld=state.levelData,z=castleRegion(state.level);ctx.fillStyle='rgba(255,255,255,.14)';ctx.font='900 72px sans-serif';ctx.textAlign='center';ctx.fillText(String(state.level).padStart(4,'0'),W/2,103);ctx.font='800 20px sans-serif';ctx.fillStyle=z.accent;ctx.globalAlpha=.55;ctx.fillText(ld?.roomTitle||z.name,W/2,139);ctx.font='650 13px sans-serif';ctx.fillStyle='rgba(255,255,255,.55)';ctx.globalAlpha=.6;ctx.fillText(`${z.name}  •  TENTATIVA ${state.attempt}`,W/2,163);ctx.globalAlpha=1;ctx.textAlign='left';}
 function burst(x,y,n){for(let i=0;i<n;i++)state.particles.push({x,y,vx:(Math.random()-.5)*500,vy:(Math.random()-.7)*450,life:1});}
-function drawParticles(){for(const p of state.particles){ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=state.role==='earth'?'#a8c66c':'#9bdcff';ctx.fillRect(p.x,p.y,6,6);}ctx.globalAlpha=1;}
+function drawParticles(){for(const p of state.particles){ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=(ELEMENTS[state.role]||ELEMENTS.earth).color;ctx.fillRect(p.x,p.y,6,6);}ctx.globalAlpha=1;}
 function updateParticles(dt){for(const p of state.particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=700*dt;p.life-=dt*1.7;}state.particles=state.particles.filter(p=>p.life>0);}
 function showOverlay(title,text,ms){$('#overlayTitle').textContent=title;$('#overlayText').textContent=text;$('#overlay').classList.remove('hidden');if(ms)setTimeout(hideOverlay,ms);}
 function hideOverlay(){$('#overlay').classList.add('hidden');}
 
-let last=performance.now();function loop(now){const dt=Math.min(.03,(now-last)/1000);last=now;if(state.running){if(state.mode==='singleplayer')updateSolo(dt);else player.update(dt);updateParticles(dt);}render();requestAnimationFrame(loop);}requestAnimationFrame(loop);
+let last=performance.now();function loop(now){const dt=Math.min(.03,(now-last)/1000);last=now;if(state.running&&!(state.shopOpen&&state.mode==='singleplayer')){if(state.mode==='singleplayer')updateSolo(dt);else player.update(dt);updateParticles(dt);}render();requestAnimationFrame(loop);}requestAnimationFrame(loop);
