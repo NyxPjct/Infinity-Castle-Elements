@@ -1,10 +1,35 @@
 const path = require('path');
+const fs = require('fs');
 const { app, BrowserWindow, ipcMain, shell, screen } = require('electron');
 
 let mainWindow = null;
 let gameServer = null;
 let quitting = false;
 let preferredResolution = 'native';
+
+function saveStorePath() {
+  return path.join(app.getPath('userData'), 'save-data.json');
+}
+function readSaveStore() {
+  try {
+    const file = saveStorePath();
+    if (!fs.existsSync(file)) return {};
+    const raw = fs.readFileSync(file, 'utf8');
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+function writeSaveStore(store) {
+  const file = saveStorePath();
+  const dir = path.dirname(file);
+  fs.mkdirSync(dir, { recursive: true });
+  const tmp = file + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(store, null, 2), 'utf8');
+  fs.renameSync(tmp, file);
+}
+
 
 app.setName('Infinity Castle Elements');
 app.setAppUserModelId('com.nyxprojectr.infinitycastleelements');
@@ -106,6 +131,21 @@ function applyPreferredWindowSize() {
   mainWindow.setSize(width, height);
   mainWindow.center();
 }
+
+ipcMain.on('ice:storage-get', (event, key) => {
+  const store = readSaveStore();
+  event.returnValue = Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null;
+});
+ipcMain.on('ice:storage-set', (_event, key, value) => {
+  const store = readSaveStore();
+  store[key] = String(value ?? '');
+  writeSaveStore(store);
+});
+ipcMain.on('ice:storage-remove', (_event, key) => {
+  const store = readSaveStore();
+  delete store[key];
+  writeSaveStore(store);
+});
 
 ipcMain.on('ice:quit', () => app.quit());
 ipcMain.handle('ice:toggle-fullscreen', () => {
