@@ -136,15 +136,17 @@ ipcMain.on('ice:storage-get', (event, key) => {
   const store = readSaveStore();
   event.returnValue = Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null;
 });
-ipcMain.on('ice:storage-set', (_event, key, value) => {
+ipcMain.on('ice:storage-set', (event, key, value) => {
   const store = readSaveStore();
   store[key] = String(value ?? '');
   writeSaveStore(store);
+  event.returnValue = true;
 });
-ipcMain.on('ice:storage-remove', (_event, key) => {
+ipcMain.on('ice:storage-remove', (event, key) => {
   const store = readSaveStore();
   delete store[key];
   writeSaveStore(store);
+  event.returnValue = true;
 });
 
 ipcMain.on('ice:quit', () => app.quit());
