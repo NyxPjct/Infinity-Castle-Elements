@@ -8,12 +8,11 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 3000;
 const MAX_LEVEL = 1000;
+const ELEMENTS = new Set(['earth', 'air', 'light', 'darkness']);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Placeholder hook for a future approved "Sign in with ChatGPT" integration.
-// Keep secrets server-side. The game already works without this via private room codes.
 app.get('/auth/chatgpt/status', (_req, res) => {
   res.json({
     enabled: false,
@@ -30,6 +29,11 @@ function makeRoomCode() {
   return code;
 }
 
+function normalizeElement(value) {
+  const element = String(value || '').trim().toLowerCase();
+  return ELEMENTS.has(element) ? element : 'earth';
+}
+
 function publicRoom(room) {
   return {
     code: room.code,
@@ -39,6 +43,7 @@ function publicRoom(room) {
       id: p.id,
       name: p.name,
       role: p.role,
+      slot: p.slot,
       ready: p.ready
     }))
   };
@@ -88,7 +93,7 @@ function maybeStartBossCharge(room) {
 }
 
 io.on('connection', socket => {
-  socket.on('create-room', ({ name } = {}, ack = () => {}) => {
+  socket.on('create-room', ({ name, element } = {}, ack = () => {}) => {
     const code = uniqueCode();
     const room = {
       code,
@@ -100,15 +105,15 @@ io.on('connection', socket => {
       bossTimer: null
     };
     rooms.set(code, room);
-    joinRoom(socket, room, name, ack);
+    joinRoom(socket, room, name, element, ack);
   });
 
-  socket.on('join-room', ({ code, name } = {}, ack = () => {}) => {
+  socket.on('join-room', ({ code, name, element } = {}, ack = () => {}) => {
     const normalized = String(code || '').trim().toUpperCase();
     const room = rooms.get(normalized);
     if (!room) return ack({ ok: false, error: 'Sala não encontrada.' });
     if (room.players.size >= 2) return ack({ ok: false, error: 'Essa sala já tem 2 jogadores.' });
-    joinRoom(socket, room, name, ack);
+    joinRoom(socket, room, name, element, ack);
   });
 
   socket.on('ready', ({ ready } = {}) => {
@@ -156,10 +161,16 @@ io.on('connection', socket => {
       resetGoalFlags(room);
       const completedLevel = room.level;
       const finished = completedLevel >= MAX_LEVEL;
-      if (!finished) { room.level += 1; resetBossState(room); }
-      io.to(room.code).emit('level-complete', { level: room.level, finished });
-      if (!finished) setTimeout(() => io.to(room.code).emit('start-level', { level: room.level, deaths: room.deaths }), 900);
-      else io.to(room.code).emit('game-finished', { deaths: room.deaths });
+      if (!finished) {
+        room.level += 1;
+        resetBossState(room);
+      }
+      io.to(room.code).emit('level-complete', { level: room.level, finished, completedLevel });
+      if (!finished) {
+        setTimeout(() => io.to(room.code).emit('start-level', { level: room.level, deaths: room.deaths }), 900);
+      } else {
+        io.to(room.code).emit('game-finished', { deaths: room.deaths });
+      }
       emitRoom(room);
     }
   });
@@ -167,7 +178,6 @@ io.on('connection', socket => {
   socket.on('player-death', () => {
     const room = getSocketRoom(socket);
     if (!room || room.resetting) return;
-    // Uma morte compartilhada conta uma vez mesmo se os dois clientes detectarem a colisão no mesmo frame.
     room.resetting = true;
     room.deaths += 1;
     resetGoalFlags(room);
@@ -183,7 +193,7 @@ io.on('connection', socket => {
     room.resetting = true;
     resetGoalFlags(room);
     resetBossState(room);
-    io.to(room.code).emit('reset-level', { deaths: room.deaths });
+    io.to(room.code).emit('reset-level', { deaths: room.deaths, manual: true });
     setTimeout(() => { if (rooms.get(room.code) === room) room.resetting = false; }, 300);
   });
 
@@ -192,11 +202,15 @@ io.on('connection', socket => {
     if (!room) return;
     room.players.delete(socket.id);
     socket.leave(room.code);
-    if (room.players.size === 0) rooms.delete(room.code);
-    else {
-      // Reassign role if needed so a single remaining player becomes Terra.
+    if (room.players.size === 0) {
+      rooms.delete(room.code);
+    } else {
       const only = [...room.players.values()][0];
-      if (only) { only.role = 'earth'; only.ready = false; only.atGoal = false; }
+      if (only) {
+        only.ready = false;
+        only.atGoal = false;
+        only.atRune = false;
+      }
       room.resetting = false;
       resetBossState(room);
       emitRoom(room);
@@ -210,19 +224,20 @@ function getSocketRoom(socket) {
   return code ? rooms.get(code) : null;
 }
 
-function joinRoom(socket, room, rawName, ack) {
+function joinRoom(socket, room, rawName, requestedElement, ack) {
   if (socket.data.roomCode) return ack({ ok: false, error: 'Você já está em uma sala.' });
   const name = String(rawName || 'Jogador').trim().slice(0, 18) || 'Jogador';
-  const roles = [...room.players.values()].map(p => p.role);
-  const role = roles.includes('earth') ? 'air' : 'earth';
-  const player = { id: socket.id, name, role, ready: false, atGoal: false, atRune: false };
+  const role = normalizeElement(requestedElement);
+  const usedSlots = new Set([...room.players.values()].map(p => p.slot));
+  const slot = usedSlots.has(0) ? 1 : 0;
+  const player = { id: socket.id, name, role, slot, ready: false, atGoal: false, atRune: false };
   room.players.set(socket.id, player);
   socket.data.roomCode = room.code;
   socket.join(room.code);
-  ack({ ok: true, code: room.code, role, id: socket.id, level: room.level });
+  ack({ ok: true, code: room.code, role, slot, id: socket.id, level: room.level });
   emitRoom(room);
 }
 
 server.listen(PORT, () => {
-  console.log(`Terra & Ar: Castelo Infinito 3.3 - Auditoria 1000 Fases running on http://localhost:${PORT}`);
+  console.log(`Infinity Castle Elements 4.0 running on http://localhost:${PORT}`);
 });
