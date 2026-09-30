@@ -10,6 +10,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   isFullscreen: () => ipcRenderer.invoke('ice:is-fullscreen'),
   setResolution: (value) => ipcRenderer.invoke('ice:set-resolution', value),
   storageGet: (key) => ipcRenderer.sendSync('ice:storage-get', key),
-  storageSet: (key, value) => ipcRenderer.send('ice:storage-set', key, value),
-  storageRemove: (key) => ipcRenderer.send('ice:storage-remove', key)
+  storageSet: (key, value) => ipcRenderer.sendSync('ice:storage-set', key, value),
+  storageRemove: (key) => ipcRenderer.sendSync('ice:storage-remove', key)
 });
