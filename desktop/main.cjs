@@ -116,6 +116,13 @@ ipcMain.handle('ice:toggle-fullscreen', () => {
   return next;
 });
 ipcMain.handle('ice:is-fullscreen', () => Boolean(mainWindow?.isFullScreen()));
+ipcMain.handle('ice:set-fullscreen', (_event, enabled) => {
+  if (!mainWindow) return false;
+  const next = Boolean(enabled);
+  mainWindow.setFullScreen(next);
+  if (!next) setTimeout(applyPreferredWindowSize, 80);
+  return next;
+});
 ipcMain.handle('ice:set-resolution', (_event, value) => {
   preferredResolution = typeof value === 'string' ? value : 'native';
   applyPreferredWindowSize();
