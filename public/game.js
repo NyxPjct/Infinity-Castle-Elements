@@ -144,15 +144,17 @@ async function exitFullscreen(){
   } catch {}
 }
 async function toggleFullscreen(){
+  if(window.electronAPI?.toggleFullscreen){await window.electronAPI.toggleFullscreen();await updateFullscreenButton();return;}
   if (fullscreenElement()) await exitFullscreen();
   else await enterFullscreen();
 }
-function updateFullscreenButton(){
+async function updateFullscreenButton(){
   if (!fullscreenBtn) return;
-  const active = !!fullscreenElement();
+  let active=!!fullscreenElement();
+  if(window.electronAPI?.isFullscreen){try{active=await window.electronAPI.isFullscreen();}catch{}}
   fullscreenBtn.textContent = active ? '⛶ Sair da tela cheia' : '⛶ Tela cheia';
   fullscreenBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  fullscreenBtn.title = active ? 'Sair da tela cheia (Esc)' : 'Colocar o jogo em tela cheia';
+  fullscreenBtn.title = active ? 'Alternar tela cheia nas configurações' : 'Colocar o jogo em tela cheia';
 }
 if (fullscreenBtn) fullscreenBtn.onclick = toggleFullscreen;
 document.addEventListener('fullscreenchange', updateFullscreenButton);
@@ -201,19 +203,38 @@ function openShop({death=false,multiplayer=false}={}){
 function closeShop(){state.shopOpen=false;$('#shopModal').classList.add('hidden');$('#shopCountdown').textContent='';}
 function applySettings(){
   const cfg=profile?.settings||{};document.body?.classList.toggle('reduce-motion',!!cfg.reducedMotion);
-  const shake=$('#settingScreenShake'),motion=$('#settingReducedMotion');if(shake)shake.checked=cfg.screenShake!==false;if(motion)motion.checked=!!cfg.reducedMotion;
+  const shake=$('#settingScreenShake'),motion=$('#settingReducedMotion'),resolution=$('#settingResolution'),language=$('#settingLanguage');
+  if(shake)shake.checked=cfg.screenShake!==false;if(motion)motion.checked=!!cfg.reducedMotion;
+  if(resolution)resolution.value=cfg.resolution||'native';if(language)language.value=cfg.language||'pt-BR';
+  document.documentElement.lang=cfg.language||'pt-BR';
+  if(typeof applyInterfaceLanguage==='function')applyInterfaceLanguage();
 }
-function openSettings(){applySettings();$('#settingsModal').classList.remove('hidden');}
-function closeSettings(){$('#settingsModal').classList.add('hidden');}
-$('#closeSettingsBtn').onclick=closeSettings;
+async function applyResolutionSetting(value){if(window.electronAPI?.setResolution){try{await window.electronAPI.setResolution(value||'native');}catch{}}}
+function openSettings(fromPause=false){
+  state.settingsFromPause=!!fromPause;applySettings();
+  if(fromPause)$('#pauseMenu')?.classList.add('hidden');
+  $('#settingsModal').classList.remove('hidden');
+}
+function closeSettings(restorePause=true){
+  $('#settingsModal').classList.add('hidden');
+  if(restorePause&&state.settingsFromPause&&state.paused)$('#pauseMenu')?.classList.remove('hidden');
+  state.settingsFromPause=false;
+}
+$('#closeSettingsBtn').onclick=()=>closeSettings();
 $('#settingScreenShake').addEventListener('change',e=>{profile.settings.screenShake=!!e.target.checked;saveProfile();});
 $('#settingReducedMotion').addEventListener('change',e=>{profile.settings.reducedMotion=!!e.target.checked;saveProfile();});
+$('#settingResolution').addEventListener('change',async e=>{profile.settings.resolution=e.target.value;saveProfile();await applyResolutionSetting(e.target.value);});
+$('#settingLanguage').addEventListener('change',e=>{profile.settings.language=e.target.value;saveProfile();});
 $('#settingsFullscreenBtn').onclick=toggleAppFullscreen;
+$('#pauseSaveBtn').onclick=saveFromPause;
+$('#pauseSettingsBtn').onclick=()=>openSettings(true);
+$('#pauseMainMenuBtn').onclick=pauseToMainMenu;
+$('#pauseDesktopBtn').onclick=pauseToDesktop;
 document.querySelectorAll('.shop-item').forEach(btn=>btn.onclick=()=>buyShopItem(btn.dataset.item));
 $('#shopBtnLobby').onclick=()=>openShop();$('#shopBtnHud').onclick=()=>openShop();
 $('#closeShopBtn').onclick=()=>{if($('#retryBtn').disabled)return;const retry=state.mode==='singleplayer'&&!state.running;closeShop();if(retry)startLevel(state.level);};
 $('#retryBtn').onclick=()=>{if($('#retryBtn').disabled)return;const wasRunning=state.running;closeShop();if(state.mode==='singleplayer'&&!wasRunning)startLevel(state.level);};
-profile.selectedRole=ELEMENTS[profile.selectedRole]?profile.selectedRole:'earth';state.selectedRole=profile.selectedRole;selectElement(state.selectedRole);refreshEconomyUI();applySettings();
+profile.selectedRole=ELEMENTS[profile.selectedRole]?profile.selectedRole:'earth';state.selectedRole=profile.selectedRole;selectElement(state.selectedRole);refreshEconomyUI();applySettings();applyResolutionSetting(profile.settings.resolution);
 if(typeof location!=='undefined'&&new URLSearchParams(location.search).has('menu'))showMainMenu();else splashTimer=setTimeout(showTitleScreen,2850);
 
 function loadSoloSave(){
@@ -291,7 +312,7 @@ socket.on('boss-defeated', ({level}={}) => {
 });
 
 function startLevel(level){
-  roomEl.classList.add('hidden'); gameWrap.classList.remove('hidden'); hideOverlay();
+  closePauseMenu(false);roomEl.classList.add('hidden'); gameWrap.classList.remove('hidden'); hideOverlay();
   state.running=true; state.lastGoalSent=false; state.remote=null; state.trapState.clear();
   state.bossCharge=0; state.bossDefeated=false; state.lastRuneSent=null; state.levelStart=performance.now();
   state.soloResetPending=false; state.soloTransition=false;
@@ -319,6 +340,7 @@ function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':
 
 const keys={};
 addEventListener('keydown',e=>{
+  if(state.paused||!$('#settingsModal')?.classList.contains('hidden'))return;
   const k=e.key.toLowerCase(); keys[k]=true;
   if(k==='r'&&!e.repeat)restartGame();
   if(k==='e'&&!e.repeat)activateAbility();
