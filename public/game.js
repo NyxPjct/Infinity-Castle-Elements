@@ -28,8 +28,32 @@ const state = {
 };
 
 const SOLO_SAVE_KEY = 'infinity-castle-elements-solo-v1';
+const MULTI_SAVE_KEY = 'infinity-castle-elements-multiplayer-v1';
 const LEGACY_SOLO_SAVE_KEY = 'terra-ar-castelo-infinito-solo-v1';
 const PROFILE_KEY = 'infinity-castle-elements-profile-v1';
+
+function persistentGet(key){
+  try{
+    const api=typeof window!=='undefined'?window.electronAPI:null;
+    if(api?.storageGet){
+      const nativeValue=api.storageGet(key);
+      if(nativeValue!==null&&nativeValue!==undefined&&nativeValue!=='')return nativeValue;
+      const legacy=localStorage.getItem(key);
+      if(legacy!==null&&legacy!==undefined){api.storageSet(key,legacy);return legacy;}
+      return null;
+    }
+    return localStorage.getItem(key);
+  }catch{return null;}
+}
+function persistentSet(key,value){
+  const text=String(value??'');
+  try{localStorage.setItem(key,text);}catch{}
+  try{if(typeof window!=='undefined'&&window.electronAPI?.storageSet)window.electronAPI.storageSet(key,text);}catch{}
+}
+function persistentRemove(key){
+  try{localStorage.removeItem(key);}catch{}
+  try{if(typeof window!=='undefined'&&window.electronAPI?.storageRemove)window.electronAPI.storageRemove(key);}catch{}
+}
 
 function setConnectionStatus(online){
   for(const id of ['#connectionPill','#menuConnectionPill']){const el=$(id);if(!el)continue;el.textContent=online?'● Online':'● Offline';el.style.color=online?'#55e6a5':'#ff7893';}
@@ -60,7 +84,7 @@ function showSetup(kind){
   state.running=false;state.mode='menu';$('#backToMenuBtn').style.display='';
   const solo=kind==='singleplayer';$('#soloSetup').classList.toggle('hidden',!solo);$('#multiSetup').classList.toggle('hidden',solo);
   const t=uiT();$('#setupEyebrow').textContent=(solo?t.single:t.multi).toUpperCase()+' · '+t.choose;
-  $('#errorText').textContent='';refreshSoloSaveButton();
+  $('#errorText').textContent='';refreshSoloSaveButton();refreshMultiplayerSaveButton();
 }
 function showExitScreen(){
   if(window.electronAPI?.quit){window.electronAPI.quit();return;}
@@ -89,8 +113,14 @@ function closePauseMenu(resume=true){
 function togglePauseMenu(){if(state.paused)closePauseMenu(true);else openPauseMenu();}
 function saveFromPause(){
   saveProfile();
-  const t=uiT();if(state.mode==='singleplayer'){saveSoloProgress(false);if($('#pauseMessage'))$('#pauseMessage').textContent=t.saved;}
-  else if($('#pauseMessage'))$('#pauseMessage').textContent=t.profileSaved;
+  const t=uiT();
+  if(state.mode==='singleplayer'){
+    saveSoloProgress(false);
+    if($('#pauseMessage'))$('#pauseMessage').textContent=`${t.saved} Fase ${state.level} pronta para continuar.`;
+  }else if(state.mode==='multiplayer'){
+    saveMultiplayerProgress(false);
+    if($('#pauseMessage'))$('#pauseMessage').textContent=`Multiplayer salvo na fase ${state.level}. Ao continuar será criada uma nova sala nessa fase.`;
+  }else if($('#pauseMessage'))$('#pauseMessage').textContent=t.profileSaved;
 }
 function leaveMultiplayerSession(){
   if(state.mode!=='multiplayer')return;
@@ -121,6 +151,7 @@ addEventListener('keydown',e=>{
 $('#soloBtn').onclick = () => startSolo(false);
 $('#continueSoloBtn').onclick = () => startSolo(true);
 $('#createBtn').onclick = () => { state.mode='multiplayer'; socket.emit('create-room', { name: playerName(), element: state.selectedRole }, handleJoin); };
+$('#continueMultiBtn').onclick = continueMultiplayer;
 $('#joinBtn').onclick = () => { state.mode='multiplayer'; socket.emit('join-room', { code: $('#roomCodeInput').value, name: playerName(), element: state.selectedRole }, handleJoin); };
 $('#roomCodeInput').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
 $('#copyCode').onclick = async () => { try { await navigator.clipboard.writeText(state.roomCode); $('#copyCode').textContent='Copiado!'; setTimeout(()=>$('#copyCode').textContent='Copiar código',900); } catch{} };
@@ -182,10 +213,10 @@ function applyInterfaceLanguage(){
   if(typeof refreshSoloSaveButton==='function')refreshSoloSaveButton();
 }
 function loadProfile(){
-  try{const raw=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null'),base=defaultProfile();if(!raw)return base;return {...base,...raw,boosts:{...base.boosts,...(raw.boosts||{})},owned:{...base.owned,...(raw.owned||{})},settings:{...base.settings,...(raw.settings||{})}};}catch{return defaultProfile();}
+  try{const raw=JSON.parse(persistentGet(PROFILE_KEY)||'null'),base=defaultProfile();if(!raw)return base;return {...base,...raw,boosts:{...base.boosts,...(raw.boosts||{})},owned:{...base.owned,...(raw.owned||{})},settings:{...base.settings,...(raw.settings||{})}};}catch{return defaultProfile();}
 }
 let profile=loadProfile();
-function saveProfile(){profile.selectedRole=state.selectedRole;localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));refreshEconomyUI();applySettings();}
+function saveProfile(){profile.selectedRole=state.selectedRole;persistentSet(PROFILE_KEY,JSON.stringify(profile));refreshEconomyUI();applySettings();}
 function addCoins(n){profile.coins=Math.max(0,(profile.coins||0)+Math.max(0,Math.floor(n)));saveProfile();}
 function spendCoins(n){if(profile.coins<n)return false;profile.coins-=n;saveProfile();return true;}
 function rewardLevel(level){const lv=Math.max(1,Math.min(1000,Number(level)||1));if(state.lastRewardedLevel===lv)return;state.lastRewardedLevel=lv;addCoins(4+Math.floor(lv/100));}
@@ -267,28 +298,70 @@ profile.selectedRole=ELEMENTS[profile.selectedRole]?profile.selectedRole:'earth'
 if(typeof location!=='undefined'&&new URLSearchParams(location.search).has('menu'))showMainMenu();else splashTimer=setTimeout(showTitleScreen,2850);
 
 function loadSoloSave(){
-  try {const current=JSON.parse(localStorage.getItem(SOLO_SAVE_KEY)||'null');if(current)return current;const legacy=JSON.parse(localStorage.getItem(LEGACY_SOLO_SAVE_KEY)||'null');return legacy?{...legacy,role:'earth'}:null;} catch { return null; }
+  try{
+    const current=JSON.parse(persistentGet(SOLO_SAVE_KEY)||'null');if(current)return current;
+    const legacy=JSON.parse(persistentGet(LEGACY_SOLO_SAVE_KEY)||'null');
+    if(legacy){const migrated={...legacy,role:legacy.role||'earth'};persistentSet(SOLO_SAVE_KEY,JSON.stringify(migrated));return migrated;}
+    return null;
+  }catch{return null;}
 }
 function saveSoloProgress(completed=false){
-  if(state.mode!=='singleplayer') return;
-  localStorage.setItem(SOLO_SAVE_KEY, JSON.stringify({level:state.level,deaths:state.deaths,role:state.role,completed,updatedAt:Date.now()}));
+  if(state.mode!=='singleplayer')return;
+  persistentSet(SOLO_SAVE_KEY,JSON.stringify({level:state.level,deaths:state.deaths,role:state.role,completed,updatedAt:Date.now()}));
   refreshSoloSaveButton();
 }
 function refreshSoloSaveButton(){
-  const btn=$('#continueSoloBtn'); if(!btn) return;
+  const btn=$('#continueSoloBtn');if(!btn)return;
   const save=loadSoloSave();
-  if(save && !save.completed && save.level>=1){
+  if(save&&!save.completed&&Number(save.level)>=1){
     btn.classList.remove('hidden');
-    const e=ELEMENTS[save.role]||ELEMENTS.earth,t=uiT();btn.textContent='↻ '+t.continue+' '+e.icon+' '+e.name+' — '+t.level+' '+Math.min(1000,save.level);
-  } else btn.classList.add('hidden');
+    const e=ELEMENTS[save.role]||ELEMENTS.earth,t=uiT();
+    btn.textContent='↻ '+t.continue+' '+e.icon+' '+e.name+' — '+t.level+' '+Math.min(1000,Number(save.level)||1);
+  }else btn.classList.add('hidden');
+}
+function loadMultiplayerSave(){
+  try{return JSON.parse(persistentGet(MULTI_SAVE_KEY)||'null');}catch{return null;}
+}
+function saveMultiplayerProgress(completed=false){
+  if(state.mode!=='multiplayer')return;
+  const payload={
+    level:Math.max(1,Math.min(1000,Number(state.level)||1)),
+    deaths:Math.max(0,Number(state.deaths)||0),
+    role:ELEMENTS[state.role]?state.role:state.selectedRole,
+    name:playerName(),
+    completed,
+    updatedAt:Date.now()
+  };
+  persistentSet(MULTI_SAVE_KEY,JSON.stringify(payload));
+  refreshMultiplayerSaveButton();
+}
+function refreshMultiplayerSaveButton(){
+  const btn=$('#continueMultiBtn');if(!btn)return;
+  const save=loadMultiplayerSave();
+  if(save&&!save.completed&&Number(save.level)>=1){
+    btn.classList.remove('hidden');
+    btn.textContent='↻ Continuar multiplayer — fase '+Math.min(1000,Number(save.level)||1);
+    const name=$('#playerName');if(name&&!name.value&&save.name)name.value=String(save.name).slice(0,18);
+  }else btn.classList.add('hidden');
 }
 function startSolo(useSave){
   const save=useSave?loadSoloSave():null;
-  state.mode='singleplayer'; state.id='solo'; state.roomCode=null; state.room=null; state.remote=null;state.slot=0;
-  state.level=save?.level||1; state.deaths=save?.deaths||0; state.role=ELEMENTS[save?.role]?save.role:state.selectedRole;
-  if(!useSave) saveSoloProgress(false);
-  lobby.classList.add('hidden'); roomEl.classList.add('hidden');$('#backToMenuBtn').style.display='none';
+  state.mode='singleplayer';state.id='solo';state.roomCode=null;state.room=null;state.remote=null;state.slot=0;
+  state.level=save?.level||1;state.deaths=save?.deaths||0;state.role=ELEMENTS[save?.role]?save.role:state.selectedRole;
+  if(!useSave)saveSoloProgress(false);
+  lobby.classList.add('hidden');roomEl.classList.add('hidden');$('#backToMenuBtn').style.display='none';
   startLevel(state.level);
+}
+function continueMultiplayer(){
+  const save=loadMultiplayerSave();
+  if(!save)return refreshMultiplayerSaveButton();
+  state.mode='multiplayer';
+  socket.emit('create-room',{
+    name:playerName()||save.name||'Jogador',
+    element:state.selectedRole,
+    resumeLevel:Math.max(1,Math.min(1000,Number(save.level)||1)),
+    resumeDeaths:Math.max(0,Number(save.deaths)||0)
+  },handleJoin);
 }
 function restartGame(){
   if(state.mode==='singleplayer'){
@@ -297,10 +370,10 @@ function restartGame(){
     setTimeout(()=>startLevel(state.level),330);
   } else socket.emit('restart-level');
 }
-refreshSoloSaveButton();
+refreshSoloSaveButton();refreshMultiplayerSaveButton();
 function handleJoin(res){
   if(!res?.ok){ $('#errorText').textContent = res?.error || 'Não foi possível entrar.'; return; }
-  state.mode='multiplayer'; state.id=res.id; state.roomCode=res.code; state.role=res.role; state.slot=res.slot||0; state.level=res.level;
+  state.mode='multiplayer';state.id=res.id;state.roomCode=res.code;state.role=res.role;state.slot=res.slot||0;state.level=res.level;state.deaths=Number(res.deaths)||0;
   $('#errorText').textContent='';document.body?.classList.remove('setup-active'); lobby.classList.add('hidden'); roomEl.classList.remove('hidden');$('#backToMenuBtn').style.display='none';
   $('#roomCode').textContent=res.code; updateHud();
 }
@@ -308,7 +381,8 @@ function handleJoin(res){
 socket.on('room-state', room => {
   state.room=room; state.level=room.level; state.deaths=room.deaths;
   const me=room.players.find(p=>p.id===state.id);if(me){state.role=me.role;state.slot=me.slot||0;}
-  $('#roomLevel').textContent=room.level; $('#roomDeaths').textContent=room.deaths;
+  $('#roomLevel').textContent=room.level;$('#roomDeaths').textContent=room.deaths;
+  saveMultiplayerProgress(false);
   const players=$('#players'); players.innerHTML='';
   room.players.forEach(p=>{
     const e=ELEMENTS[p.role]||ELEMENTS.earth,div=document.createElement('div');div.className=`player-card ${p.role}`;
@@ -320,16 +394,17 @@ socket.on('room-state', room => {
 
 socket.on('start-level', ({level,deaths}) => { state.level=level; state.deaths=deaths; startLevel(level); });
 socket.on('reset-level', ({deaths,manual}={}) => {
-  state.deaths=deaths;state.running=false;
+  state.deaths=deaths;state.running=false;saveMultiplayerProgress(false);
   if(manual){showOverlay('↻ SALA REINICIADA','Tentem uma rota diferente.',320);setTimeout(()=>startLevel(state.level),340);return;}
   showOverlay('☠️ O CASTELO COBROU OUTRA ALMA',deathLine(),520);openShop({death:true,multiplayer:true});
   clearTimeout(state.shopTimer);state.shopTimer=setTimeout(()=>{closeShop();startLevel(state.level);},5000);
 });
 socket.on('level-complete', ({level,finished,completedLevel}) => {
   rewardLevel(completedLevel||Math.max(1,(finished?1000:level-1)));state.level=level;
+  saveMultiplayerProgress(!!finished);
   showOverlay(finished?'🏆 INFINITY CASTLE CONQUISTADO':'✓ SALA SUPERADA', finished?'Vocês conquistaram as 1000 salas de Infinity Castle Elements.':`Próxima: fase ${level}`, finished?0:700);
 });
-socket.on('game-finished', ({deaths}) => { state.running=false; state.deaths=deaths; updateHud(); showOverlay('🏆 1000/1000', `Infinity Castle caiu após ${deaths} mortes compartilhadas.`, 0); });
+socket.on('game-finished', ({deaths}) => { state.running=false;state.deaths=deaths;saveMultiplayerProgress(true);updateHud();showOverlay('🏆 1000/1000',`Infinity Castle caiu após ${deaths} mortes compartilhadas.`,0); });
 socket.on('enemy-defeated', ({id,level}={}) => {if(Number(level)!==state.level)return;const e=(state.levelData?.enemies||[]).find(x=>x.id===id);if(e)defeatEnemy(e,true);});
 socket.on('partner-left', () => { if(state.mode!=='multiplayer')return; closeShop();clearTimeout(state.shopTimer);state.running=false; showOverlay('Parceiro desconectou', 'Aguardando alguém entrar novamente na sala.', 0); gameWrap.classList.add('hidden'); roomEl.classList.remove('hidden'); state.ready=false; $('#readyBtn').textContent='Estou pronto'; });
 socket.on('remote-state', data => { if(state.mode==='multiplayer'&&data.id!==state.id) state.remote=data; });
