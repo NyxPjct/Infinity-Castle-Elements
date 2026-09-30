@@ -4,6 +4,8 @@
 
 A versão **INSANITY 0.0.0** é a primeira versão definitiva do projeto e a edição oficial para Windows.
 
+**Versão atual do jogo:** `0.0.0`
+
 ## Downloads para Windows
 
 1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0/Infinity-Castle-Elements-Setup-0.0.exe)
