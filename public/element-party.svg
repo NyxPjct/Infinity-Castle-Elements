@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700" role="img" aria-labelledby="t d">
+<title id="t">Infinity Castle Elements</title>
+<desc id="d">Quatro heróis elementais reunidos diante de um castelo colossal.</desc>
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#161326"/><stop offset=".55" stop-color="#090b12"/><stop offset="1" stop-color="#04050a"/></linearGradient>
+  <radialGradient id="moon"><stop stop-color="#fff8d0"/><stop offset=".25" stop-color="#ffd96a" stop-opacity=".75"/><stop offset="1" stop-color="#ffd96a" stop-opacity="0"/></radialGradient>
+  <linearGradient id="earth" x1="0" x2="1" y2="1"><stop stop-color="#d7f59a"/><stop offset="1" stop-color="#6d8a42"/></linearGradient>
+  <linearGradient id="air" x1="0" x2="1" y2="1"><stop stop-color="#e7fbff"/><stop offset="1" stop-color="#65b9e7"/></linearGradient>
+  <linearGradient id="light" x1="0" x2="1" y2="1"><stop stop-color="#fffbd4"/><stop offset="1" stop-color="#ffc84c"/></linearGradient>
+  <linearGradient id="dark" x1="0" x2="1" y2="1"><stop stop-color="#c49aff"/><stop offset="1" stop-color="#4b246f"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="18" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1600" height="700" fill="url(#sky)"/>
+<circle cx="1240" cy="150" r="220" fill="url(#moon)" opacity=".5"/>
+<g opacity=".5" fill="#171b27" stroke="#2b3144" stroke-width="4">
+  <path d="M110 505V210h130v-75h105v75h110v295z"/>
+  <path d="M1150 505V185h115v-85h110v85h120v320z"/>
+  <path d="M460 505V145h115V75h120v70h95v360z"/>
+  <path d="M790 505V115h120V35h120v80h115v390z"/>
+</g>
+<g fill="#090b11" opacity=".9">
+  <rect x="0" y="505" width="1600" height="195"/>
+  <path d="M0 540 C230 470 390 520 570 485 S940 475 1100 510 S1420 455 1600 520V700H0z"/>
+</g>
+<g transform="translate(800 70)" filter="url(#glow)">
+  <circle r="22" fill="#ffd96a"/>
+  <path d="M0-65L12-22 54-10 16 8 8 52-10 15-52 2-14-15z" fill="#fff2a3" opacity=".8"/>
+</g>
+<!-- darkness -->
+<g transform="translate(280 250)">
+  <ellipse cx="0" cy="260" rx="115" ry="26" fill="#000" opacity=".45"/>
+  <path d="M-72 90Q0 5 72 90L95 285H-95z" fill="#140e20"/>
+  <path d="M-58 102Q0 40 58 102L50 238H-50z" fill="url(#dark)"/>
+  <circle cy="68" r="48" fill="#271536"/>
+  <path d="M-54 64Q0 5 54 64L30 80Q0 54-30 80z" fill="#09070f"/>
+  <circle cx="-16" cy="68" r="5" fill="#d5b3ff"/><circle cx="16" cy="68" r="5" fill="#d5b3ff"/>
+  <path d="M-83 135L-150 250M83 135L148 238" stroke="#8d5ac0" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="-153" cy="253" r="22" fill="#9b6dd0"/>
+  <path d="M-165 255c35-45 61-22 66 8-29-11-41 10-62 20z" fill="#3b2058"/>
+  <text y="340" text-anchor="middle" fill="#d5b3ff" font-family="system-ui" font-weight="900" font-size="30">ESCURIDÃO</text>
+</g>
+<!-- earth -->
+<g transform="translate(600 225)">
+  <ellipse cx="0" cy="285" rx="120" ry="28" fill="#000" opacity=".45"/>
+  <path d="M-86 122Q0 35 86 122L74 290H-74z" fill="url(#earth)"/>
+  <circle cy="82" r="50" fill="#8ca55f"/>
+  <path d="M-54 73Q0 18 54 73L28 61 12 28-8 60-30 43z" fill="#5a4634"/>
+  <circle cx="-17" cy="83" r="5" fill="#0d1110"/><circle cx="17" cy="83" r="5" fill="#0d1110"/>
+  <path d="M-90 140L-165 230M88 142L150 208" stroke="#8ca55f" stroke-width="22" stroke-linecap="round"/>
+  <path d="M-185 213l48-16 32 55-72 22z" fill="#6d604f" stroke="#b9b29b" stroke-width="5"/>
+  <path d="M95 133l58-45 28 35-62 50z" fill="#57683d"/>
+  <text y="365" text-anchor="middle" fill="#d7f59a" font-family="system-ui" font-weight="900" font-size="30">TERRA</text>
+</g>
+<!-- light -->
+<g transform="translate(960 210)" filter="url(#glow)">
+  <ellipse cx="0" cy="300" rx="115" ry="26" fill="#000" opacity=".35"/>
+  <path d="M-78 128Q0 35 78 128L65 300H-65z" fill="url(#light)"/>
+  <circle cy="84" r="49" fill="#f6d970"/>
+  <path d="M-48 80Q0 25 48 80L20 54 0 15-20 54z" fill="#fff7cc"/>
+  <circle cx="-16" cy="85" r="5" fill="#6a5010"/><circle cx="16" cy="85" r="5" fill="#6a5010"/>
+  <path d="M-82 142L-145 225M82 142L145 220" stroke="#f6d970" stroke-width="19" stroke-linecap="round"/>
+  <circle cx="150" cy="216" r="32" fill="#fff3a5"/>
+  <path d="M150 166v100M100 216h100" stroke="#fff9d7" stroke-width="10" stroke-linecap="round"/>
+  <text y="375" text-anchor="middle" fill="#fff0a2" font-family="system-ui" font-weight="900" font-size="30">LUZ</text>
+</g>
+<!-- air -->
+<g transform="translate(1290 235)">
+  <ellipse cx="0" cy="275" rx="118" ry="27" fill="#000" opacity=".4"/>
+  <path d="M-82 115Q0 32 82 115L72 282H-72z" fill="url(#air)"/>
+  <circle cy="75" r="48" fill="#a9e5ff"/>
+  <path d="M-55 70Q0 10 55 70L30 60 10 28-7 57-31 40z" fill="#ecfbff"/>
+  <circle cx="-16" cy="76" r="5" fill="#15364b"/><circle cx="16" cy="76" r="5" fill="#15364b"/>
+  <path d="M-88 130L-158 200M88 130L158 205" stroke="#9bdcff" stroke-width="18" stroke-linecap="round"/>
+  <path d="M-176 200c38-27 64-15 86 8-31 6-52 15-84 1M115 203c34-30 64-25 91-5-31 11-54 20-88 15" fill="none" stroke="#dff7ff" stroke-width="9" stroke-linecap="round"/>
+  <text y="350" text-anchor="middle" fill="#dff7ff" font-family="system-ui" font-weight="900" font-size="30">AR</text>
+</g>
+<text x="800" y="635" text-anchor="middle" fill="#eef1ff" font-family="system-ui" font-weight="950" font-size="54" letter-spacing="8">INFINITY CASTLE ELEMENTS</text>
+<text x="800" y="674" text-anchor="middle" fill="#7f89a5" font-family="system-ui" font-weight="700" font-size="18" letter-spacing="5">THE CASTLE CHOOSES HOW YOU DIE</text>
+</svg>
