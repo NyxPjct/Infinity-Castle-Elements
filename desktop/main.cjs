@@ -1,9 +1,10 @@
 const path = require('path');
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, screen } = require('electron');
 
 let mainWindow = null;
 let gameServer = null;
 let quitting = false;
+let preferredResolution = 'native';
 
 app.setName('Infinity Castle Elements');
 app.setAppUserModelId('com.nyxprojectr.infinitycastleelements');
@@ -36,6 +37,7 @@ function createWindow(port) {
     minWidth: 1100,
     minHeight: 680,
     show: false,
+    fullscreen: true,
     backgroundColor: '#000000',
     autoHideMenuBar: true,
     title: 'Infinity Castle Elements — INSANITY 0.0',
@@ -53,6 +55,7 @@ function createWindow(port) {
   mainWindow.loadURL(`http://127.0.0.1:${port}`);
 
   mainWindow.once('ready-to-show', () => {
+    mainWindow.setFullScreen(true);
     mainWindow.show();
     mainWindow.focus();
   });
@@ -78,24 +81,46 @@ function createWindow(port) {
     if (input.type !== 'keyDown') return;
     if (input.key === 'F11') {
       event.preventDefault();
-      mainWindow.setFullScreen(!mainWindow.isFullScreen());
-    }
-    if (input.key === 'Escape' && mainWindow.isFullScreen()) {
-      event.preventDefault();
-      mainWindow.setFullScreen(false);
+      const next = !mainWindow.isFullScreen();
+      mainWindow.setFullScreen(next);
+      if (!next) setTimeout(applyPreferredWindowSize, 80);
     }
   });
 
   mainWindow.on('closed', () => { mainWindow = null; });
 }
 
+function applyPreferredWindowSize() {
+  if (!mainWindow || mainWindow.isFullScreen()) return;
+  const display = screen.getDisplayMatching(mainWindow.getBounds());
+  const maxW = Math.max(1100, display.workAreaSize.width);
+  const maxH = Math.max(680, display.workAreaSize.height);
+  let width = Math.min(1600, maxW), height = Math.min(900, maxH);
+  if (preferredResolution !== 'native') {
+    const match = /^(\d{3,4})x(\d{3,4})$/.exec(preferredResolution);
+    if (match) {
+      width = Math.max(1100, Math.min(Number(match[1]), maxW));
+      height = Math.max(680, Math.min(Number(match[2]), maxH));
+    }
+  }
+  mainWindow.setSize(width, height);
+  mainWindow.center();
+}
+
 ipcMain.on('ice:quit', () => app.quit());
 ipcMain.handle('ice:toggle-fullscreen', () => {
   if (!mainWindow) return false;
-  mainWindow.setFullScreen(!mainWindow.isFullScreen());
-  return mainWindow.isFullScreen();
+  const next = !mainWindow.isFullScreen();
+  mainWindow.setFullScreen(next);
+  if (!next) setTimeout(applyPreferredWindowSize, 80);
+  return next;
 });
 ipcMain.handle('ice:is-fullscreen', () => Boolean(mainWindow?.isFullScreen()));
+ipcMain.handle('ice:set-resolution', (_event, value) => {
+  preferredResolution = typeof value === 'string' ? value : 'native';
+  applyPreferredWindowSize();
+  return preferredResolution;
+});
 
 app.whenReady().then(async () => {
   try {
