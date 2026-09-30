@@ -41,7 +41,7 @@ jobs:
 
       - name: Build Windows EXE
         shell: pwsh
-        run: npm run dist:win
+        run: npm run dist:win -- --publish never
 
       - name: Show generated executables
         shell: pwsh
