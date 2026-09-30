@@ -9,15 +9,20 @@ const io = new Server(server, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 3000;
 const MAX_LEVEL = 1000;
 const ELEMENTS = new Set(['earth', 'air', 'light', 'darkness']);
+const MULTIPLAYER_ONLY = process.env.MULTIPLAYER_ONLY === '1';
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+if (!MULTIPLAYER_ONLY) app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/health', (_req, res) => res.status(200).json({ ok:true, service:'infinity-castle-elements-multiplayer', version:'0.0.0', rooms:rooms?.size||0 }));
 
 app.get('/auth/chatgpt/status', (_req, res) => {
   res.json({ enabled: false, reason: 'Requires an approved Sign in with ChatGPT integration/client configuration for this app.' });
 });
 
 const rooms = new Map();
+
+app.get('/multiplayer/status', (_req, res) => res.json({ online:true, version:'0.0.0', activeRooms:rooms.size, maxPlayersPerRoom:2 }));
 
 function makeRoomCode() {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -127,7 +132,7 @@ function joinRoom(socket,room,rawName,requestedElement,ack){
   ack({ok:true,code:room.code,role,slot,id:socket.id,level:room.level,deaths:room.deaths});emitRoom(room);
 }
 
-function startServer(port = PORT, host) {
+function startServer(port = PORT, host = '0.0.0.0') {
   if (server.listening) return server;
   server.listen(port, host, () => {
     const addr = server.address();
