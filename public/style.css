@@ -132,3 +132,41 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
   .menu-layout{grid-template-columns:1fr;height:auto;min-height:100%;padding:25px 12px}.menu-panel{align-self:center;padding:20px 0}.menu-story-card{display:none}.menu-choice{min-height:68px}.menu-brand-mini{margin-bottom:18px}.menu-bg{background-position:center}
   .topbar-actions #backToMenuBtn{order:3;width:100%}
 }
+
+
+/* =========================================================
+   INSANITY 0.0.0 — CHARACTER SELECT + SETTINGS + PAUSE
+   ========================================================= */
+.character-select-block{margin:0 0 18px;padding:14px;border:1px solid #293149;background:linear-gradient(180deg,#0b101a,#080c14);border-radius:16px}
+.character-select-title{margin:0 0 11px;font-size:9px;letter-spacing:.22em;color:#8f98aa;font-weight:900}
+.character-picker{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.character-choice{--ec:#a8c66c;--ea:#6f5139;position:relative;min-width:0;padding:10px 5px 8px;border:1px solid #2a3347;border-radius:13px;background:#090e18;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:none}
+.character-choice.air{--ec:#9bdcff;--ea:#e9f8ff}.character-choice.light{--ec:#ffe477;--ea:#fff8d0}.character-choice.darkness{--ec:#a46cff;--ea:#241233}
+.character-choice:hover,.character-choice:focus-visible{border-color:var(--ec);transform:translateY(-2px);outline:none}
+.character-choice.selected{border-color:var(--ec);background:color-mix(in srgb,var(--ec) 9%,#090e18);box-shadow:0 0 0 2px color-mix(in srgb,var(--ec) 22%,transparent),0 10px 28px color-mix(in srgb,var(--ec) 12%,transparent)}
+.character-choice b{font-size:10px;letter-spacing:.04em}.character-choice small{font-size:12px}
+.mini-character{position:relative;width:42px;height:56px;display:block;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--ec) 26%,transparent))}
+.mini-body{position:absolute;left:5px;top:8px;width:32px;height:45px;border-radius:11px;background:var(--ec)}
+.mini-head{position:absolute;z-index:2;left:12px;top:1px;width:18px;height:18px;border-radius:50%;background:var(--ec)}
+.mini-detail{position:absolute;z-index:3;left:9px;bottom:8px;width:24px;height:6px;border-radius:5px;background:var(--ea)}
+.character-choice.air .mini-detail{height:5px;bottom:11px;transform:skewX(-18deg)}
+.character-choice.light .mini-detail{width:14px;height:14px;left:14px;bottom:8px;transform:rotate(45deg);border-radius:2px}
+.character-choice.darkness .mini-detail{width:20px;height:10px;left:11px;bottom:7px;border-radius:50% 50% 45% 45%}
+.mini-eye{position:absolute;z-index:4;top:19px;width:5px;height:5px;border-radius:2px;background:#0b0d10;box-shadow:inset 1px 1px #fff8}
+.mini-eye.left{left:12px}.mini-eye.right{right:12px}
+.character-select-help{margin:9px 0 0;text-align:center;color:#6f788b;font-size:9px}
+.setting-select{min-width:220px;max-width:48%;height:40px;border:1px solid #394255;border-radius:10px;background:#111827;color:#f4f0fa;padding:0 11px;font:700 12px system-ui;outline:none}
+.setting-select:focus{border-color:#8852ce;box-shadow:0 0 0 2px rgba(136,82,206,.18)}
+.pause-modal{position:fixed;inset:0;z-index:260;background:rgba(0,0,0,.78);backdrop-filter:blur(14px);display:grid;place-items:center;padding:22px}
+.pause-modal.hidden{display:none!important}
+.pause-card{width:min(680px,94vw);background:linear-gradient(180deg,rgba(18,14,28,.98),rgba(7,8,14,.98));border:1px solid #3d3150;border-radius:24px;padding:28px;box-shadow:0 40px 140px rgba(0,0,0,.75),0 0 60px rgba(129,65,185,.13)}
+.pause-card h2{margin:4px 0 5px;font-family:Georgia,serif;font-size:38px;letter-spacing:.05em}
+.pause-actions{display:flex;flex-direction:column;gap:8px;margin-top:20px}
+.pause-choice{min-height:68px}
+.pause-message{min-height:18px;margin:14px 4px 0;color:#77e2aa;font-size:11px;font-weight:800}
+body.game-paused .game-wrap{filter:saturate(.65) brightness(.72)}
+@media(max-width:900px){
+  .character-picker{grid-template-columns:repeat(2,1fr)}
+  .setting-row{align-items:flex-start;flex-direction:column}
+  .setting-select{width:100%;max-width:none}
+}
