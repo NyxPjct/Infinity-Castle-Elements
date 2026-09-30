@@ -54,9 +54,11 @@ function maybeStartBossCharge(room){
 }
 
 io.on('connection', socket => {
-  socket.on('create-room', ({name,element}={}, ack=()=>{}) => {
+  socket.on('create-room', ({name,element,resumeLevel,resumeDeaths}={}, ack=()=>{}) => {
     const code=uniqueCode();
-    const room={code,level:1,deaths:0,players:new Map(),resetting:false,bossDefeated:false,bossTimer:null};
+    const level=Math.max(1,Math.min(MAX_LEVEL,Number(resumeLevel)||1));
+    const deaths=Math.max(0,Math.min(999999,Number(resumeDeaths)||0));
+    const room={code,level,deaths,players:new Map(),resetting:false,bossDefeated:false,bossTimer:null};
     rooms.set(code,room);joinRoom(socket,room,name,element,ack);
   });
   socket.on('join-room', ({code,name,element}={}, ack=()=>{}) => {
@@ -122,7 +124,7 @@ function joinRoom(socket,room,rawName,requestedElement,ack){
   const usedSlots=new Set([...room.players.values()].map(p=>p.slot)),slot=usedSlots.has(0)?1:0;
   const player={id:socket.id,name,role,slot,ready:false,atGoal:false,atRune:false};
   room.players.set(socket.id,player);socket.data.roomCode=room.code;socket.join(room.code);
-  ack({ok:true,code:room.code,role,slot,id:socket.id,level:room.level});emitRoom(room);
+  ack({ok:true,code:room.code,role,slot,id:socket.id,level:room.level,deaths:room.deaths});emitRoom(room);
 }
 
 function startServer(port = PORT, host) {
