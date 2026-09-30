@@ -97,21 +97,6 @@
         <h2>Quatro elementos.<br><em>Mil salas tentando te destruir.</em></h2>
         <p class="lead">A partir da fase 5 o castelo abandona qualquer respeito pelo jogador. Terra, Ar, Luz e Escuridão têm movimentos, imunidades e habilidades próprias. As armadilhas continuam determinísticas: morrer ensina alguma coisa — mesmo quando dá vontade de fechar o jogo.</p>
 
-        <div class="element-picker" id="elementPicker" aria-label="Escolha seu elemento">
-          <button class="element-card selected earth" data-element="earth">
-            <span class="element-icon">🪨</span><b>Terra</b><small>Raízes não te param · E = impacto sísmico</small>
-          </button>
-          <button class="element-card air" data-element="air">
-            <span class="element-icon">💨</span><b>Ar</b><small>Imune a vendavais · E = impulso aéreo</small>
-          </button>
-          <button class="element-card light" data-element="light">
-            <span class="element-icon">☀️</span><b>Luz</b><small>Resiste a maldições · E = clarão protetor</small>
-          </button>
-          <button class="element-card darkness" data-element="darkness">
-            <span class="element-icon">🌑</span><b>Escuridão</b><small>Não se perde no avesso · E = passo sombrio</small>
-          </button>
-        </div>
-
         <div class="difficulty-strip">
           <span>1</span><div class="bar"><i></i></div><span>1000</span>
         </div>
@@ -121,6 +106,29 @@
         <div class="selected-element-summary">
           <span id="selectedElementIcon">🪨</span>
           <div><small>SEU ELEMENTO</small><b id="selectedElementName">Terra</b></div>
+        </div>
+
+        <div class="character-select-block">
+          <p class="character-select-title">ESCOLHA SEU ELEMENTO</p>
+          <div class="character-picker" id="elementPicker" aria-label="Escolha seu elemento">
+            <button class="character-choice selected earth" data-element="earth" type="button" title="Terra">
+              <span class="mini-character"><i class="mini-head"></i><i class="mini-body"></i><i class="mini-detail"></i><i class="mini-eye left"></i><i class="mini-eye right"></i></span>
+              <b>Terra</b><small>🪨</small>
+            </button>
+            <button class="character-choice air" data-element="air" type="button" title="Ar">
+              <span class="mini-character"><i class="mini-head"></i><i class="mini-body"></i><i class="mini-detail"></i><i class="mini-eye left"></i><i class="mini-eye right"></i></span>
+              <b>Ar</b><small>💨</small>
+            </button>
+            <button class="character-choice light" data-element="light" type="button" title="Luz">
+              <span class="mini-character"><i class="mini-head"></i><i class="mini-body"></i><i class="mini-detail"></i><i class="mini-eye left"></i><i class="mini-eye right"></i></span>
+              <b>Luz</b><small>☀️</small>
+            </button>
+            <button class="character-choice darkness" data-element="darkness" type="button" title="Escuridão">
+              <span class="mini-character"><i class="mini-head"></i><i class="mini-body"></i><i class="mini-detail"></i><i class="mini-eye left"></i><i class="mini-eye right"></i></span>
+              <b>Escuridão</b><small>🌑</small>
+            </button>
+          </div>
+          <p class="character-select-help">Clique no personagem antes de iniciar a fase.</p>
         </div>
 
         <div id="soloSetup">
@@ -227,11 +235,61 @@
         <button id="closeSettingsBtn" class="small">✕</button>
       </div>
       <div class="settings-list">
+        <label class="setting-row"><span><b>Resolução</b><small>Define o tamanho da janela quando o jogo não estiver em tela cheia.</small></span>
+          <select id="settingResolution" class="setting-select" aria-label="Resolução">
+            <option value="native">Nativa / Monitor</option>
+            <option value="3840x2160">3840 × 2160 (4K)</option>
+            <option value="2560x1440">2560 × 1440 (1440p)</option>
+            <option value="1920x1080">1920 × 1080 (1080p)</option>
+            <option value="1600x900">1600 × 900</option>
+            <option value="1366x768">1366 × 768</option>
+            <option value="1280x720">1280 × 720 (720p)</option>
+          </select>
+        </label>
+        <label class="setting-row"><span><b>Idioma</b><small>Idioma da interface e dos menus principais.</small></span>
+          <select id="settingLanguage" class="setting-select" aria-label="Idioma">
+            <option value="pt-BR">Português (Brasil)</option>
+            <option value="en-US">English</option>
+            <option value="es-ES">Español</option>
+            <option value="fr-FR">Français</option>
+            <option value="de-DE">Deutsch</option>
+            <option value="it-IT">Italiano</option>
+            <option value="nl-NL">Nederlands</option>
+            <option value="pl-PL">Polski</option>
+            <option value="ru-RU">Русский</option>
+            <option value="tr-TR">Türkçe</option>
+            <option value="ja-JP">日本語</option>
+            <option value="ko-KR">한국어</option>
+            <option value="zh-CN">中文（简体）</option>
+            <option value="zh-TW">中文（繁體）</option>
+            <option value="ar-SA">العربية</option>
+            <option value="hi-IN">हिन्दी</option>
+            <option value="sv-SE">Svenska</option>
+            <option value="da-DK">Dansk</option>
+            <option value="fi-FI">Suomi</option>
+            <option value="cs-CZ">Čeština</option>
+          </select>
+        </label>
         <label class="setting-row"><span><b>Tremor de tela</b><small>Impactos, mortes e pegadinhas sacodem a câmera.</small></span><input id="settingScreenShake" type="checkbox" checked /></label>
         <label class="setting-row"><span><b>Reduzir animações</b><small>Diminui fades e movimentos das telas de abertura.</small></span><input id="settingReducedMotion" type="checkbox" /></label>
-        <div class="setting-row"><span><b>Tela cheia</b><small>Coloca a experiência inteira em fullscreen.</small></span><button id="settingsFullscreenBtn" class="small">⛶ Alternar tela cheia</button></div>
+        <div class="setting-row"><span><b>Tela cheia</b><small>O jogo já inicia em tela cheia. Use aqui para alternar o modo.</small></span><button id="settingsFullscreenBtn" class="small">⛶ Alternar tela cheia</button></div>
       </div>
       <p class="fine">As preferências ficam salvas neste dispositivo. Na versão desktop, o botão Sair fecha o jogo diretamente.</p>
+    </div>
+  </div>
+
+  <div id="pauseMenu" class="pause-modal hidden" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+    <div class="pause-card">
+      <p class="eyebrow">INFINITY CASTLE ELEMENTS</p>
+      <h2 id="pauseTitle">JOGO PAUSADO</h2>
+      <p id="pauseSubtitle" class="fine">ESC para continuar a tentativa.</p>
+      <div class="pause-actions">
+        <button id="pauseSaveBtn" class="menu-choice pause-choice" type="button"><span class="menu-index">01</span><span><b>Salvar jogo</b><small>Salva a fase, mortes, elemento, moedas e inventário.</small></span><em>›</em></button>
+        <button id="pauseSettingsBtn" class="menu-choice pause-choice" type="button"><span class="menu-index">02</span><span><b>Configurações</b><small>Resolução, idioma, tela cheia e acessibilidade.</small></span><em>›</em></button>
+        <button id="pauseMainMenuBtn" class="menu-choice pause-choice" type="button"><span class="menu-index">03</span><span><b>Sair para o menu</b><small>Volta para o menu principal.</small></span><em>›</em></button>
+        <button id="pauseDesktopBtn" class="menu-choice pause-choice danger-choice" type="button"><span class="menu-index">04</span><span><b>Sair para desktop</b><small>Fecha o Infinity Castle Elements.</small></span><em>›</em></button>
+      </div>
+      <p id="pauseMessage" class="pause-message"></p>
     </div>
   </div>
 
