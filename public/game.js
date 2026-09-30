@@ -99,7 +99,6 @@ function pauseToMainMenu(){closeSettings(false);closePauseMenu(false);clearTimeo
 function pauseToDesktop(){if(window.electronAPI?.quit)window.electronAPI.quit();else showExitScreen();}
 $('#menuSingleBtn').onclick=()=>showSetup('singleplayer');
 $('#menuMultiBtn').onclick=()=>showSetup('multiplayer');
-$('#menuShopBtn').onclick=()=>openShop();
 $('#menuSettingsBtn').onclick=()=>openSettings();
 $('#menuExitBtn').onclick=showExitScreen;
 $('#exitBackBtn').onclick=showMainMenu;
