@@ -2,7 +2,7 @@
   "name": "infinity-castle-elements",
   "version": "0.0.0",
   "private": true,
-  "description": "Infinity Castle Elements — INSANITY 0.0. Versão desktop definitiva inicial da NYX PROJECT R, com 1000 fases, quatro elementos, modo solo, multiplayer, loja, inimigos e chefes.",
+  "description": "Infinity Castle Elements — INSANITY 0.0.0. Versão desktop definitiva inicial da NYX PROJECT R, com 1000 fases, quatro elementos, modo solo, multiplayer, loja, inimigos e chefes.",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",
