@@ -8,7 +8,6 @@
     "restartPolicyMaxRetries": 10
   },
   "build": {
-    "builder": "RAILPACK",
     "buildCommand": "npm install --omit=dev --no-audit --no-fund"
   }
 }
