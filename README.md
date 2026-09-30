@@ -4,6 +4,8 @@
 
 A versão **INSANITY 0.0** é a primeira versão definitiva do projeto e também a base oficial da edição desktop para Windows.
 
+**Build oficial Windows:** instalador e versão portátil em `.exe`.
+
 ## Abertura e identidade
 
 Ao iniciar o jogo, a apresentação acontece em três etapas:
