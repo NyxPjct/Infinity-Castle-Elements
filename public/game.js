@@ -66,10 +66,37 @@ function showExitScreen(){
 }
 async function toggleAppFullscreen(){
   try{
+    if(window.electronAPI?.toggleFullscreen){await window.electronAPI.toggleFullscreen();await updateFullscreenButton();return;}
     if(fullscreenElement())return await exitFullscreen();
     const target=document.documentElement||document.body;if(target?.requestFullscreen)await target.requestFullscreen();else if(target?.webkitRequestFullscreen)target.webkitRequestFullscreen();
   }catch{}
 }
+function gameplayVisible(){return !!gameWrap&&!gameWrap.classList.contains('hidden')&&state.mode!=='menu';}
+function openPauseMenu(){
+  if(!gameplayVisible()||state.shopOpen||state.paused)return;
+  state.pauseWasRunning=state.running;state.running=false;state.paused=true;
+  const msg=$('#pauseMessage');if(msg)msg.textContent='';
+  $('#pauseMenu')?.classList.remove('hidden');document.body?.classList.add('game-paused');
+}
+function closePauseMenu(resume=true){
+  const wasRunning=state.pauseWasRunning;
+  state.paused=false;state.pauseWasRunning=false;
+  $('#pauseMenu')?.classList.add('hidden');document.body?.classList.remove('game-paused');
+  if(resume&&wasRunning&&gameplayVisible())state.running=true;
+}
+function togglePauseMenu(){if(state.paused)closePauseMenu(true);else openPauseMenu();}
+function saveFromPause(){
+  saveProfile();
+  if(state.mode==='singleplayer'){saveSoloProgress(false);if($('#pauseMessage'))$('#pauseMessage').textContent='Jogo salvo.';}
+  else if($('#pauseMessage'))$('#pauseMessage').textContent='Perfil local salvo. A sala multiplayer continua no servidor.';
+}
+function leaveMultiplayerSession(){
+  if(state.mode!=='multiplayer')return;
+  try{socket.disconnect();setTimeout(()=>socket.connect(),80);}catch{}
+  state.room=null;state.roomCode=null;state.remote=null;state.ready=false;
+}
+function pauseToMainMenu(){closeSettings(false);closePauseMenu(false);clearTimeout(state.shopTimer);closeShop();leaveMultiplayerSession();showMainMenu();}
+function pauseToDesktop(){if(window.electronAPI?.quit)window.electronAPI.quit();else showExitScreen();}
 $('#menuSingleBtn').onclick=()=>showSetup('singleplayer');
 $('#menuMultiBtn').onclick=()=>showSetup('multiplayer');
 $('#menuShopBtn').onclick=()=>openShop();
@@ -82,7 +109,13 @@ titleScreen?.addEventListener('click',showMainMenu);
 studioSplash?.addEventListener('click',showTitleScreen);
 addEventListener('keydown',e=>{
   if((e.key==='Enter'||e.key===' ')&&studioSplash&&!studioSplash.classList.contains('hidden')){e.preventDefault();showTitleScreen();return;}
-  if(e.key==='Enter'&&titleScreen&&!titleScreen.classList.contains('hidden')){e.preventDefault();showMainMenu();}
+  if(e.key==='Enter'&&titleScreen&&!titleScreen.classList.contains('hidden')){e.preventDefault();showMainMenu();return;}
+  if(e.key==='Escape'){
+    const settingsOpen=!$('#settingsModal')?.classList.contains('hidden');
+    if(settingsOpen){e.preventDefault();closeSettings();return;}
+    if(state.paused){e.preventDefault();closePauseMenu(true);return;}
+    if(gameplayVisible()&&!state.shopOpen){e.preventDefault();openPauseMenu();return;}
+  }
 });
 $('#soloBtn').onclick = () => startSolo(false);
 $('#continueSoloBtn').onclick = () => startSolo(true);
