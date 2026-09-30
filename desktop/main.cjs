@@ -6,6 +6,7 @@ let mainWindow = null;
 let gameServer = null;
 let quitting = false;
 let preferredResolution = 'native';
+let multiplayerServerUrl = process.env.ICE_MULTIPLAYER_URL || '';
 
 function saveStorePath() {
   return path.join(app.getPath('userData'), 'save-data.json');
@@ -149,6 +150,7 @@ ipcMain.on('ice:storage-remove', (event, key) => {
   event.returnValue = true;
 });
 
+ipcMain.on('ice:get-multiplayer-url', (event) => { event.returnValue = multiplayerServerUrl; });
 ipcMain.on('ice:quit', () => app.quit());
 ipcMain.handle('ice:toggle-fullscreen', () => {
   if (!mainWindow) return false;
