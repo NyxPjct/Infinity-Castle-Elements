@@ -7,6 +7,19 @@ let gameServer = null;
 let quitting = false;
 let preferredResolution = 'native';
 let multiplayerServerUrl = process.env.ICE_MULTIPLAYER_URL || '';
+const MULTIPLAYER_DISCOVERY_URL = 'https://raw.githubusercontent.com/NyxPjct/Infinity-Castle-Elements/main/multiplayer-server.json';
+
+async function resolveMultiplayerServerUrl() {
+  if (multiplayerServerUrl) return multiplayerServerUrl;
+  try {
+    const response = await fetch(`${MULTIPLAYER_DISCOVERY_URL}?v=${Date.now()}`);
+    if (!response.ok) return '';
+    const data = await response.json();
+    const url = String(data?.url || '').trim().replace(/\/$/, '');
+    if (/^https:\/\//i.test(url)) multiplayerServerUrl = url;
+  } catch {}
+  return multiplayerServerUrl;
+}
 
 function saveStorePath() {
   return path.join(app.getPath('userData'), 'save-data.json');
@@ -175,6 +188,7 @@ ipcMain.handle('ice:set-resolution', (_event, value) => {
 
 app.whenReady().then(async () => {
   try {
+    await resolveMultiplayerServerUrl();
     const port = await startEmbeddedServer();
     createWindow(port);
   } catch (error) {
