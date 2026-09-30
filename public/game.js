@@ -1,6 +1,7 @@
 const socket = io();
 const $ = s => document.querySelector(s);
 const lobby = $('#lobby'), roomEl = $('#room'), gameWrap = $('#gameWrap');
+const appShell=$('#appShell'),studioSplash=$('#studioSplash'),titleScreen=$('#titleScreen'),mainMenu=$('#mainMenu'),exitScreen=$('#exitScreen');
 const canvas = $('#game'), ctx = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 
@@ -29,10 +30,58 @@ const SOLO_SAVE_KEY = 'infinity-castle-elements-solo-v1';
 const LEGACY_SOLO_SAVE_KEY = 'terra-ar-castelo-infinito-solo-v1';
 const PROFILE_KEY = 'infinity-castle-elements-profile-v1';
 
-socket.on('connect', () => { $('#connectionPill').textContent = '● Online'; $('#connectionPill').style.color = '#55e6a5'; });
-socket.on('disconnect', () => { $('#connectionPill').textContent = '● Offline'; $('#connectionPill').style.color = '#ff7893'; });
+function setConnectionStatus(online){
+  for(const id of ['#connectionPill','#menuConnectionPill']){const el=$(id);if(!el)continue;el.textContent=online?'● Online':'● Offline';el.style.color=online?'#55e6a5':'#ff7893';}
+}
+socket.on('connect', () => setConnectionStatus(true));
+socket.on('disconnect', () => setConnectionStatus(false));
 
 document.querySelectorAll('.element-card').forEach(btn=>btn.addEventListener('click',()=>selectElement(btn.dataset.element)));
+
+let splashTimer=null;
+function hideCinematicScreens(){for(const el of [studioSplash,titleScreen,mainMenu,exitScreen])el?.classList.add('hidden');}
+function showTitleScreen(){
+  if(!titleScreen)return;
+  clearTimeout(splashTimer);studioSplash?.classList.add('leaving');
+  setTimeout(()=>{studioSplash?.classList.add('hidden');studioSplash?.classList.remove('leaving');titleScreen.classList.remove('hidden');},260);
+}
+function showMainMenu(){
+  clearTimeout(splashTimer);state.running=false;state.mode='menu';state.shopOpen=false;closeShop();
+  hideCinematicScreens();mainMenu?.classList.remove('hidden');appShell?.classList.add('hidden');
+  document.body?.classList.add('boot-sequence');
+}
+function showSetup(kind){
+  hideCinematicScreens();document.body?.classList.remove('boot-sequence');appShell?.classList.remove('hidden');
+  lobby?.classList.remove('hidden');roomEl?.classList.add('hidden');gameWrap?.classList.add('hidden');
+  state.running=false;state.mode='menu';$('#backToMenuBtn').style.display='';
+  const solo=kind==='singleplayer';$('#soloSetup').classList.toggle('hidden',!solo);$('#multiSetup').classList.toggle('hidden',solo);
+  $('#setupEyebrow').textContent=solo?'SINGLEPLAYER · ESCOLHA SEU ELEMENTO':'MULTIPLAYER · ESCOLHA SEU ELEMENTO';
+  $('#errorText').textContent='';refreshSoloSaveButton();
+}
+function showExitScreen(){
+  if(window.electronAPI?.quit){window.electronAPI.quit();return;}
+  hideCinematicScreens();appShell?.classList.add('hidden');exitScreen?.classList.remove('hidden');document.body?.classList.add('boot-sequence');
+}
+async function toggleAppFullscreen(){
+  try{
+    if(fullscreenElement())return await exitFullscreen();
+    const target=document.documentElement||document.body;if(target?.requestFullscreen)await target.requestFullscreen();else if(target?.webkitRequestFullscreen)target.webkitRequestFullscreen();
+  }catch{}
+}
+$('#menuSingleBtn').onclick=()=>showSetup('singleplayer');
+$('#menuMultiBtn').onclick=()=>showSetup('multiplayer');
+$('#menuShopBtn').onclick=()=>openShop();
+$('#menuSettingsBtn').onclick=()=>openSettings();
+$('#menuExitBtn').onclick=showExitScreen;
+$('#exitBackBtn').onclick=showMainMenu;
+$('#backToMenuBtn').onclick=showMainMenu;
+$('#titleContinueBtn').onclick=e=>{e.stopPropagation();showMainMenu();};
+titleScreen?.addEventListener('click',showMainMenu);
+studioSplash?.addEventListener('click',showTitleScreen);
+addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&studioSplash&&!studioSplash.classList.contains('hidden')){e.preventDefault();showTitleScreen();return;}
+  if(e.key==='Enter'&&titleScreen&&!titleScreen.classList.contains('hidden')){e.preventDefault();showMainMenu();}
+});
 $('#soloBtn').onclick = () => startSolo(false);
 $('#continueSoloBtn').onclick = () => startSolo(true);
 $('#createBtn').onclick = () => { state.mode='multiplayer'; socket.emit('create-room', { name: playerName(), element: state.selectedRole }, handleJoin); };
@@ -81,12 +130,12 @@ $('#chatgptBtn').onclick = async () => {
 
 function playerName(){ return ($('#playerName').value || 'Jogador').trim().slice(0,18); }
 
-function defaultProfile(){return {coins:25,selectedRole:'earth',boosts:{shield:0,speed:0,jump:0},owned:{crown:false,aura:false}};}
+function defaultProfile(){return {coins:25,selectedRole:'earth',boosts:{shield:0,speed:0,jump:0},owned:{crown:false,aura:false},settings:{screenShake:true,reducedMotion:false}};}
 function loadProfile(){
-  try{const raw=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null'),base=defaultProfile();if(!raw)return base;return {...base,...raw,boosts:{...base.boosts,...(raw.boosts||{})},owned:{...base.owned,...(raw.owned||{})}};}catch{return defaultProfile();}
+  try{const raw=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null'),base=defaultProfile();if(!raw)return base;return {...base,...raw,boosts:{...base.boosts,...(raw.boosts||{})},owned:{...base.owned,...(raw.owned||{})},settings:{...base.settings,...(raw.settings||{})}};}catch{return defaultProfile();}
 }
 let profile=loadProfile();
-function saveProfile(){profile.selectedRole=state.selectedRole;localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));refreshEconomyUI();}
+function saveProfile(){profile.selectedRole=state.selectedRole;localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));refreshEconomyUI();applySettings();}
 function addCoins(n){profile.coins=Math.max(0,(profile.coins||0)+Math.max(0,Math.floor(n)));saveProfile();}
 function spendCoins(n){if(profile.coins<n)return false;profile.coins-=n;saveProfile();return true;}
 function rewardLevel(level){const lv=Math.max(1,Math.min(1000,Number(level)||1));if(state.lastRewardedLevel===lv)return;state.lastRewardedLevel=lv;addCoins(4+Math.floor(lv/100));}
@@ -111,15 +160,26 @@ function buyShopItem(key){
 }
 function openShop({death=false,multiplayer=false}={}){
   state.shopOpen=true;$('#shopModal').classList.remove('hidden');$('#shopTitle').textContent=death?'☠️ Morreu. Quer trapacear de volta?':'Loja Arcana';
-  $('#retryBtn').textContent=multiplayer?'Recomeçando...':death?'Tentar novamente':'Voltar ao jogo';$('#retryBtn').disabled=multiplayer;
+  $('#retryBtn').textContent=multiplayer?'Recomeçando...':death?'Tentar novamente':state.mode==='menu'?'Voltar ao menu':'Voltar ao jogo';$('#retryBtn').disabled=multiplayer;
   $('#shopCountdown').textContent=multiplayer?'A dupla retorna em 5 segundos. Aproveite a lojinha.':'';refreshEconomyUI();
 }
 function closeShop(){state.shopOpen=false;$('#shopModal').classList.add('hidden');$('#shopCountdown').textContent='';}
+function applySettings(){
+  const cfg=profile?.settings||{};document.body?.classList.toggle('reduce-motion',!!cfg.reducedMotion);
+  const shake=$('#settingScreenShake'),motion=$('#settingReducedMotion');if(shake)shake.checked=cfg.screenShake!==false;if(motion)motion.checked=!!cfg.reducedMotion;
+}
+function openSettings(){applySettings();$('#settingsModal').classList.remove('hidden');}
+function closeSettings(){$('#settingsModal').classList.add('hidden');}
+$('#closeSettingsBtn').onclick=closeSettings;
+$('#settingScreenShake').addEventListener('change',e=>{profile.settings.screenShake=!!e.target.checked;saveProfile();});
+$('#settingReducedMotion').addEventListener('change',e=>{profile.settings.reducedMotion=!!e.target.checked;saveProfile();});
+$('#settingsFullscreenBtn').onclick=toggleAppFullscreen;
 document.querySelectorAll('.shop-item').forEach(btn=>btn.onclick=()=>buyShopItem(btn.dataset.item));
 $('#shopBtnLobby').onclick=()=>openShop();$('#shopBtnHud').onclick=()=>openShop();
 $('#closeShopBtn').onclick=()=>{if($('#retryBtn').disabled)return;const retry=state.mode==='singleplayer'&&!state.running;closeShop();if(retry)startLevel(state.level);};
 $('#retryBtn').onclick=()=>{if($('#retryBtn').disabled)return;const wasRunning=state.running;closeShop();if(state.mode==='singleplayer'&&!wasRunning)startLevel(state.level);};
-profile.selectedRole=ELEMENTS[profile.selectedRole]?profile.selectedRole:'earth';state.selectedRole=profile.selectedRole;selectElement(state.selectedRole);refreshEconomyUI();
+profile.selectedRole=ELEMENTS[profile.selectedRole]?profile.selectedRole:'earth';state.selectedRole=profile.selectedRole;selectElement(state.selectedRole);refreshEconomyUI();applySettings();
+if(typeof location!=='undefined'&&new URLSearchParams(location.search).has('menu'))showMainMenu();else splashTimer=setTimeout(showTitleScreen,2850);
 
 function loadSoloSave(){
   try {const current=JSON.parse(localStorage.getItem(SOLO_SAVE_KEY)||'null');if(current)return current;const legacy=JSON.parse(localStorage.getItem(LEGACY_SOLO_SAVE_KEY)||'null');return legacy?{...legacy,role:'earth'}:null;} catch { return null; }
@@ -142,7 +202,7 @@ function startSolo(useSave){
   state.mode='singleplayer'; state.id='solo'; state.roomCode=null; state.room=null; state.remote=null;state.slot=0;
   state.level=save?.level||1; state.deaths=save?.deaths||0; state.role=ELEMENTS[save?.role]?save.role:state.selectedRole;
   if(!useSave) saveSoloProgress(false);
-  lobby.classList.add('hidden'); roomEl.classList.add('hidden');
+  lobby.classList.add('hidden'); roomEl.classList.add('hidden');$('#backToMenuBtn').style.display='none';
   startLevel(state.level);
 }
 function restartGame(){
@@ -156,7 +216,7 @@ refreshSoloSaveButton();
 function handleJoin(res){
   if(!res?.ok){ $('#errorText').textContent = res?.error || 'Não foi possível entrar.'; return; }
   state.mode='multiplayer'; state.id=res.id; state.roomCode=res.code; state.role=res.role; state.slot=res.slot||0; state.level=res.level;
-  $('#errorText').textContent=''; lobby.classList.add('hidden'); roomEl.classList.remove('hidden');
+  $('#errorText').textContent=''; lobby.classList.add('hidden'); roomEl.classList.remove('hidden');$('#backToMenuBtn').style.display='none';
   $('#roomCode').textContent=res.code; updateHud();
 }
 
@@ -853,7 +913,7 @@ function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>1
 
 function render(){
   ctx.save();
-  if(state.screenShake>0){const m=state.screenShake;ctx.translate((Math.random()-.5)*m,(Math.random()-.5)*m);state.screenShake=Math.max(0,state.screenShake-1.15);}
+  if(profile.settings?.screenShake!==false&&state.screenShake>0){const m=state.screenShake;ctx.translate((Math.random()-.5)*m,(Math.random()-.5)*m);state.screenShake=Math.max(0,state.screenShake-1.15);}else if(state.screenShake>0)state.screenShake=0;
   ctx.clearRect(-30,-30,W+60,H+60);drawBackground();if(!state.levelData){ctx.restore();return;}const ld=state.levelData;
   for(const p of ld.platforms)drawPlatform(p);for(const h of ld.hazards)drawHazard(h);for(const f of ld.fakeFloors||[])drawFakeFloor(f);for(const t of ld.bridgeTiles||[])drawBridgeTile(t);for(const v of ld.vanishPlatforms||[])drawVanishPlatform(v);for(const e of ld.elevators||[])drawElevator(dynamicElevator(e));for(const b of ld.bookshelves||[])drawBookshelf(dynamicBookshelf(b));
   for(const z of ld.windGusts||[])drawWindGust(z);for(const z of ld.reverseZones||[])drawReverseZone(z);if(ld.plate)drawPlate(ld.plate,platePressed(ld.plate));if(ld.plate2)drawPlate(ld.plate2,platePressed(ld.plate2));if(ld.door&&!doorOpen())drawDoor(ld.door);

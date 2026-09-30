@@ -36,7 +36,7 @@ IMPORTANTE
 A dificuldade é troll e brutal, mas as pegadinhas são determinísticas: morrer deve revelar uma regra, não depender de sorte.
 
 
-CORREÇÃO 4.1.1
+BASE DEFINITIVA 0.0
 - Corrigida tela vazia causada por erro no primeiro frame de gameplay.
 - Auditoria agora executa frames reais nos quatro elementos em todas as 1000 fases.
 - Há fallback de emergência para impedir que uma falha de geração deixe a sala sem geometria.

@@ -1,0 +1,29 @@
+INFINITY CASTLE ELEMENTS — INSANITY 0.0 
+
+VALIDAÇÕES EXECUTADAS
+- node --check public/game.js: OK
+- node --check server.js: OK
+- node --check tools/audit-levels.js: OK
+- IDs usados pelo JavaScript presentes no HTML: OK
+- nyx-owl.svg presente: OK
+- element-party.svg presente: OK
+
+AUDITORIA DO JOGO
+{
+  "checked": 1000,
+  "bosses": 10,
+  "doors": 240,
+  "archetypes": 12,
+  "regions": [100,100,100,100,100,100,100,100,100,100],
+  "rendered": 1000,
+  "runtimeFrames": 4000,
+  "failures": 0
+}
+
+NOVO FLUXO
+1. NYX PROJECT R — Apresenta
+2. Infinity Castle Elements — title screen
+3. Menu principal
+4. Singleplayer / Multiplayer / Loja / Configurações / Sair
+
+Esta build é de teste e não foi enviada ao GitHub.

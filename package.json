@@ -1,13 +1,15 @@
 {
   "name": "infinity-castle-elements",
-  "version": "4.1.1-test.2",
+  "version": "0.0.0",
   "private": true,
-  "description": "Infinity Castle Elements — Insanity Fixed Test: dificuldade brutal a partir da fase 5, com auditoria estrutural, 4000 frames de runtime e proteção contra tela vazia.",
-  "main": "server.js",
+  "description": "Infinity Castle Elements — INSANITY 0.0. Versão desktop definitiva inicial da NYX PROJECT R, com 1000 fases, quatro elementos, modo solo, multiplayer, loja, inimigos e chefes.",
+  "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test:levels": "node tools/audit-levels.js"
+    "test:levels": "node tools/audit-levels.js",
+    "desktop": "electron .",
+    "dist:win": "electron-builder --win nsis portable"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -15,5 +17,59 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "electron": "44.5.1",
+    "electron-builder": "26.17.0"
+  },
+  "build": {
+    "appId": "com.nyxprojectr.infinitycastleelements",
+    "productName": "Infinity Castle Elements",
+    "copyright": "Copyright © 2026 NYX PROJECT R",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "public/**/*",
+      "desktop/**/*",
+      "server.js",
+      "package.json",
+      "README.md",
+      "COMO_JOGAR.txt",
+      "build/icon.ico"
+    ],
+    "asar": true,
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Infinity Castle Elements",
+      "runAfterFinish": true,
+      "artifactName": "Infinity-Castle-Elements-Setup-0.0.${ext}"
+    },
+    "portable": {
+      "artifactName": "Infinity-Castle-Elements-Portable-0.0.${ext}"
+    }
   }
 }

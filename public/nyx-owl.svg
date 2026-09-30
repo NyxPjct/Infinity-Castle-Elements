@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">NYX PROJECT R Owl</title>
+  <desc id="desc">Coruja roxa sombria com olhos vermelhos intensos.</desc>
+  <defs>
+    <radialGradient id="a" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="#9d5cff"/><stop offset=".48" stop-color="#5a238f"/><stop offset="1" stop-color="#170b28"/></radialGradient>
+    <linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#bb7bff"/><stop offset="1" stop-color="#3e176a"/></linearGradient>
+    <radialGradient id="eye"><stop offset="0" stop-color="#fff"/><stop offset=".16" stop-color="#ffb3b3"/><stop offset=".4" stop-color="#ff1e38"/><stop offset="1" stop-color="#8b0012"/></radialGradient>
+    <filter id="redGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="10" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="purpleGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="14" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g filter="url(#purpleGlow)">
+    <path d="M95 131L174 67l36 63c29-11 63-11 92 0l36-63 79 64-31 121c15 28 23 60 23 94 0 94-68 145-153 145S103 440 103 346c0-34 8-66 23-94z" fill="url(#a)" stroke="#8d4bd2" stroke-width="8"/>
+    <path d="M116 148l70-52 25 48-55 31zM396 148l-70-52-25 48 55 31z" fill="#2a113f"/>
+    <path d="M134 228c38-49 82-65 122-39-22 5-40 23-48 49-27-12-51-11-74-10zm244 0c-38-49-82-65-122-39 22 5 40 23 48 49 27-12 51-11 74-10z" fill="#16091f"/>
+    <path d="M152 244c31-17 62-17 90 4-12 45-38 69-77 61-21-16-25-39-13-65zm208 0c-31-17-62-17-90 4 12 45 38 69 77 61 21-16 25-39 13-65z" fill="#08050d" stroke="#6b2c9c" stroke-width="5"/>
+    <ellipse cx="194" cy="263" rx="21" ry="16" fill="url(#eye)" filter="url(#redGlow)"/>
+    <ellipse cx="318" cy="263" rx="21" ry="16" fill="url(#eye)" filter="url(#redGlow)"/>
+    <circle cx="194" cy="263" r="6" fill="#130006"/><circle cx="318" cy="263" r="6" fill="#130006"/>
+    <path d="M256 273l-33 39 33 25 33-25z" fill="#cc7bff" stroke="#3b1552" stroke-width="6"/>
+    <path d="M150 322c28 9 52 31 67 71l39 47-85-24-42-54zm212 0c-28 9-52 31-67 71l-39 47 85-24 42-54z" fill="url(#b)" opacity=".95"/>
+    <path d="M204 350l52 35 52-35-13 68-39 40-39-40z" fill="#241033"/>
+    <path d="M112 357l-63 48 83-5zm288 0l63 48-83-5z" fill="#4d1c75"/>
+  </g>
+</svg>

@@ -3,22 +3,88 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#090b12" />
+  <meta name="theme-color" content="#050408" />
   <title>Infinity Castle Elements</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
+<body class="boot-sequence">
   <div class="ambient"></div>
-  <main class="shell">
+
+  <!-- ATO I: assinatura do estúdio -->
+  <section id="studioSplash" class="cinematic-screen studio-splash" aria-label="NYX PROJECT R apresenta">
+    <div class="studio-lockup">
+      <div class="owl-stage">
+        <div class="owl-red-haze"></div>
+        <img src="/nyx-owl.svg" alt="Coruja roxa da NYX PROJECT R com olhos vermelhos" class="nyx-owl" />
+      </div>
+      <div class="studio-copy">
+        <p class="studio-kicker">UMA EXPERIÊNCIA DE</p>
+        <h1>NYX PROJECT <span>R</span></h1>
+        <p class="presents">Apresenta:</p>
+      </div>
+    </div>
+    <p class="skip-hint">Clique para avançar</p>
+  </section>
+
+  <!-- ATO II: título -->
+  <section id="titleScreen" class="cinematic-screen title-screen hidden" aria-label="Infinity Castle Elements">
+    <div class="title-bg" aria-hidden="true"></div>
+    <div class="title-vignette" aria-hidden="true"></div>
+    <div class="title-content">
+      <p class="title-kicker">UMA AVENTURA ELEMENTAL NO CASTELO QUE TE ODEIA</p>
+      <h1 class="game-logo"><span>INFINITY</span><span>CASTLE</span><strong>ELEMENTS</strong></h1>
+      <div class="title-rule"><i></i><b>INSANITY</b><i></i></div>
+      <p class="title-tagline">QUATRO ELEMENTOS · MIL SALAS · NENHUMA PAZ</p>
+      <button id="titleContinueBtn" class="press-start" type="button">PRESSIONE ENTER OU CLIQUE PARA CONTINUAR</button>
+    </div>
+    <div class="element-sigils" aria-hidden="true"><span>🪨</span><span>💨</span><span>☀️</span><span>🌑</span></div>
+  </section>
+
+  <!-- ATO III: menu principal -->
+  <section id="mainMenu" class="cinematic-screen main-menu hidden" aria-label="Menu principal">
+    <div class="menu-bg" aria-hidden="true"></div>
+    <div class="menu-vignette" aria-hidden="true"></div>
+    <div class="menu-layout">
+      <aside class="menu-panel">
+        <div class="menu-brand-mini">
+          <img src="/nyx-owl.svg" alt="" />
+          <div><small>NYX PROJECT R</small><b>INFINITY CASTLE<br><span>ELEMENTS</span></b></div>
+        </div>
+        <nav class="main-nav" aria-label="Opções do jogo">
+          <button id="menuSingleBtn" class="menu-choice primary-choice"><span class="menu-index">01</span><span><b>Singleplayer</b><small>Entre sozinho. O castelo não terá pena.</small></span><em>›</em></button>
+          <button id="menuMultiBtn" class="menu-choice"><span class="menu-index">02</span><span><b>Multiplayer</b><small>Divida o sofrimento com outro elemento.</small></span><em>›</em></button>
+          <button id="menuShopBtn" class="menu-choice"><span class="menu-index">03</span><span><b>Loja</b><small>Boosts, runas e cosméticos.</small></span><em>›</em></button>
+          <button id="menuSettingsBtn" class="menu-choice"><span class="menu-index">04</span><span><b>Configurações</b><small>Visual, movimento e tela cheia.</small></span><em>›</em></button>
+          <button id="menuExitBtn" class="menu-choice danger-choice"><span class="menu-index">05</span><span><b>Sair</b><small>Fuja enquanto ainda consegue.</small></span><em>›</em></button>
+        </nav>
+        <div class="menu-footer"><span id="menuConnectionPill">● Conectando</span><span>INSANITY 0.0</span></div>
+      </aside>
+      <div class="menu-story-card">
+        <p>O CASTELO DESPERTOU</p>
+        <h2>Escolha seu elemento.<br>Aprenda cada morte.<br><em>Não confie em nada.</em></h2>
+        <div class="menu-elements"><span>🪨 TERRA</span><span>💨 AR</span><span>☀️ LUZ</span><span>🌑 ESCURIDÃO</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="exitScreen" class="cinematic-screen exit-screen hidden" aria-label="Sair do jogo">
+    <img src="/nyx-owl.svg" alt="Coruja NYX PROJECT R" />
+    <p>O CASTELO CONTINUARÁ ESPERANDO.</p>
+    <h2>Até a próxima tentativa.</h2>
+    <button id="exitBackBtn" class="press-start" type="button">VOLTAR AO MENU</button>
+  </section>
+
+  <main id="appShell" class="shell hidden">
     <header class="topbar">
       <div class="brand">
         <div class="brand-mark">✦</div>
         <div>
           <h1>INFINITY CASTLE <span>ELEMENTS</span></h1>
-          <p>INSANITY TEST BUILD · 1000 FASES · ELEMENTOS · INIMIGOS · SOLO + CO-OP</p>
+          <p>INSANITY 0.0 · 1000 FASES · ELEMENTOS · INIMIGOS · SOLO + CO-OP</p>
         </div>
       </div>
       <div class="topbar-actions">
+        <button id="backToMenuBtn" class="small">← Menu principal</button>
         <button id="shopBtnLobby" class="small coin-pill">🪙 <span id="lobbyCoins">0</span> · Loja</button>
         <div class="pill" id="connectionPill">● Conectando</div>
       </div>
@@ -27,7 +93,7 @@
     <section id="lobby" class="panel lobby-grid">
       <div class="hero-copy">
         <img src="/element-party.svg" alt="Terra, Ar, Luz e Escuridão diante do Castelo Infinito" class="party-art" />
-        <p class="eyebrow">ESCOLHA SEU ELEMENTO · ENTRE NO CASTELO · NÃO CONFIE EM NADA</p>
+        <p id="setupEyebrow" class="eyebrow">SINGLEPLAYER · ESCOLHA SEU ELEMENTO</p>
         <h2>Quatro elementos.<br><em>Mil salas tentando te destruir.</em></h2>
         <p class="lead">A partir da fase 5 o castelo abandona qualquer respeito pelo jogador. Terra, Ar, Luz e Escuridão têm movimentos, imunidades e habilidades próprias. As armadilhas continuam determinísticas: morrer ensina alguma coisa — mesmo quando dá vontade de fechar o jogo.</p>
 
@@ -57,23 +123,27 @@
           <div><small>SEU ELEMENTO</small><b id="selectedElementName">Terra</b></div>
         </div>
 
-        <p class="mode-title">MODO SINGLEPLAYER</p>
-        <button id="soloBtn" class="primary solo-primary">▶ Jogar solo com este elemento</button>
-        <button id="continueSoloBtn" class="ghost hidden">↻ Continuar solo</button>
-        <p class="fine">No solo você joga com <b>apenas o elemento escolhido</b>. Portas e chefes se adaptam para continuarem possíveis com um único personagem.</p>
-
-        <div class="or"><span>multiplayer online</span></div>
-        <label>Seu nome</label>
-        <input id="playerName" maxlength="18" placeholder="Ex.: Leonardo" autocomplete="nickname" />
-        <button id="createBtn" class="primary">Criar sala privada</button>
-        <div class="or"><span>ou</span></div>
-        <label>Código da sala</label>
-        <div class="join-row">
-          <input id="roomCodeInput" maxlength="6" placeholder="ABC123" />
-          <button id="joinBtn">Entrar</button>
+        <div id="soloSetup">
+          <p class="mode-title">MODO SINGLEPLAYER</p>
+          <button id="soloBtn" class="primary solo-primary">▶ Nova aventura solo</button>
+          <button id="continueSoloBtn" class="ghost hidden">↻ Continuar solo</button>
+          <p class="fine">No solo você joga com <b>apenas o elemento escolhido</b>. Portas e chefes se adaptam para continuarem possíveis com um único personagem.</p>
         </div>
-        <p class="fine">Cada jogador escolhe seu próprio elemento antes de entrar. Os dois podem até usar o mesmo elemento.</p>
-        <button id="chatgptBtn" class="ghost" title="Disponível quando o app tiver credenciais aprovadas">◉ Vincular conta ChatGPT</button>
+
+        <div id="multiSetup" class="hidden">
+          <p class="mode-title">MULTIPLAYER ONLINE</p>
+          <label>Seu nome</label>
+          <input id="playerName" maxlength="18" placeholder="Ex.: Leonardo" autocomplete="nickname" />
+          <button id="createBtn" class="primary">Criar sala privada</button>
+          <div class="or"><span>ou</span></div>
+          <label>Código da sala</label>
+          <div class="join-row">
+            <input id="roomCodeInput" maxlength="6" placeholder="ABC123" />
+            <button id="joinBtn">Entrar</button>
+          </div>
+          <p class="fine">Cada jogador escolhe seu próprio elemento antes de entrar. Os dois podem até usar o mesmo elemento.</p>
+          <button id="chatgptBtn" class="ghost" title="Disponível quando o app tiver credenciais aprovadas">◉ Vincular conta ChatGPT</button>
+        </div>
         <p id="errorText" class="error"></p>
       </div>
     </section>
@@ -145,8 +215,23 @@
       </div>
       <div class="shop-footer">
         <span id="shopCountdown" class="fine"></span>
-        <button id="retryBtn" class="primary">Tentar novamente</button>
+        <button id="retryBtn" class="primary">Voltar</button>
       </div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="shop-modal hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="shop-card settings-card">
+      <div class="shop-head">
+        <div><p class="eyebrow">CONFIGURAÇÕES</p><h2 id="settingsTitle">Como você quer sofrer?</h2></div>
+        <button id="closeSettingsBtn" class="small">✕</button>
+      </div>
+      <div class="settings-list">
+        <label class="setting-row"><span><b>Tremor de tela</b><small>Impactos, mortes e pegadinhas sacodem a câmera.</small></span><input id="settingScreenShake" type="checkbox" checked /></label>
+        <label class="setting-row"><span><b>Reduzir animações</b><small>Diminui fades e movimentos das telas de abertura.</small></span><input id="settingReducedMotion" type="checkbox" /></label>
+        <div class="setting-row"><span><b>Tela cheia</b><small>Coloca a experiência inteira em fullscreen.</small></span><button id="settingsFullscreenBtn" class="small">⛶ Alternar tela cheia</button></div>
+      </div>
+      <p class="fine">As preferências ficam salvas neste dispositivo. Na versão desktop, o botão Sair fecha o jogo diretamente.</p>
     </div>
   </div>
 

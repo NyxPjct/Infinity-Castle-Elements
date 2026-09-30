@@ -1,238 +1,91 @@
-# Infinity Castle Elements — INSANITY 4.1.1
+# Infinity Castle Elements — INSANITY 0.0
 
-**Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência para **1 ou 2 jogadores**, com uma campanha de **1000 fases** dentro de um castelo gigantesco que fica progressivamente mais hostil.
+**Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A proposta é misturar plataforma de precisão, pegadinhas no estilo *Level Devil / Cat Mario*, exploração de ambientes diferentes, habilidades elementais, inimigos, chefes, moedas e progressão. O castelo foi feito para enganar o jogador: chão aparentemente seguro pode cair, a saída pode fugir, plataformas podem desaparecer e armadilhas podem aparecer depois que você já tomou uma decisão.
+A versão **INSANITY 0.0** é a primeira versão definitiva do projeto e também a base oficial da edição desktop para Windows.
 
-A partir da **fase 5**, a dificuldade começa a subir de verdade. As armadilhas são pensadas para serem cruéis, mas determinísticas: morrer serve para aprender a pegadinha e tentar novamente.
+## Abertura e identidade
 
----
+Ao iniciar o jogo, a apresentação acontece em três etapas:
+
+1. tela preta da **NYX PROJECT R**, com a coruja roxa de olhos vermelhos e a assinatura **Apresenta:**;
+2. tela cinematográfica de **INFINITY CASTLE ELEMENTS — INSANITY**, com os quatro elementos diante do castelo em clima de aventura fantástica;
+3. menu principal com **Singleplayer, Multiplayer, Loja, Configurações e Sair**.
+
+Na versão desktop, **Sair** fecha o executável diretamente.
 
 ## Campanha com 1000 fases
 
-O jogo possui uma campanha completa da fase **1 até a 1000**.
+A campanha vai da fase **1 até a 1000**. A partir da **fase 5**, a dificuldade INSANITY começa a escalar de verdade. As pegadinhas são determinísticas: a ideia é morrer, aprender o que aconteceu e tentar superar o castelo na próxima tentativa.
 
-A dificuldade aumenta gradualmente e novas mecânicas vão sendo misturadas conforme o jogador avança.
+O jogo possui **12 arquétipos de layout**, **10 regiões** e um chefe a cada 100 fases, totalizando **10 chefes**.
 
-Existem **12 arquétipos diferentes de layout**, usados para variar a estrutura das salas e evitar que as 1000 fases sejam apenas versões do mesmo corredor.
+### Regiões
 
-A cada **100 fases existe um chefe**, totalizando **10 chefes** durante a campanha.
+- **001–100 — Portão e Pátio Real**
+- **101–200 — Galeria Nobre**
+- **201–300 — Masmorras Profundas**
+- **301–400 — Torre do Relógio**
+- **401–500 — Biblioteca Viva**
+- **501–600 — Capela Assombrada**
+- **601–700 — Jardins Suspensos**
+- **701–800 — Muralhas da Tempestade**
+- **801–900 — Trono Rubro**
+- **901–1000 — Coração Impossível**
 
----
-
-## 10 regiões diferentes do castelo
-
-Conforme você avança, o cenário muda completamente.
-
-Cada região possui identidade visual, arquitetura, iluminação, background e conjunto de mecânicas próprios.
-
-### 001–100 — Portão e Pátio Real
-Primeiro contato com o castelo, plataformas, armadilhas escondidas, inimigos e as primeiras pegadinhas.
-
-### 101–200 — Galeria Nobre
-Salões, corredores luxuosos, portas falsas, lustres e armadilhas arquitetônicas.
-
-### 201–300 — Masmorras Profundas
-Celas, correntes, áreas mais fechadas, armaduras vivas e perigos vindos do teto.
-
-### 301–400 — Torre do Relógio
-Engrenagens, elevadores, plataformas móveis e esmagadores.
-
-### 401–500 — Biblioteca Viva
-Estantes móveis, plataformas que desaparecem e caminhos que mudam durante a tentativa.
-
-### 501–600 — Capela Assombrada
-Fantasmas, maldições, corredores escuros e armadilhas sobrenaturais.
-
-### 601–700 — Jardins Suspensos
-Raízes, vegetação, pontes quebráveis e áreas abertas.
-
-### 701–800 — Muralhas da Tempestade
-Vento, tempestades, áreas externas, rajadas e dragões.
-
-### 801–900 — Trono Rubro
-Controles invertidos, paredes agressivas e combinações mais pesadas de armadilhas.
-
-### 901–1000 — Coração Impossível
-A parte mais insana do jogo, misturando praticamente todas as mecânicas anteriores.
-
----
-
-## Quatro elementos jogáveis
-
-Na tela inicial você escolhe qual elemento quer controlar.
+## Elementos jogáveis
 
 ### 🪨 Terra
-- personagem mais pesado;
-- resistente a raízes;
-- movimentação mais controlada;
-- habilidade **Impacto Sísmico**;
-- pode destruir ou atordoar ameaças próximas durante a habilidade.
+Mais pesado e controlado, resistente a raízes e equipado com **Impacto Sísmico**, capaz de destruir ou neutralizar ameaças próximas.
 
 ### 💨 Ar
-- personagem mais rápido;
-- salto e mobilidade maiores;
-- imune às rajadas de vento;
-- habilidade **Impulso Aéreo**;
-- ganha mobilidade extra temporariamente.
+Mais rápido e móvel, imune a vendavais e equipado com **Impulso Aéreo**, que melhora temporariamente velocidade, gravidade e controle no ar.
 
 ### ☀️ Luz
-- resistente a maldições;
-- habilidade **Clarão Protetor**;
-- possui defesa temporária durante a habilidade;
-- pode atingir inimigos próximos.
+Resistente a maldições e equipada com **Clarão Protetor**, que fornece proteção temporária e pode atingir inimigos próximos.
 
 ### 🌑 Escuridão
-- ignora áreas que invertem os controles;
-- habilidade **Passo Sombrio**;
-- consegue atravessar perigos durante uma pequena janela de tempo.
-
----
+Ignora zonas de controles invertidos e usa **Passo Sombrio**, ficando temporariamente capaz de atravessar diversos perigos.
 
 ## Singleplayer
 
-No modo solo você escolhe **um único elemento** antes de iniciar a campanha.
+No modo solo, o jogador escolhe **um único elemento** antes de começar. Portões, placas e rituais de chefes são adaptados para que a campanha continue possível com apenas um personagem.
 
-Você joga toda a tentativa com esse personagem.
+O progresso solo inclui fase atual, mortes, elemento, moedas, boosts e cosméticos.
 
-Não existe troca obrigatória entre dois personagens.
+## Multiplayer
 
-O jogo adapta mecânicas originalmente cooperativas para que as fases continuem possíveis no modo solo.
+O multiplayer foi criado para **2 jogadores**, com salas privadas por código e escolha independente de elemento. O servidor sincroniza jogadores, fase, mortes, chefes, runas, inimigos derrotados e reinícios.
 
-### Portões no solo
-Ao ativar uma placa de pressão, o portão pode permanecer destravado naquela tentativa, evitando a necessidade de um segundo personagem.
+Na edição desktop 0.0, o jogo inclui o servidor Node.js dentro do aplicativo. Para multiplayer entre computadores diferentes pela internet, ambos os jogadores precisam utilizar a mesma instância de servidor hospedado; a infraestrutura pública de matchmaking não está incluída nesta versão inicial.
 
-### Chefes no solo
-Os rituais dos chefes também são adaptados para funcionar com apenas um personagem.
+## Sistema de moedas e Loja Arcana
 
-### Progresso
-O progresso solo é salvo no navegador, incluindo:
-- fase atual;
-- mortes;
-- elemento utilizado;
-- moedas;
-- boosts;
-- cosméticos desbloqueados.
+Moedas são recebidas ao concluir fases e derrotar inimigos. Elas podem ser usadas na **Loja Arcana** para comprar:
 
----
+- **Runa de Escudo** — absorve um golpe fatal;
+- **Botas do Vento** — aumenta temporariamente a velocidade;
+- **Salto Arcano** — aumenta temporariamente a força do salto;
+- **Coroa do Castelo** — cosmético permanente;
+- **Aura Elemental** — cosmético permanente.
 
-## Multiplayer online para 2 jogadores
+## Inimigos e ameaças
 
-O multiplayer funciona por **salas privadas com código**.
+A campanha possui sentinelas, morcegos, espectros e ameaças especiais como armaduras vivas, fantasmas, dragões, projéteis e objetos que despencam do cenário. A quantidade e a combinação de ameaças aumentam conforme o jogador avança.
 
-### Como funciona
-1. um jogador escolhe seu elemento;
-2. cria uma sala privada;
-3. recebe um código de 6 caracteres;
-4. envia o código para o segundo jogador;
-5. o segundo jogador escolhe seu próprio elemento;
-6. entra na sala;
-7. a fase começa quando os dois jogadores estiverem prontos.
+## Pegadinhas INSANITY
 
-Os jogadores podem escolher:
-- elementos diferentes;
-- ou até o mesmo elemento.
-
-O servidor sincroniza:
-- posição dos jogadores;
-- fase atual;
-- mortes;
-- conclusão da fase;
-- chefes;
-- runas;
-- inimigos derrotados;
-- reinício das salas.
-
----
-
-## Sistema de moedas
-
-O jogo possui uma economia própria.
-
-As moedas podem ser obtidas principalmente ao:
-
-- concluir fases;
-- derrotar inimigos.
-
-O saldo é salvo localmente no navegador.
-
-As moedas podem ser usadas na **Loja Arcana**.
-
----
-
-## Loja Arcana
-
-Depois de morrer, o jogador pode acessar a loja antes de tentar novamente.
-
-A loja também pode ser aberta durante o jogo pelo HUD.
-
-### 🛡️ Runa de Escudo
-Absorve **um golpe fatal** na próxima tentativa.
-
-### 🥾 Botas do Vento
-Aumentam temporariamente a velocidade do personagem.
-
-### 🪶 Salto Arcano
-Aumenta temporariamente a força do salto.
-
-### 👑 Coroa do Castelo
-Cosmético permanente para o personagem.
-
-### ✨ Aura Elemental
-Adiciona uma aura visual permanente ao personagem.
-
-Boosts são consumidos nas tentativas em que são usados.
-
-Cosméticos permanecem desbloqueados no navegador.
-
----
-
-## Inimigos
-
-Além das armadilhas do cenário, existem inimigos espalhados pelas fases.
-
-A quantidade e variedade aumentam conforme a campanha avança.
-
-Entre os inimigos atuais estão:
-
-### Sentinelas
-Patrulham plataformas e obrigam o jogador a calcular o momento de avançar.
-
-### Morcegos
-Voam em padrões próprios e atacam áreas verticais.
-
-### Espectros
-Inimigos sobrenaturais que aparecem nas regiões mais avançadas.
-
-Também existem ameaças especiais ligadas ao cenário, como:
-
-- armaduras vivas;
-- fantasmas;
-- dragões;
-- projéteis de chefes;
-- objetos que despencam do teto.
-
-Inimigos derrotados são sincronizados no multiplayer.
-
----
-
-## Pegadinhas e armadilhas
-
-O modo **INSANITY** começa a mostrar sua verdadeira intenção a partir da fase 5.
-
-Entre as mecânicas existentes estão:
+Entre as mecânicas atuais estão:
 
 - chão falso;
 - plataformas que desaparecem;
 - pontes quebráveis;
-- espinhos normais;
-- espinhos que aparecem depois que o jogador passa pelo gatilho;
-- espinhos no teto;
-- saída falsa;
-- saída que foge do jogador;
+- espinhos normais e surpresa;
+- espinhos de teto;
+- saídas falsas;
+- saída que foge;
 - portas falsas;
-- blocos de pedra caindo;
-- lustres despencando;
+- blocos e lustres caindo;
 - paredes que avançam de surpresa;
 - esmagadores;
 - elevadores;
@@ -243,156 +96,59 @@ Entre as mecânicas existentes estão:
 - armaduras vivas;
 - dragões;
 - projéteis;
-- armadilhas colocadas perto da saída;
-- combinações de múltiplas mecânicas na mesma sala.
-
-As armadilhas são geradas de forma determinística para que o jogador consiga aprender a fase depois de morrer.
-
----
+- combinações de várias pegadinhas na mesma sala.
 
 ## Chefes
 
-Existe um chefe a cada 100 fases:
-
-- fase 100;
-- fase 200;
-- fase 300;
-- fase 400;
-- fase 500;
-- fase 600;
-- fase 700;
-- fase 800;
-- fase 900;
-- fase 1000.
-
-Os chefes possuem:
-
-- barreira própria;
-- runas;
-- ritual;
-- projéteis;
-- área de combate;
-- mecânicas cooperativas no multiplayer;
-- versão adaptada para singleplayer.
-
-No multiplayer, o servidor valida o ritual para impedir divergências entre os dois jogadores.
-
----
+Há chefes nas fases **100, 200, 300, 400, 500, 600, 700, 800, 900 e 1000**. Eles utilizam barreiras, runas, rituais, projéteis e arenas próprias, com comportamento adaptado para solo e multiplayer.
 
 ## Sistema anti-fase-impossível
 
-O jogo possui validações para reduzir situações em que uma fase fique impossível por erro procedural.
-
-São protegidas áreas como:
-
-- spawn;
-- saída;
-- placas;
-- portões;
-- runas;
-- áreas obrigatórias de passagem.
-
-O gerador evita que objetos críticos sejam bloqueados por:
-
-- paredes;
-- plataformas;
-- inimigos;
-- esmagadores;
-- fantasmas;
-- armadilhas móveis;
-- objetos em queda.
-
-Também existe uma **fase de emergência**: se uma sala for detectada como estruturalmente inválida no momento de iniciar, o jogo pode substituir aquela geração por uma sala segura em vez de deixar a partida quebrada.
-
----
+O gerador protege áreas críticas como spawn, saída, placas, portões, runas e caminhos obrigatórios. Também existe uma **sala de emergência**: se uma geração for detectada como estruturalmente inválida, aquela fase é substituída por um layout seguro em vez de deixar a partida quebrada.
 
 ## Auditoria das 1000 fases
 
-A versão INSANITY 4.1.1 possui um sistema próprio de auditoria.
-
-O teste percorre:
-
-- as 1000 fases;
-- os 10 chefes;
-- as fases com portões;
-- os 12 arquétipos;
-- as 10 regiões;
-- geração;
-- renderização;
-- colisões importantes;
-- áreas críticas;
-- inimigos;
-- runtime dos personagens.
-
-O auditor também executa frames reais de gameplay com:
-
-- Terra;
-- Ar;
-- Luz;
-- Escuridão.
-
-Para executar a auditoria:
+A build possui auditoria própria para geração, renderização, estruturas críticas, inimigos e runtime dos quatro elementos.
 
 ```bash
 npm run test:levels
 ```
 
----
-
-## Tela cheia
-
-Durante a partida existe o botão:
-
-```
-⛶ Tela cheia
-```
-
-O jogo se adapta automaticamente à resolução disponível mantendo a proporção do canvas.
-
-Para sair do fullscreen, pressione:
-
-```
-Esc
-```
-
-O modo F11 do próprio navegador também continua disponível.
-
----
+Na INSANITY 0.0, a auditoria definida pelo projeto verifica as **1000 fases**, os **10 chefes**, as **240 fases com portões**, os **12 arquétipos**, as **10 regiões**, renderização e **4000 frames de runtime** dos quatro elementos.
 
 ## Controles
 
-### Movimento
-```
-A / D
-ou
-← / →
-```
-
-### Pular
-```
-W
-↑
-Espaço
-```
-
-### Habilidade elemental
-```
-E
-```
-
-### Reiniciar a fase
-```
-R
-```
-
----
+- **A / D** ou **← / →** — movimento
+- **W**, **↑** ou **Espaço** — pular
+- **E** — habilidade elemental
+- **R** — reiniciar fase
+- **F11** — alternar tela cheia no desktop
+- **Esc** — sair da tela cheia
 
 # Especificações de execução
 
-## Tecnologias utilizadas
+## Versão desktop para Windows
 
-O jogo utiliza:
+A versão desktop utiliza **Electron** e já leva o runtime necessário junto do jogo. Por isso, quem instalar o `.exe` **não precisa instalar Node.js, npm, Express ou Socket.IO separadamente**.
 
+O projeto gera dois formatos:
+
+- **Infinity-Castle-Elements-Setup-0.0.exe** — instalador para Windows;
+- **Infinity-Castle-Elements-Portable-0.0.exe** — versão portátil, sem instalação.
+
+Requisitos recomendados para a build desktop:
+
+- Windows 10 ou Windows 11 de 64 bits;
+- processador x64;
+- 4 GB de RAM ou mais;
+- aceleração gráfica compatível com Chromium;
+- espaço livre para o aplicativo e os dados locais de save.
+
+## Tecnologias
+
+O projeto utiliza:
+
+- **Electron**
 - **Node.js**
 - **JavaScript**
 - **HTML5**
@@ -401,71 +157,9 @@ O jogo utiliza:
 - **Express**
 - **Socket.IO**
 
-O Node.js executa o servidor local e o Socket.IO é responsável pelo multiplayer em tempo real.
+## Rodar pelo código-fonte
 
----
-
-## Requisitos
-
-Para rodar corretamente:
-
-- **Node.js 18 ou superior**;
-- **npm**;
-- Windows, Linux ou macOS;
-- navegador atualizado;
-- Google Chrome, Microsoft Edge ou Firefox recomendados;
-- porta **3000** disponível;
-- conexão com a internet na primeira instalação caso as dependências ainda não estejam baixadas.
-
-Para verificar o Node.js:
-
-```bash
-node --version
-```
-
-Para verificar o npm:
-
-```bash
-npm --version
-```
-
----
-
-## Executar no Windows
-
-A maneira mais simples é abrir:
-
-```
-INICIAR_JOGO.bat
-```
-
-O inicializador:
-
-1. verifica se o Node.js está instalado;
-2. entra na pasta correta do projeto;
-3. instala as dependências na primeira execução;
-4. inicia o servidor Node.js;
-5. abre o jogo no navegador.
-
-O endereço local é:
-
-```
-http://localhost:3000
-```
-
-Para desligar o servidor:
-
-```
-CTRL + C
-```
-
-na janela do terminal.
-
----
-
-## Executar manualmente
-
-Abra o terminal na pasta do projeto e execute:
+Para executar a versão web pelo código-fonte, é necessário ter **Node.js 18 ou superior** e **npm**.
 
 ```bash
 npm install
@@ -474,49 +168,30 @@ npm start
 
 Depois abra:
 
-```
+```text
 http://localhost:3000
 ```
 
----
+No Windows também é possível usar:
 
-## Dependências
+```text
+INICIAR_JOGO.bat
+```
 
-As dependências já estão declaradas no `package.json`.
+## Rodar a versão desktop em desenvolvimento
 
-O comando:
+Depois de instalar as dependências:
 
 ```bash
 npm install
+npm run desktop
 ```
 
-instala automaticamente o necessário.
-
-Não é preciso instalar **Express** ou **Socket.IO** separadamente.
-
----
-
-## Caso o jogo não abra
-
-Verifique:
-
-- se o Node.js está instalado;
-- se o npm está funcionando;
-- se `npm install` terminou sem erros;
-- se a porta 3000 está livre;
-- se outro servidor do jogo já não está aberto;
-- se o terminal exibiu algum erro;
-- se o navegador está atualizado.
-
-Se necessário:
+## Gerar os executáveis do Windows
 
 ```bash
 npm install
-npm start
+npm run dist:win
 ```
 
-e abra novamente:
-
-```
-http://localhost:3000
-```
+Os arquivos finais são colocados na pasta `dist`.
