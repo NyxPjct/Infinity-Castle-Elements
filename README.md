@@ -20,7 +20,7 @@ Ao iniciar o jogo, a apresentação acontece em três etapas:
 
 1. tela preta da **NYX PROJECT R**, com a coruja roxa de olhos vermelhos e a assinatura **Apresenta:**;
 2. tela cinematográfica de **INFINITY CASTLE ELEMENTS — INSANITY**, com os quatro elementos diante do castelo em clima de aventura fantástica;
-3. menu principal com **Singleplayer, Multiplayer, Loja, Configurações e Sair**.
+3. menu principal com **Singleplayer, Multiplayer, Configurações e Sair**. A Loja Arcana continua disponível dentro do jogo.
 
 Na versão desktop, **Sair** fecha o jogo diretamente.
 
