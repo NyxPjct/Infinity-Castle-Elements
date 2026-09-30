@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
   desktop: true,
   version: '0.0.0',
+  multiplayerUrl: ipcRenderer.sendSync('ice:get-multiplayer-url'),
   quit: () => ipcRenderer.send('ice:quit'),
   toggleFullscreen: () => ipcRenderer.invoke('ice:toggle-fullscreen'),
   setFullscreen: (enabled) => ipcRenderer.invoke('ice:set-fullscreen', enabled),
