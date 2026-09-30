@@ -173,9 +173,10 @@ function uiT(){const code=profile?.settings?.language||'pt-BR';return UI_I18N[co
 function applyInterfaceLanguage(){
   const t=uiT(),pairs=[['#menuSingleBtn b',t.single],['#menuMultiBtn b',t.multi],['#menuShopBtn b',t.shop],['#menuSettingsBtn b',t.settings],['#menuExitBtn b',t.exit],['#pauseSaveBtn b',t.save],['#pauseSettingsBtn b',t.settings],['#pauseMainMenuBtn b',t.menu],['#pauseDesktopBtn b',t.desktop],['#pauseTitle',t.paused],['#pauseSubtitle',t.esc],['.character-select-title',t.choose]];
   for(const [sel,val] of pairs){const el=document.querySelector(sel);if(el)el.textContent=val;}
-  const rr=$('#settingResolution')?.closest('.setting-row')?.querySelector('b');if(rr)rr.textContent=t.resolution;
-  const ll=$('#settingLanguage')?.closest('.setting-row')?.querySelector('b');if(ll)ll.textContent=t.language;
-  const ff=$('#settingsFullscreenBtn')?.closest('.setting-row')?.querySelector('b');if(ff)ff.textContent=t.fullscreen;
+  const rr0=$('#settingResolution'),ll0=$('#settingLanguage'),ff0=$('#settingsFullscreenBtn');
+  const rr=rr0&&typeof rr0.closest==='function'?rr0.closest('.setting-row')?.querySelector('b'):null;if(rr)rr.textContent=t.resolution;
+  const ll=ll0&&typeof ll0.closest==='function'?ll0.closest('.setting-row')?.querySelector('b'):null;if(ll)ll.textContent=t.language;
+  const ff=ff0&&typeof ff0.closest==='function'?ff0.closest('.setting-row')?.querySelector('b'):null;if(ff)ff.textContent=t.fullscreen;
   if($('#soloBtn'))$('#soloBtn').textContent='▶ '+t.newGame;
   if(typeof refreshSoloSaveButton==='function')refreshSoloSaveButton();
 }
@@ -217,7 +218,7 @@ function applySettings(){
   const shake=$('#settingScreenShake'),motion=$('#settingReducedMotion'),resolution=$('#settingResolution'),language=$('#settingLanguage');
   if(shake)shake.checked=cfg.screenShake!==false;if(motion)motion.checked=!!cfg.reducedMotion;
   if(resolution)resolution.value=cfg.resolution||'native';if(language)language.value=cfg.language||'pt-BR';
-  document.documentElement.lang=cfg.language||'pt-BR';
+  if(document.documentElement)document.documentElement.lang=cfg.language||'pt-BR';
   if(typeof applyInterfaceLanguage==='function')applyInterfaceLanguage();
 }
 async function applyResolutionSetting(value){if(window.electronAPI?.setResolution){try{await window.electronAPI.setResolution(value||'native');}catch{}}}
