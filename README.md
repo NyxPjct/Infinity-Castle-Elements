@@ -1,39 +1,52 @@
-# Terra & Ar — Castelo Infinito 3.3: Devil Mode — Auditoria das 1000 Fases
+# Infinity Castle Elements 4.0
 
-Jogo original de plataforma troll para **1 ou 2 jogadores**, com **1000 fases**, singleplayer controlando Terra e Ar, multiplayer por sala privada, 10 regiões do castelo, chefes a cada 100 fases e modo tela cheia.
+**Infinity Castle Elements** é um jogo original de plataforma troll para **1 ou 2 jogadores**, com **1000 fases**, quatro elementos jogáveis, inimigos, moedas, loja, boosts, cosméticos, 10 regiões do castelo e chefes a cada 100 fases.
 
-A versão **3.3** foi feita para atacar bugs estruturais de fase: o castelo pode ser cruel, mentiroso e cheio de pegadinhas, mas a fase precisa continuar tendo uma solução física possível.
+A ideia continua sendo a essência de jogos como Cat Mario e Level Devil: o cenário mente, o chão cai, a saída foge e a armadilha aparece quando você acha que entendeu a fase — mas a sala precisa continuar fisicamente possível.
 
-## O que foi corrigido na 3.3
+## Elementos jogáveis
 
-- auditoria automatizada das **1000 fases**, usando o próprio `game.js`;
-- teste de geração e renderização de todas as 1000 salas;
-- validação de rota física usando os limites de salto de **Terra**, que é o personagem menos móvel;
-- validação das 240 fases com portão cooperativo;
-- proteção de spawn, saída, placas e áreas críticas contra sobreposição de armadilhas;
-- plataformas estreitas mantêm uma zona real de aterrissagem;
-- correção das fases de chefe: as runas agora são alcançáveis por Terra e existe uma rota superior para atravessar os chefes avançados sem uma parede contínua de espinhos;
-- sincronização de função Terra/Ar no multiplayer após desconexão;
-- mortes simultâneas no multiplayer não contam duas vezes;
-- ritual dos chefes no multiplayer passou a ser validado pelo servidor, evitando divergência entre os dois clientes;
-- o servidor bloqueia a saída do chefe enquanto o ritual não tiver sido concluído;
-- cada placa agora acende individualmente quando realmente está pressionada.
+- 🪨 **Terra** — resiste a raízes e usa Impacto Sísmico para destruir/atordoar ameaças próximas.
+- 💨 **Ar** — mais rápido e leve, imune a vendavais e ganha Impulso Aéreo.
+- ☀️ **Luz** — resiste a maldições e usa Clarão Protetor, além de atingir inimigos próximos.
+- 🌑 **Escuridão** — ignora zonas de controle invertido e usa Passo Sombrio para atravessar perigos por um curto período.
 
-## Resultado da auditoria desta build
+## Singleplayer
 
-- **1000/1000 fases geradas**;
-- **1000/1000 fases renderizadas** sem exceção no teste automatizado;
-- **10 chefes** encontrados;
-- **240 fases com portão cooperativo** verificadas;
-- **12 arquétipos de layout** presentes;
-- **100 fases em cada uma das 10 regiões**;
-- **0 falhas** nas regras estruturais verificadas pela auditoria 3.3.
+Na tela inicial você escolhe **um único elemento** e joga toda a tentativa com ele. Não existe mais troca entre Terra e Ar.
 
-Você pode repetir a auditoria com:
+Portões de pressão se adaptam ao solo: ao ativar a placa, o portão permanece destravado naquela tentativa. Nos chefes, o ritual pode ser realizado por um único elemento em qualquer uma das runas.
 
-```bash
-npm run test:levels
-```
+O progresso solo e o elemento utilizado ficam salvos no navegador.
+
+## Multiplayer
+
+Cada jogador escolhe seu próprio elemento antes de criar/entrar na sala. Os dois podem escolher elementos diferentes ou até repetir o mesmo elemento.
+
+Nos chefes, cada jogador recebe uma das duas runas do ritual pelo slot da sala, independentemente do elemento escolhido.
+
+## Moedas e Loja Arcana
+
+A economia é salva localmente no navegador.
+
+Você começa com moedas e pode ganhar mais:
+- ao concluir fases;
+- derrotando inimigos.
+
+Depois de morrer, a Loja Arcana pode ser aberta antes da próxima tentativa.
+
+Itens atuais:
+- 🛡️ **Runa de Escudo** — absorve um golpe fatal na próxima tentativa;
+- 🥾 **Botas do Vento** — aumenta a velocidade na próxima tentativa;
+- 🪶 **Salto Arcano** — aumenta a força do salto na próxima tentativa;
+- 👑 **Coroa do Castelo** — cosmético permanente;
+- ✨ **Aura Elemental** — cosmético permanente.
+
+## Inimigos
+
+Além das armadilhas troll, as fases normais possuem inimigos procedurais, incluindo sentinelas, morcegos e espectros. A quantidade e variedade aumentam durante a campanha.
+
+A geração protege spawn, saída, portões e placas para que os inimigos não transformem uma fase em uma sala estruturalmente impossível.
 
 ## Regiões
 
@@ -48,19 +61,39 @@ npm run test:levels
 9. Trono Rubro — 801–900
 10. Coração Impossível — 901–1000
 
+Cada região tem background, arquitetura, iluminação, nomes de salas e mecânicas próprias.
+
 ## Controles
 
-- A/D ou setas: mover
-- W / seta para cima / espaço: pular
-- E: habilidade
-- Q / Tab: trocar Terra/Ar no singleplayer
-- F: segurar posição no singleplayer
-- R: reiniciar
-- botão **⛶ Tela cheia**: fullscreen; `Esc` sai
+- **A/D** ou setas: mover
+- **W / ↑ / Espaço**: pular
+- **E**: habilidade elemental
+- **R**: reiniciar a sala
+- **⛶ Tela cheia**: fullscreen
+- **Esc**: sair do fullscreen
+
+## Auditoria das 1000 fases
+
+Execute:
+
+```bash
+npm run test:levels
+```
+
+A build 4.0 foi auditada usando o próprio gerador do jogo:
+- 1000 fases geradas;
+- 1000 fases renderizadas;
+- 10 chefes;
+- 240 fases com portão;
+- 12 arquétipos de layout;
+- 10 regiões com 100 fases cada;
+- 0 falhas na auditoria automatizada desta build.
 
 ## Executar
 
-No Windows, abra `INICIAR_JOGO.bat`. Ou:
+No Windows, abra `INICIAR_JOGO.bat`.
+
+Ou:
 
 ```bash
 npm install
@@ -69,17 +102,8 @@ npm start
 
 Depois acesse `http://localhost:3000`.
 
-## Observação
+## GitHub Actions
 
-A auditoria reduz fortemente a chance de fases estruturalmente impossíveis e corrige os bugs detectados nesta revisão. Como qualquer jogo procedural, ainda pode existir algum comportamento de navegador, rede ou combinação de timing que não apareça em teste automatizado; por isso o script de auditoria foi incluído no projeto para facilitar novas verificações.
+O workflow `.github/workflows/audit.yml` roda automaticamente a cada push ou Pull Request para `main`, verificando sintaxe e auditando as 1000 fases.
 
-## CI no GitHub
-
-O repositório inclui o workflow `.github/workflows/audit.yml`. A cada `push` ou Pull Request para `main`, o GitHub Actions:
-
-1. instala as dependências;
-2. verifica a sintaxe do JavaScript;
-3. executa `npm run test:levels`;
-4. audita as 1000 fases antes de considerar a build válida.
-
-> Este projeto usa Node.js + Socket.IO para o multiplayer, então **GitHub Pages sozinho não hospeda o modo online**. Para publicar o multiplayer, use um host Node/WebSocket (por exemplo Render, Railway, Fly.io ou VPS).
+> O multiplayer usa Node.js + Socket.IO. GitHub Pages sozinho não executa o servidor online; para publicar o multiplayer é necessário um host com Node/WebSocket.
