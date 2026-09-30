@@ -1,63 +1,81 @@
-# Infinity Castle Elements — INSANITY FIXED TEST 4.1.1
+# Infinity Castle Elements — INSANITY 4.1.1
 
-Build local de teste. **Não foi publicada no GitHub.**
+## Requisitos
 
-Esta versão mantém os quatro elementos, singleplayer com um único elemento, multiplayer com escolha independente, moedas, Loja Arcana, boosts, cosméticos, inimigos, fullscreen, 10 regiões e 1000 fases.
+Para rodar o jogo corretamente, você precisa ter:
 
-## O que mudou nesta build
+- **Node.js 18 ou superior** instalado no computador;
+- **npm**, que normalmente já vem junto com o Node.js;
+- um navegador atualizado, de preferência **Google Chrome**, **Microsoft Edge** ou **Firefox**;
+- a porta **3000** livre no computador;
+- conexão com a internet apenas na primeira execução, caso ainda seja necessário baixar as dependências com `npm install`.
 
-As fases **1 a 4** continuam servindo como falsa sensação de segurança. A partir da **fase 5**, a curva de maldade sobe imediatamente.
+## Como executar no Windows
 
-- inimigos entram já na fase 5;
-- chão falso aparece muito mais cedo e com frequência maior;
-- a saída começa a fugir já na fase 5 em padrões determinísticos;
-- saídas falsas começam cedo;
-- espinhos-surpresa de chão e teto entram praticamente no começo;
-- blocos de pedra caem do teto muito antes;
-- lustres, elevadores, plataformas que desaparecem, armaduras e esmagadores foram antecipados;
-- portas falsas e saídas-isca aparecem ainda no primeiro trecho da campanha;
-- fases mais avançadas combinam várias dessas mecânicas ao mesmo tempo;
-- mais inimigos são adicionados conforme a campanha avança;
-- mensagens de morte foram refeitas para reforçar a sensação de “agora eu sei onde está a armadilha... talvez”.
+A forma mais simples é abrir:
 
-As armadilhas continuam determinísticas: a dificuldade foi aumentada para exigir memória, timing e repetição, não para virar RNG sem solução.
-
-## Elementos
-
-- 🪨 Terra — impacto sísmico, resistente a raízes.
-- 💨 Ar — mais rápido, impulso aéreo, imune a vendavais.
-- ☀️ Luz — resiste a maldições e usa clarão protetor/ataque em área.
-- 🌑 Escuridão — ignora zonas de controle invertido e usa passo sombrio.
-
-## Loja
-
-Moedas são obtidas ao concluir fases e derrotar inimigos. A Loja Arcana permite comprar escudo, velocidade, salto e cosméticos.
-
-## Teste das 1000 fases
-
-Execute:
-
-```bash
-npm run test:levels
+```
+INICIAR_JOGO.bat
 ```
 
-Nesta build a auditoria verifica geração, renderização, rotas estruturais, chefes, portões, áreas críticas e inimigos. Além disso, ela executa `startLevel()` e frames reais de gameplay nos quatro elementos para cada uma das 1000 fases.
+O arquivo verifica se o Node.js está instalado, instala as dependências automaticamente na primeira execução e inicia o servidor do jogo.
 
-### Correção crítica desta revisão
+Depois, o jogo abre em:
 
-A build anterior podia mostrar apenas o background porque `processTrolls()` havia sido removida por engano durante uma refatoração. O primeiro update do personagem lançava um erro e interrompia o frame antes de desenhar a fase. A função foi restaurada e esse caminho agora faz parte obrigatória do auditor.
+```
+http://localhost:3000
+```
 
-Também existe uma geração de emergência: se uma fase falhar na geração ou for detectada como estruturalmente inválida ao iniciar, o jogo substitui apenas aquela sala por um layout seguro em vez de deixar a tela vazia.
+Para encerrar o servidor, volte para a janela do terminal e pressione:
 
-## Executar
+```
+CTRL + C
+```
 
-No Windows, abra `INICIAR_JOGO.bat`.
+## Como executar manualmente
 
-Ou:
+Abra um terminal dentro da pasta do projeto e rode:
 
 ```bash
 npm install
 npm start
 ```
 
-Abra `http://localhost:3000`.
+Depois acesse no navegador:
+
+```
+http://localhost:3000
+```
+
+## Dependências utilizadas
+
+O projeto utiliza:
+
+- **Node.js**
+- **Express**
+- **Socket.IO**
+
+As dependências do projeto já estão declaradas no arquivo `package.json` e são instaladas automaticamente pelo comando:
+
+```bash
+npm install
+```
+
+Não é necessário instalar Express ou Socket.IO separadamente.
+
+## Se o jogo não abrir
+
+Confira se:
+
+- o Node.js está instalado com `node --version`;
+- o npm está funcionando com `npm --version`;
+- nenhuma outra aplicação está usando a porta 3000;
+- as dependências foram instaladas corretamente;
+- o terminal não exibiu nenhum erro ao iniciar o servidor.
+
+Se necessário, execute novamente:
+
+```bash
+npm install
+npm start
+```
