@@ -1,8 +1,8 @@
-# Infinity Castle Elements — INSANITY 0.0
+# Infinity Castle Elements — INSANITY 0.0.0
 
 **Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A versão **INSANITY 0.0** é a primeira versão definitiva do projeto e a edição oficial para Windows.
+A versão **INSANITY 0.0.0** é a primeira versão definitiva do projeto e a edição oficial para Windows.
 
 ## Downloads para Windows
 
@@ -58,6 +58,8 @@ Ignora zonas de controles invertidos e usa **Passo Sombrio**, ficando temporaria
 ## Singleplayer
 
 No modo solo, o jogador escolhe **um único elemento** antes de começar. Portões, placas e rituais de chefes são adaptados para que a campanha continue possível com apenas um personagem.
+
+A escolha do elemento agora é feita diretamente pelos **quatro bonequinhos elementais** na tela antes de iniciar a fase, sem precisar descer a interface para procurar a seleção.
 
 O progresso solo inclui fase atual, mortes, elemento, moedas, boosts e cosméticos.
 
@@ -124,7 +126,7 @@ Também existe uma **sala de emergência**: se uma geração for detectada como 
 
 A build possui auditoria própria para geração, renderização, estruturas críticas, inimigos e runtime dos quatro elementos.
 
-Na INSANITY 0.0, o processo de validação verifica:
+Na INSANITY 0.0.0, o processo de validação verifica:
 
 - **1000 fases**;
 - **10 chefes**;
@@ -135,14 +137,35 @@ Na INSANITY 0.0, o processo de validação verifica:
 - runtime dos quatro elementos;
 - áreas críticas de spawn e saída.
 
+## Configurações e menu de pausa
+
+A versão desktop inicia **em tela cheia por padrão**.
+
+Dentro de **Configurações** ficam centralizadas as opções de:
+
+- **resolução** — Nativa, 4K, 1440p, 1080p, 1600×900, 1366×768 e 720p;
+- **idioma da interface** — Português, Inglês, Espanhol, Francês, Alemão, Italiano, Holandês, Polonês, Russo, Turco, Japonês, Coreano, Chinês Simplificado, Chinês Tradicional, Árabe, Hindi, Sueco, Dinamarquês, Finlandês e Tcheco;
+- **tela cheia**;
+- **tremor de tela**;
+- **redução de animações**.
+
+Durante uma fase, pressione **ESC** para abrir o menu de pausa. Nele é possível:
+
+- **Salvar jogo**;
+- abrir **Configurações**;
+- **Sair para o menu**;
+- **Sair para desktop**.
+
+Pressionar **ESC novamente** fecha o menu de pausa e continua a tentativa.
+
 ## Controles
 
 - **A / D** ou **← / →** — movimento
 - **W**, **↑** ou **Espaço** — pular
 - **E** — habilidade elemental
 - **R** — reiniciar fase
+- **ESC** — abrir/fechar menu de pausa
 - **F11** — alternar tela cheia
-- **Esc** — sair da tela cheia
 
 ---
 
