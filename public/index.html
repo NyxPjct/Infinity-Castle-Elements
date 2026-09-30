@@ -185,20 +185,12 @@
           <span id="difficultyLabel">PORTÃO REAL</span>
           <span id="mechanicLabel">O CASTELO OBSERVA</span>
           <button id="shopBtnHud" class="small" type="button">🛒 Loja</button>
-          <button id="fullscreenBtn" class="small fullscreen-btn" type="button" title="Colocar o jogo em tela cheia">⛶ Tela cheia</button>
           <button id="restartBtn" class="small">↻ Reiniciar</button>
         </div>
       </div>
       <div class="canvas-shell">
         <canvas id="game" width="1600" height="900"></canvas>
         <div id="overlay" class="overlay hidden"><div><h2 id="overlayTitle"></h2><p id="overlayText"></p></div></div>
-      </div>
-      <div class="controls">
-        <span>← → / A D mover</span>
-        <span>↑ / W pular</span>
-        <span>E habilidade elemental</span>
-        <span>R reiniciar</span>
-        <span>⛶ Tela cheia</span>
       </div>
     </section>
   </main>
@@ -272,7 +264,7 @@
         </label>
         <label class="setting-row"><span><b>Tremor de tela</b><small>Impactos, mortes e pegadinhas sacodem a câmera.</small></span><input id="settingScreenShake" type="checkbox" checked /></label>
         <label class="setting-row"><span><b>Reduzir animações</b><small>Diminui fades e movimentos das telas de abertura.</small></span><input id="settingReducedMotion" type="checkbox" /></label>
-        <div class="setting-row"><span><b>Tela cheia</b><small>O jogo já inicia em tela cheia. Use aqui para alternar o modo.</small></span><button id="settingsFullscreenBtn" class="small">⛶ Alternar tela cheia</button></div>
+        <label class="setting-row"><span><b>Tela cheia</b><small>Ativada por padrão. Quando desligada, a resolução escolhida acima define o tamanho da janela.</small></span><input id="settingFullscreen" type="checkbox" checked /></label>
       </div>
       <p class="fine">As preferências ficam salvas neste dispositivo. Na versão desktop, o botão Sair fecha o jogo diretamente.</p>
     </div>
