@@ -53,6 +53,8 @@ function showMainMenu(){
   document.body?.classList.remove('game-active','setup-active');document.body?.classList.add('boot-sequence');
 }
 function showSetup(kind){
+  closeShop();closeSettings(false);closePauseMenu(false);
+  state.shopOpen=false;
   hideCinematicScreens();document.body?.classList.remove('boot-sequence','game-active');document.body?.classList.add('setup-active');appShell?.classList.remove('hidden');
   lobby?.classList.remove('hidden');roomEl?.classList.add('hidden');gameWrap?.classList.add('hidden');
   state.running=false;state.mode='menu';$('#backToMenuBtn').style.display='';
@@ -97,8 +99,8 @@ function leaveMultiplayerSession(){
 }
 function pauseToMainMenu(){closeSettings(false);closePauseMenu(false);clearTimeout(state.shopTimer);closeShop();leaveMultiplayerSession();showMainMenu();}
 function pauseToDesktop(){if(window.electronAPI?.quit)window.electronAPI.quit();else showExitScreen();}
-$('#menuSingleBtn').onclick=()=>showSetup('singleplayer');
-$('#menuMultiBtn').onclick=()=>showSetup('multiplayer');
+$('#menuSingleBtn').onclick=()=>{closeShop();showSetup('singleplayer');};
+$('#menuMultiBtn').onclick=()=>{closeShop();showSetup('multiplayer');};
 $('#menuSettingsBtn').onclick=()=>openSettings();
 $('#menuExitBtn').onclick=showExitScreen;
 $('#exitBackBtn').onclick=showMainMenu;
@@ -207,6 +209,7 @@ function buyShopItem(key){
   saveProfile();if($('#shopMessage'))$('#shopMessage').textContent=item.type==='boost'?'Comprado. O boost entra na próxima tentativa.':'Item permanente desbloqueado para seu personagem.';
 }
 function openShop({death=false,multiplayer=false}={}){
+  if(state.mode==='menu'&&mainMenu&&!mainMenu.classList.contains('hidden'))return;
   state.shopOpen=true;$('#shopModal').classList.remove('hidden');$('#shopTitle').textContent=death?'☠️ Morreu. Quer trapacear de volta?':'Loja Arcana';
   $('#retryBtn').textContent=multiplayer?'Recomeçando...':death?'Tentar novamente':state.mode==='menu'?'Voltar ao menu':'Voltar ao jogo';$('#retryBtn').disabled=multiplayer;
   $('#shopCountdown').textContent=multiplayer?'A dupla retorna em 5 segundos. Aproveite a lojinha.':'';refreshEconomyUI();
