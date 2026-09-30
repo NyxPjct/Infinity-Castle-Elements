@@ -9,7 +9,7 @@ const code = fs.readFileSync(path.join(root, 'public', 'game.js'), 'utf8');
 function makeEl(ctx) {
   return {
     textContent: '', value: '', style: {}, onclick: null,
-    classList: { add() {}, remove() {}, contains() { return false; } },
+    classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
     addEventListener() {}, setAttribute() {},
     getContext() { return ctx; }
   };
@@ -27,6 +27,8 @@ const canvas = makeEl(ctx); canvas.width = 1600; canvas.height = 900; canvas.get
 const els = new Map([['#game', canvas]]);
 const document = {
   querySelector(sel) { if (!els.has(sel)) els.set(sel, makeEl(ctx)); return els.get(sel); },
+  querySelectorAll() { return []; },
+  createElement() { return makeEl(ctx); },
   addEventListener() {}, fullscreenElement: null, webkitFullscreenElement: null,
   exitFullscreen: async () => {}, webkitExitFullscreen() {}
 };
@@ -73,10 +75,11 @@ function sweep(kind,v){
   if(kind==='chandeliers')return{x:v.x,y:v.y,w:v.w,h:Math.max(v.h,v.floorY-v.y)};
   if(kind==='fallingBlocks')return{x:v.x,y:v.y,w:v.w,h:Math.max(v.h,v.floorY-v.y)};
   if(kind==='slamWalls')return{x:Math.min(v.startX,v.endX),y:v.y,w:Math.abs(v.endX-v.startX)+v.w,h:v.h};
+  if(kind==='enemies')return{x:Math.min(v.x0,v.x1),y:v.y-(v.rangeY||0),w:Math.abs(v.x1-v.x0)+v.w,h:v.h+(v.rangeY||0)*2};
   return v;
 }
 function dynamicInvades(ld,zone){
-  for(const kind of ['elevators','bookshelves','armors','crushers','ghosts','chandeliers','fallingBlocks','slamWalls'])for(const v of ld[kind]||[])if(intersects(sweep(kind,v),zone))return kind;
+  for(const kind of ['elevators','bookshelves','armors','crushers','ghosts','chandeliers','fallingBlocks','slamWalls','enemies'])for(const v of ld[kind]||[])if(intersects(sweep(kind,v),zone))return kind;
   return null;
 }
 
@@ -100,7 +103,8 @@ for(let level=1; level<=1000; level++) {
 
   if(!canReachRect(ld,ld.goal))bad.push([level,'auditoria independente: saída sem rota física de Terra']);
   if(ld.boss){
-    for(const role of ['earth','air']) if(!canReachRect(ld,ld.boss.runes[role]))bad.push([level,`auditoria independente: runa ${role} inalcançável`]);
+    const runes=Object.entries(ld.boss.runes||{});if(runes.length!==2)bad.push([level,`chefão com ${runes.length} runas, esperado 2`]);
+    for(const [key,rune] of runes)if(!canReachRect(ld,rune))bad.push([level,`auditoria independente: runa ${key} inalcançável`]);
   }
 
   const spawn={x:70,y:675,w:125,h:75}, goalSafe={x:ld.goal.x-10,y:ld.goal.y-8,w:ld.goal.w+20,h:ld.goal.h+16};
@@ -108,6 +112,7 @@ for(let level=1; level<=1000; level++) {
   if(lethal.some(r=>intersects(r,spawn)))bad.push([level,'armadilha estática invade spawn']);
   if(lethal.some(r=>intersects(r,goalSafe)))bad.push([level,'armadilha estática invade saída']);
   const spawnDynamic=dynamicInvades(ld,spawn),goalDynamic=dynamicInvades(ld,goalSafe);
+  if(level%100!==0&&!(ld.enemies||[]).length)bad.push([level,'fase normal sem inimigos']);
   if(spawnDynamic)bad.push([level,`${spawnDynamic} invade spawn`]);
   if(goalDynamic)bad.push([level,`${goalDynamic} invade saída`]);
   if(ld.door){for(const [name,plate] of [['esquerda',ld.plate],['direita',ld.plate2]]){const zone={x:plate.x-12,y:plate.y-68,w:plate.w+24,h:78},kind=dynamicInvades(ld,zone);if(kind)bad.push([level,`${kind} invade placa ${name}`]);}}
