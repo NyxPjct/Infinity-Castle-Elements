@@ -124,7 +124,7 @@ function openShop({death=false,multiplayer=false}={}){
 function closeShop(){state.shopOpen=false;$('#shopModal').classList.add('hidden');$('#shopCountdown').textContent='';}
 document.querySelectorAll('.shop-item').forEach(btn=>btn.onclick=()=>buyShopItem(btn.dataset.item));
 $('#shopBtnLobby').onclick=()=>openShop();$('#shopBtnHud').onclick=()=>openShop();
-$('#closeShopBtn').onclick=()=>{if(!$('#retryBtn').disabled)closeShop();};
+$('#closeShopBtn').onclick=()=>{if($('#retryBtn').disabled)return;const retry=state.mode==='singleplayer'&&!state.running;closeShop();if(retry)startLevel(state.level);};
 $('#retryBtn').onclick=()=>{if($('#retryBtn').disabled)return;const wasRunning=state.running;closeShop();if(state.mode==='singleplayer'&&!wasRunning)startLevel(state.level);};
 profile.selectedRole=ELEMENTS[profile.selectedRole]?profile.selectedRole:'earth';state.selectedRole=profile.selectedRole;selectElement(state.selectedRole);refreshEconomyUI();
 
@@ -196,6 +196,9 @@ socket.on('level-complete', ({level,finished,completedLevel}) => {
   showOverlay(finished?'🏆 INFINITY CASTLE CONQUISTADO':'✓ SALA SUPERADA', finished?'Vocês conquistaram as 1000 salas de Infinity Castle Elements.':`Próxima: fase ${level}`, finished?0:700);
 });
 socket.on('game-finished', ({deaths}) => { state.running=false; state.deaths=deaths; updateHud(); showOverlay('🏆 1000/1000', `Infinity Castle caiu após ${deaths} mortes compartilhadas.`, 0); });
+socket.on('enemy-defeated', ({id,level}={}) => {
+  if(Number(level)!==state.level)return;const e=(state.levelData?.enemies||[]).find(x=>x.id===id);if(e)defeatEnemy(e,true);
+});
 socket.on('partner-left', () => { if(state.mode!=='multiplayer')return; closeShop();clearTimeout(state.shopTimer);state.running=false; showOverlay('Parceiro desconectou', 'Aguardando alguém entrar novamente na sala.', 0); gameWrap.classList.add('hidden'); roomEl.classList.remove('hidden'); state.ready=false; $('#readyBtn').textContent='Estou pronto'; });
 socket.on('remote-state', data => { if(state.mode==='multiplayer'&&data.id!==state.id) state.remote=data; });
 socket.on('boss-defeated', ({level}={}) => {
@@ -423,8 +426,10 @@ function enemyRect(e){
   const t=elapsed()*e.speed+e.phase,q=(Math.sin(t)+1)/2,x=e.x0+(e.x1-e.x0)*q,y=e.y+(e.rangeY?Math.sin(t*1.7)*e.rangeY:0);
   return {x,y,w:e.w,h:e.h};
 }
-function defeatEnemy(e){
-  const key='enemyDead'+e.id;if(state.trapState.get(key))return;state.trapState.set(key,true);addCoins(2);const r=enemyRect({...e,id:-e.id});burst((e.x0+e.x1)/2,e.y,14);
+function defeatEnemy(e,remote=false){
+  const key='enemyDead'+e.id;if(state.trapState.get(key))return;state.trapState.set(key,true);
+  if(!remote){addCoins(2);if(state.mode==='multiplayer')socket.emit('enemy-defeated',{id:e.id,level:state.level});}
+  burst((e.x0+e.x1)/2,e.y,14);
 }
 function attackEnemiesAround(p,role){
   const radius=role==='light'?230:role==='earth'?175:0;if(!radius)return;
