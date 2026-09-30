@@ -1,4 +1,5 @@
-const socket = io();
+const MULTIPLAYER_SERVER_URL = String(window.electronAPI?.multiplayerUrl || window.ICE_MULTIPLAYER_SERVER_URL || '').trim();
+const socket = MULTIPLAYER_SERVER_URL ? io(MULTIPLAYER_SERVER_URL,{transports:['websocket','polling'],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:800,timeout:10000}) : io();
 const $ = s => document.querySelector(s);
 const lobby = $('#lobby'), roomEl = $('#room'), gameWrap = $('#gameWrap');
 const appShell=$('#appShell'),studioSplash=$('#studioSplash'),titleScreen=$('#titleScreen'),mainMenu=$('#mainMenu'),exitScreen=$('#exitScreen');
