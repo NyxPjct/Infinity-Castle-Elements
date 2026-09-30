@@ -23,7 +23,8 @@ const state = {
   levelData: null, trapState: new Map(), particles: [], levelStart: 0,
   bossCharge: 0, bossDefeated: false, lastRuneSent: null, lastAbility: 0, abilityUntil: 0,
   invulnUntil: 0, levelAttempts: new Map(), attempt: 1, screenShake: 0,
-  activeBoosts:{shield:false,speed:false,jump:false}, shopOpen:false, shopTimer:null, lastRewardedLevel:0
+  activeBoosts:{shield:false,speed:false,jump:false}, shopOpen:false, shopTimer:null, lastRewardedLevel:0,
+  paused:false, pauseWasRunning:false, settingsFromPause:false
 };
 
 const SOLO_SAVE_KEY = 'infinity-castle-elements-solo-v1';
@@ -36,7 +37,7 @@ function setConnectionStatus(online){
 socket.on('connect', () => setConnectionStatus(true));
 socket.on('disconnect', () => setConnectionStatus(false));
 
-document.querySelectorAll('.element-card').forEach(btn=>btn.addEventListener('click',()=>selectElement(btn.dataset.element)));
+document.querySelectorAll('.character-choice').forEach(btn=>btn.addEventListener('click',()=>selectElement(btn.dataset.element)));
 
 let splashTimer=null;
 function hideCinematicScreens(){for(const el of [studioSplash,titleScreen,mainMenu,exitScreen])el?.classList.add('hidden');}
@@ -47,6 +48,7 @@ function showTitleScreen(){
 }
 function showMainMenu(){
   clearTimeout(splashTimer);state.running=false;state.mode='menu';state.shopOpen=false;closeShop();
+  if(typeof closePauseMenu==='function')closePauseMenu(false);if(typeof closeSettings==='function')closeSettings(false);
   hideCinematicScreens();mainMenu?.classList.remove('hidden');appShell?.classList.add('hidden');
   document.body?.classList.add('boot-sequence');
 }
@@ -130,7 +132,7 @@ $('#chatgptBtn').onclick = async () => {
 
 function playerName(){ return ($('#playerName').value || 'Jogador').trim().slice(0,18); }
 
-function defaultProfile(){return {coins:25,selectedRole:'earth',boosts:{shield:0,speed:0,jump:0},owned:{crown:false,aura:false},settings:{screenShake:true,reducedMotion:false}};}
+function defaultProfile(){return {coins:25,selectedRole:'earth',boosts:{shield:0,speed:0,jump:0},owned:{crown:false,aura:false},settings:{screenShake:true,reducedMotion:false,resolution:'native',language:'pt-BR'}};}
 function loadProfile(){
   try{const raw=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null'),base=defaultProfile();if(!raw)return base;return {...base,...raw,boosts:{...base.boosts,...(raw.boosts||{})},owned:{...base.owned,...(raw.owned||{})},settings:{...base.settings,...(raw.settings||{})}};}catch{return defaultProfile();}
 }
@@ -145,7 +147,7 @@ function refreshEconomyUI(){
 }
 function selectElement(role){
   if(!ELEMENTS[role])return;state.selectedRole=role;profile.selectedRole=role;saveProfile();
-  document.querySelectorAll('.element-card').forEach(b=>b.classList.toggle('selected',b.dataset.element===role));
+  document.querySelectorAll('.character-choice').forEach(b=>b.classList.toggle('selected',b.dataset.element===role));
   const e=ELEMENTS[role];$('#selectedElementIcon').textContent=e.icon;$('#selectedElementName').textContent=e.name;
 }
 function applyAttemptBoosts(){
