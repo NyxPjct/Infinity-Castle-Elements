@@ -1,0 +1,56 @@
+name: Build Windows Desktop 0.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "desktop/**"
+      - "public/**"
+      - "build/**"
+      - "server.js"
+      - "package.json"
+      - "README.md"
+      - "COMO_JOGAR.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: npm install --no-audit --no-fund
+
+      - name: Audit all 1000 levels
+        shell: pwsh
+        run: npm run test:levels
+
+      - name: Build Windows EXE
+        shell: pwsh
+        run: npm run dist:win
+
+      - name: Show generated executables
+        shell: pwsh
+        run: Get-ChildItem -Path dist -Filter *.exe | Format-Table Name,Length
+
+      - name: Upload Windows builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: Infinity-Castle-Elements-Windows-0.0
+          path: dist/*.exe
+          if-no-files-found: error
+          compression-level: 0
