@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#090b12" />
-  <title>Terra & Ar — Castelo Infinito</title>
+  <title>Infinity Castle Elements</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
@@ -12,35 +12,56 @@
   <main class="shell">
     <header class="topbar">
       <div class="brand">
-        <div class="brand-mark">◈</div>
+        <div class="brand-mark">✦</div>
         <div>
-          <h1>TERRA <span>&</span> AR</h1>
-          <p>CASTELO INFINITO · DEVIL MODE 3.3 · 1000 FASES AUDITADAS · SOLO + CO-OP</p>
+          <h1>INFINITY CASTLE <span>ELEMENTS</span></h1>
+          <p>DEVIL MODE 4.0 · 1000 FASES · ELEMENTOS · INIMIGOS · SOLO + CO-OP</p>
         </div>
       </div>
-      <div class="pill" id="connectionPill">● Conectando</div>
+      <div class="topbar-actions">
+        <button id="shopBtnLobby" class="small coin-pill">🪙 <span id="lobbyCoins">0</span> · Loja</button>
+        <div class="pill" id="connectionPill">● Conectando</div>
+      </div>
     </header>
 
     <section id="lobby" class="panel lobby-grid">
       <div class="hero-copy">
-        <p class="eyebrow">1000 FASES · 10 REGIÕES · TROLL, NÃO QUEBRADO</p>
-        <h2>Mil salas. Dez regiões.<br><em>Nenhuma delas joga limpo.</em></h2>
-        <p class="lead">Plataforma troll cooperativa dentro de um castelo colossal. Chão falso, saídas mentirosas, espinhos que aparecem depois do salto, paredes que atacam e cenários totalmente diferentes conforme vocês avançam. Jogue em dupla online ou controle Terra e Ar sozinho.</p>
+        <img src="/element-party.svg" alt="Terra, Ar, Luz e Escuridão diante do Castelo Infinito" class="party-art" />
+        <p class="eyebrow">ESCOLHA SEU ELEMENTO · ENTRE NO CASTELO · NÃO CONFIE EM NADA</p>
+        <h2>Quatro elementos.<br><em>Mil salas tentando te matar.</em></h2>
+        <p class="lead">Agora você escolhe quem entra no castelo. Terra, Ar, Luz e Escuridão têm movimentos, imunidades e habilidades próprias. O modo troll continua absurdo, mas agora o mapa também recebe inimigos vivos, moedas e uma loja para preparar a próxima tentativa.</p>
+
+        <div class="element-picker" id="elementPicker" aria-label="Escolha seu elemento">
+          <button class="element-card selected earth" data-element="earth">
+            <span class="element-icon">🪨</span><b>Terra</b><small>Raízes não te param · E = impacto sísmico</small>
+          </button>
+          <button class="element-card air" data-element="air">
+            <span class="element-icon">💨</span><b>Ar</b><small>Imune a vendavais · E = impulso aéreo</small>
+          </button>
+          <button class="element-card light" data-element="light">
+            <span class="element-icon">☀️</span><b>Luz</b><small>Resiste a maldições · E = clarão protetor</small>
+          </button>
+          <button class="element-card darkness" data-element="darkness">
+            <span class="element-icon">🌑</span><b>Escuridão</b><small>Não se perde no avesso · E = passo sombrio</small>
+          </button>
+        </div>
+
         <div class="difficulty-strip">
           <span>1</span><div class="bar"><i></i></div><span>1000</span>
-        </div>
-        <div class="mini-cards">
-          <div><b>🪨 Terra</b><small>Resiste às raízes · E = impacto sísmico</small></div>
-          <div><b>💨 Ar</b><small>Atravessa ventos · E = impulso aéreo</small></div>
-          <div><b>☠️ Ambos</b><small>Caem para maldições e armadilhas</small></div>
         </div>
       </div>
 
       <div class="join-card">
+        <div class="selected-element-summary">
+          <span id="selectedElementIcon">🪨</span>
+          <div><small>SEU ELEMENTO</small><b id="selectedElementName">Terra</b></div>
+        </div>
+
         <p class="mode-title">MODO SINGLEPLAYER</p>
-        <button id="soloBtn" class="primary solo-primary">▶ Nova aventura solo</button>
+        <button id="soloBtn" class="primary solo-primary">▶ Jogar solo com este elemento</button>
         <button id="continueSoloBtn" class="ghost hidden">↻ Continuar solo</button>
-        <p class="fine">No solo, pressione <b>Q/Tab</b> para alternar entre Terra e Ar. O progresso fica salvo neste navegador.</p>
+        <p class="fine">No solo você joga com <b>apenas o elemento escolhido</b>. Portas e chefes se adaptam para continuarem possíveis com um único personagem.</p>
+
         <div class="or"><span>multiplayer online</span></div>
         <label>Seu nome</label>
         <input id="playerName" maxlength="18" placeholder="Ex.: Leonardo" autocomplete="nickname" />
@@ -51,8 +72,8 @@
           <input id="roomCodeInput" maxlength="6" placeholder="ABC123" />
           <button id="joinBtn">Entrar</button>
         </div>
+        <p class="fine">Cada jogador escolhe seu próprio elemento antes de entrar. Os dois podem até usar o mesmo elemento.</p>
         <button id="chatgptBtn" class="ghost" title="Disponível quando o app tiver credenciais aprovadas">◉ Vincular conta ChatGPT</button>
-        <p class="fine">O jogo funciona normalmente com código de sala. O botão de ChatGPT fica preparado para autenticação oficial quando habilitada para o app.</p>
         <p id="errorText" class="error"></p>
       </div>
     </section>
@@ -80,10 +101,12 @@
           <span id="hudRole">🪨 TERRA</span>
           <span>FASE <b id="hudLevel">1</b>/1000</span>
           <span>MORTES <b id="hudDeaths">0</b></span>
+          <span class="coin-hud">🪙 <b id="hudCoins">0</b></span>
         </div>
         <div class="hud-right">
           <span id="difficultyLabel">PORTÃO REAL</span>
-          <span id="mechanicLabel">PORTAS • PRESSÃO</span>
+          <span id="mechanicLabel">CHÃO FALSO • INIMIGOS</span>
+          <button id="shopBtnHud" class="small" type="button">🛒 Loja</button>
           <button id="fullscreenBtn" class="small fullscreen-btn" type="button" title="Colocar o jogo em tela cheia">⛶ Tela cheia</button>
           <button id="restartBtn" class="small">↻ Reiniciar</button>
         </div>
@@ -95,13 +118,37 @@
       <div class="controls">
         <span>← → / A D mover</span>
         <span>↑ / W pular</span>
-        <span>E habilidade</span>
-        <span id="soloControls" class="hidden">Q/Tab trocar · F segurar posição</span>
+        <span>E habilidade elemental</span>
         <span>R reiniciar</span>
-        <span>⛶ botão Tela cheia · F11 também funciona no navegador</span>
+        <span>⛶ Tela cheia</span>
       </div>
     </section>
   </main>
+
+  <div id="shopModal" class="shop-modal hidden" role="dialog" aria-modal="true">
+    <div class="shop-card">
+      <div class="shop-head">
+        <div>
+          <p class="eyebrow">LOJA ARCANA</p>
+          <h2 id="shopTitle">Prepare a próxima tentativa</h2>
+        </div>
+        <button id="closeShopBtn" class="small">✕</button>
+      </div>
+      <div class="shop-wallet">🪙 <b id="shopCoins">0</b> moedas</div>
+      <p id="shopMessage" class="fine">Boosts comprados entram automaticamente na próxima tentativa. Cosméticos ficam salvos neste navegador.</p>
+      <div class="shop-grid">
+        <button class="shop-item" data-item="shield"><b>🛡️ Runa de Escudo</b><small>Absorve 1 golpe fatal na próxima tentativa.</small><strong>12 🪙</strong></button>
+        <button class="shop-item" data-item="speed"><b>🥾 Botas do Vento</b><small>+20% velocidade na próxima tentativa.</small><strong>10 🪙</strong></button>
+        <button class="shop-item" data-item="jump"><b>🪶 Salto Arcano</b><small>+15% força de salto na próxima tentativa.</small><strong>10 🪙</strong></button>
+        <button class="shop-item" data-item="crown"><b>👑 Coroa do Castelo</b><small>Cosmético permanente para seu personagem.</small><strong>40 🪙</strong></button>
+        <button class="shop-item" data-item="aura"><b>✨ Aura Elemental</b><small>Cosmético permanente com brilho extra.</small><strong>60 🪙</strong></button>
+      </div>
+      <div class="shop-footer">
+        <span id="shopCountdown" class="fine"></span>
+        <button id="retryBtn" class="primary">Tentar novamente</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/game.js"></script>
