@@ -1,8 +1,8 @@
 {
   "name": "infinity-castle-elements",
-  "version": "4.0.0",
+  "version": "4.1.1-test.2",
   "private": true,
-  "description": "Infinity Castle Elements — plataforma troll solo/co-op com 1000 salas, quatro elementos jogáveis, inimigos, moedas, loja, boosts, cosméticos e auditoria anti-fase-impossível.",
+  "description": "Infinity Castle Elements — Insanity Fixed Test: dificuldade brutal a partir da fase 5, com auditoria estrutural, 4000 frames de runtime e proteção contra tela vazia.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

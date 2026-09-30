@@ -1,78 +1,39 @@
-# Infinity Castle Elements 4.0
+# Infinity Castle Elements — INSANITY FIXED TEST 4.1.1
 
-**Infinity Castle Elements** é um jogo original de plataforma troll para **1 ou 2 jogadores**, com **1000 fases**, quatro elementos jogáveis, inimigos, moedas, loja, boosts, cosméticos, 10 regiões do castelo e chefes a cada 100 fases.
+Build local de teste. **Não foi publicada no GitHub.**
 
-A ideia continua sendo a essência de jogos como Cat Mario e Level Devil: o cenário mente, o chão cai, a saída foge e a armadilha aparece quando você acha que entendeu a fase — mas a sala precisa continuar fisicamente possível.
+Esta versão mantém os quatro elementos, singleplayer com um único elemento, multiplayer com escolha independente, moedas, Loja Arcana, boosts, cosméticos, inimigos, fullscreen, 10 regiões e 1000 fases.
 
-## Elementos jogáveis
+## O que mudou nesta build
 
-- 🪨 **Terra** — resiste a raízes e usa Impacto Sísmico para destruir/atordoar ameaças próximas.
-- 💨 **Ar** — mais rápido e leve, imune a vendavais e ganha Impulso Aéreo.
-- ☀️ **Luz** — resiste a maldições e usa Clarão Protetor, além de atingir inimigos próximos.
-- 🌑 **Escuridão** — ignora zonas de controle invertido e usa Passo Sombrio para atravessar perigos por um curto período.
+As fases **1 a 4** continuam servindo como falsa sensação de segurança. A partir da **fase 5**, a curva de maldade sobe imediatamente.
 
-## Singleplayer
+- inimigos entram já na fase 5;
+- chão falso aparece muito mais cedo e com frequência maior;
+- a saída começa a fugir já na fase 5 em padrões determinísticos;
+- saídas falsas começam cedo;
+- espinhos-surpresa de chão e teto entram praticamente no começo;
+- blocos de pedra caem do teto muito antes;
+- lustres, elevadores, plataformas que desaparecem, armaduras e esmagadores foram antecipados;
+- portas falsas e saídas-isca aparecem ainda no primeiro trecho da campanha;
+- fases mais avançadas combinam várias dessas mecânicas ao mesmo tempo;
+- mais inimigos são adicionados conforme a campanha avança;
+- mensagens de morte foram refeitas para reforçar a sensação de “agora eu sei onde está a armadilha... talvez”.
 
-Na tela inicial você escolhe **um único elemento** e joga toda a tentativa com ele. Não existe mais troca entre Terra e Ar.
+As armadilhas continuam determinísticas: a dificuldade foi aumentada para exigir memória, timing e repetição, não para virar RNG sem solução.
 
-Portões de pressão se adaptam ao solo: ao ativar a placa, o portão permanece destravado naquela tentativa. Nos chefes, o ritual pode ser realizado por um único elemento em qualquer uma das runas.
+## Elementos
 
-O progresso solo e o elemento utilizado ficam salvos no navegador.
+- 🪨 Terra — impacto sísmico, resistente a raízes.
+- 💨 Ar — mais rápido, impulso aéreo, imune a vendavais.
+- ☀️ Luz — resiste a maldições e usa clarão protetor/ataque em área.
+- 🌑 Escuridão — ignora zonas de controle invertido e usa passo sombrio.
 
-## Multiplayer
+## Loja
 
-Cada jogador escolhe seu próprio elemento antes de criar/entrar na sala. Os dois podem escolher elementos diferentes ou até repetir o mesmo elemento.
+Moedas são obtidas ao concluir fases e derrotar inimigos. A Loja Arcana permite comprar escudo, velocidade, salto e cosméticos.
 
-Nos chefes, cada jogador recebe uma das duas runas do ritual pelo slot da sala, independentemente do elemento escolhido.
-
-## Moedas e Loja Arcana
-
-A economia é salva localmente no navegador.
-
-Você começa com moedas e pode ganhar mais:
-- ao concluir fases;
-- derrotando inimigos.
-
-Depois de morrer, a Loja Arcana pode ser aberta antes da próxima tentativa.
-
-Itens atuais:
-- 🛡️ **Runa de Escudo** — absorve um golpe fatal na próxima tentativa;
-- 🥾 **Botas do Vento** — aumenta a velocidade na próxima tentativa;
-- 🪶 **Salto Arcano** — aumenta a força do salto na próxima tentativa;
-- 👑 **Coroa do Castelo** — cosmético permanente;
-- ✨ **Aura Elemental** — cosmético permanente.
-
-## Inimigos
-
-Além das armadilhas troll, as fases normais possuem inimigos procedurais, incluindo sentinelas, morcegos e espectros. A quantidade e variedade aumentam durante a campanha.
-
-A geração protege spawn, saída, portões e placas para que os inimigos não transformem uma fase em uma sala estruturalmente impossível.
-
-## Regiões
-
-1. Portão e Pátio Real — 1–100
-2. Galeria Nobre — 101–200
-3. Masmorras Profundas — 201–300
-4. Torre do Relógio — 301–400
-5. Biblioteca Viva — 401–500
-6. Capela Assombrada — 501–600
-7. Jardins Suspensos — 601–700
-8. Muralhas da Tempestade — 701–800
-9. Trono Rubro — 801–900
-10. Coração Impossível — 901–1000
-
-Cada região tem background, arquitetura, iluminação, nomes de salas e mecânicas próprias.
-
-## Controles
-
-- **A/D** ou setas: mover
-- **W / ↑ / Espaço**: pular
-- **E**: habilidade elemental
-- **R**: reiniciar a sala
-- **⛶ Tela cheia**: fullscreen
-- **Esc**: sair do fullscreen
-
-## Auditoria das 1000 fases
+## Teste das 1000 fases
 
 Execute:
 
@@ -80,14 +41,13 @@ Execute:
 npm run test:levels
 ```
 
-A build 4.0 foi auditada usando o próprio gerador do jogo:
-- 1000 fases geradas;
-- 1000 fases renderizadas;
-- 10 chefes;
-- 240 fases com portão;
-- 12 arquétipos de layout;
-- 10 regiões com 100 fases cada;
-- 0 falhas na auditoria automatizada desta build.
+Nesta build a auditoria verifica geração, renderização, rotas estruturais, chefes, portões, áreas críticas e inimigos. Além disso, ela executa `startLevel()` e frames reais de gameplay nos quatro elementos para cada uma das 1000 fases.
+
+### Correção crítica desta revisão
+
+A build anterior podia mostrar apenas o background porque `processTrolls()` havia sido removida por engano durante uma refatoração. O primeiro update do personagem lançava um erro e interrompia o frame antes de desenhar a fase. A função foi restaurada e esse caminho agora faz parte obrigatória do auditor.
+
+Também existe uma geração de emergência: se uma fase falhar na geração ou for detectada como estruturalmente inválida ao iniciar, o jogo substitui apenas aquela sala por um layout seguro em vez de deixar a tela vazia.
 
 ## Executar
 
@@ -100,10 +60,4 @@ npm install
 npm start
 ```
 
-Depois acesse `http://localhost:3000`.
-
-## GitHub Actions
-
-O workflow `.github/workflows/audit.yml` roda automaticamente a cada push ou Pull Request para `main`, verificando sintaxe e auditando as 1000 fases.
-
-> O multiplayer usa Node.js + Socket.IO. GitHub Pages sozinho não executa o servidor online; para publicar o multiplayer é necessário um host com Node/WebSocket.
+Abra `http://localhost:3000`.

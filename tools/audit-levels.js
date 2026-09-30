@@ -36,13 +36,31 @@ const socket = { on() {}, emit() {} };
 const sandbox = {
   console, document, window: null, io: () => socket,
   localStorage: { getItem() { return null; }, setItem() {} },
-  performance: { now: () => 1000 }, requestAnimationFrame() {}, setTimeout() {}, clearTimeout() {},
+  __now: 10000, performance: { now: () => sandbox.__now }, requestAnimationFrame() {}, setTimeout() {}, clearTimeout() {},
   addEventListener() {}, navigator: { clipboard: { writeText: async () => {} } },
   fetch: async () => ({ json: async () => ({ enabled: false }) }), Math, JSON
 };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
-vm.runInContext(code, sandbox, { filename: 'public/game.js' });
+const runtimeHook = `
+;globalThis.__runtimeSmoke = (level) => {
+  state.mode='singleplayer';state.running=false;state.shopOpen=false;state.soloResetPending=false;state.soloTransition=false;
+  globalThis.__now += 50;startLevel(level);
+  if(!state.levelData)throw new Error('startLevel terminou sem levelData');
+  if(!Array.isArray(state.levelData.platforms)||state.levelData.platforms.length<2)throw new Error('startLevel terminou sem plataformas jogáveis');
+  if(!state.levelData.goal)throw new Error('startLevel terminou sem saída');
+  render();
+  for(const role of ['earth','air','light','darkness']){
+    state.selectedRole=role;state.role=role;state.running=true;state.shopOpen=false;state.soloResetPending=false;player.dead=false;player.reset();
+    globalThis.__now+=20;player.update(1/60);
+    state.lastAbility=0;globalThis.__now+=2500;activateAbility();
+  }
+  state.running=true;state.shopOpen=false;state.soloResetPending=false;player.dead=false;
+  for(const x of [300,520,760,980,1220,1460]){player.x=x;player.y=690;player.vx=0;player.vy=0;globalThis.__now+=120;processTrolls(player);}
+  render();
+  return {platforms:state.levelData.platforms.length,goal:!!state.levelData.goal,roles:4};
+};`
+vm.runInContext(code + runtimeHook, sandbox, { filename: 'public/game.js' });
 
 function intersects(a, b) { return a && b && a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y; }
 function supportPlatform(ld, r) {
@@ -86,7 +104,7 @@ function dynamicInvades(ld,zone){
 const bad=[];
 const regionCounts=Array(10).fill(0);
 const archetypes=new Set();
-let bosses=0, doors=0, rendered=0;
+let bosses=0, doors=0, rendered=0, runtimeFrames=0;
 for(let level=1; level<=1000; level++) {
   let ld;
   try { ld=sandbox.generateLevel(level); } catch (e) { bad.push([level,`generateLevel lançou: ${e.stack||e}`]); continue; }
@@ -112,12 +130,16 @@ for(let level=1; level<=1000; level++) {
   if(lethal.some(r=>intersects(r,spawn)))bad.push([level,'armadilha estática invade spawn']);
   if(lethal.some(r=>intersects(r,goalSafe)))bad.push([level,'armadilha estática invade saída']);
   const spawnDynamic=dynamicInvades(ld,spawn),goalDynamic=dynamicInvades(ld,goalSafe);
-  if(level%100!==0&&!(ld.enemies||[]).length)bad.push([level,'fase normal sem inimigos']);
+  if(level>=5&&level%100!==0&&!(ld.enemies||[]).length)bad.push([level,'fase >=5 sem inimigos']);
   if(spawnDynamic)bad.push([level,`${spawnDynamic} invade spawn`]);
   if(goalDynamic)bad.push([level,`${goalDynamic} invade saída`]);
   if(ld.door){for(const [name,plate] of [['esquerda',ld.plate],['direita',ld.plate2]]){const zone={x:plate.x-12,y:plate.y-68,w:plate.w+24,h:78},kind=dynamicInvades(ld,zone);if(kind)bad.push([level,`${kind} invade placa ${name}`]);}}
 
-  try { sandbox.startLevel(level); sandbox.render(); rendered++; } catch(e) { bad.push([level,`render/startLevel lançou: ${e.stack||e}`]); }
+  try {
+    const snap=sandbox.__runtimeSmoke(level);
+    if(!snap||snap.platforms<2||!snap.goal)bad.push([level,'runtime: snapshot inválido']);
+    else { rendered++; runtimeFrames+=snap.roles||0; }
+  } catch(e) { bad.push([level,`runtime/startLevel/render lançou: ${e.stack||e}`]); }
 }
 
 if(bosses!==10)bad.push(['global',`chefes: ${bosses}, esperado 10`]);
@@ -125,8 +147,9 @@ if(doors!==240)bad.push(['global',`fases com portão: ${doors}, esperado 240`]);
 if(archetypes.size!==12)bad.push(['global',`arquétipos usados: ${[...archetypes].sort((a,b)=>a-b)}, esperado 12 tipos`]);
 for(let i=0;i<10;i++)if(regionCounts[i]!==100)bad.push(['global',`região ${i} tem ${regionCounts[i]} fases, esperado 100`]);
 if(rendered!==1000)bad.push(['global',`renderizações concluídas: ${rendered}/1000`]);
+if(runtimeFrames!==4000)bad.push(['global',`frames reais concluídos: ${runtimeFrames}/4000`]);
 
-const report={checked:1000, bosses, doors, archetypes:archetypes.size, regions:regionCounts, rendered, failures:bad.length};
+const report={checked:1000, bosses, doors, archetypes:archetypes.size, regions:regionCounts, rendered, runtimeFrames, failures:bad.length};
 console.log(JSON.stringify(report,null,2));
 if(bad.length){console.error('\nFalhas (primeiras 100):');for(const x of bad.slice(0,100))console.error(`Fase ${x[0]}: ${x[1]}`);process.exit(1);}
 console.log('\nOK: as 1000 fases passaram pela auditoria estrutural e de runtime definida nesta build.');

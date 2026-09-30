@@ -1,82 +1,42 @@
-INFINITY CASTLE ELEMENTS 4.0 — COMO JOGAR
+INFINITY CASTLE ELEMENTS — INSANITY TEST BUILD
 
 INICIAR
-1. No Windows, abra INICIAR_JOGO.bat.
-2. Na primeira execução, as dependências são instaladas.
-3. O navegador abre em http://localhost:3000.
+1. Abra INICIAR_JOGO.bat.
+2. Na primeira execução, aguarde npm install.
+3. O jogo abre em http://localhost:3000.
 
-A PROPOSTA
-Infinity Castle Elements continua sendo um plataforma troll brutal: chão falso, espinhos surpresa, portas mentirosas, paredes que atacam, saída que foge, controles invertidos e outras pegadinhas. Agora o castelo também possui inimigos, quatro elementos jogáveis, moedas, loja, boosts e cosméticos.
+DIFICULDADE
+Fases 1–4: introdução e falsa sensação de segurança.
+Fase 5 em diante: o castelo começa a usar inimigos, chão falso, saída móvel, saídas-isca, espinhos surpresa, blocos caindo e combinações cada vez piores.
 
 ELEMENTOS
-TERRA 🪨
-- Resiste a raízes.
-- Movimento mais pesado.
-- E = Impacto Sísmico, capaz de destruir/atordoar ameaças próximas.
-
-AR 💨
-- Mais leve e rápido.
-- Imune a rajadas de vento.
-- E = Impulso Aéreo, aumentando mobilidade temporariamente.
-
-LUZ ☀️
-- Resiste a maldições.
-- E = Clarão Protetor.
-- O clarão também atinge inimigos próximos.
-
-ESCURIDÃO 🌑
-- Ignora zonas que invertem os controles.
-- E = Passo Sombrio, permitindo atravessar perigos por um curto período.
+Terra 🪨 — resistente a raízes; E = impacto sísmico.
+Ar 💨 — rápido; imune a vento; E = impulso aéreo.
+Luz ☀️ — resistente a maldições; E = clarão protetor/ataque em área.
+Escuridão 🌑 — ignora controles invertidos; E = passo sombrio.
 
 SINGLEPLAYER
-- Escolha um elemento na tela inicial.
-- Você joga apenas com esse elemento.
-- Não existe troca de personagem.
-- Portas de pressão ficam travadas abertas quando você ativa a placa naquela tentativa.
-- Nos chefes, mantenha seu personagem em uma das runas até o ritual terminar.
-- Seu progresso e elemento ficam salvos no navegador.
+Escolha um único elemento na tela inicial e jogue somente com ele. Portões e chefes se adaptam ao solo.
 
 MULTIPLAYER
-1. Cada jogador escolhe o elemento que quer usar.
-2. Jogador 1 cria a sala e envia o código.
-3. Jogador 2 entra usando o código.
-4. Os elementos podem ser diferentes ou iguais.
-5. Nos chefes, um jogador segura a Runa I e o outro a Runa II.
+Cada jogador escolhe o próprio elemento. Elementos podem ser iguais ou diferentes.
 
-MOEDAS
-- Concluir fases rende moedas.
-- Derrotar inimigos também rende moedas.
-- O saldo fica salvo no navegador.
-
-LOJA ARCANA
-Depois de morrer você pode gastar moedas em:
-- Runa de Escudo: absorve 1 golpe fatal na próxima tentativa.
-- Botas do Vento: aumenta velocidade na próxima tentativa.
-- Salto Arcano: melhora o salto na próxima tentativa.
-- Coroa do Castelo: cosmético permanente.
-- Aura Elemental: cosmético permanente.
-
-INIMIGOS
-As salas normais recebem sentinelas, morcegos e espectros. A quantidade e variedade aumentam com a progressão. A geração impede inimigos de ocuparem spawn, saída e áreas críticas de portões.
+MOEDAS E LOJA
+Passe fases e derrote inimigos para ganhar moedas. Depois da morte, use a Loja Arcana para comprar escudo, velocidade, salto e cosméticos.
 
 CONTROLES
 A/D ou ← → = mover
 W / ↑ / espaço = pular
-E = habilidade elemental
+E = habilidade
 R = reiniciar
-Botão ⛶ Tela cheia = fullscreen
-Esc = sair do fullscreen
+⛶ = tela cheia
+Esc = sair da tela cheia
 
-REGIÕES
-001–100   Portão e Pátio Real
-101–200   Galeria Nobre
-201–300   Masmorras Profundas
-301–400   Torre do Relógio
-401–500   Biblioteca Viva
-501–600   Capela Assombrada
-601–700   Jardins Suspensos
-701–800   Muralhas da Tempestade
-801–900   Trono Rubro
-901–1000  Coração Impossível
+IMPORTANTE
+A dificuldade é troll e brutal, mas as pegadinhas são determinísticas: morrer deve revelar uma regra, não depender de sorte.
 
-A campanha só termina quando a fase 1000 for vencida.
+
+CORREÇÃO 4.1.1
+- Corrigida tela vazia causada por erro no primeiro frame de gameplay.
+- Auditoria agora executa frames reais nos quatro elementos em todas as 1000 fases.
+- Há fallback de emergência para impedir que uma falha de geração deixe a sala sem geometria.

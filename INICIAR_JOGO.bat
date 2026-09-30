@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title Infinity Castle Elements
+title Infinity Castle Elements - INSANITY TEST
 cd /d "%~dp0"
 where node >nul 2>nul
 if errorlevel 1 (
@@ -20,7 +20,7 @@ if not exist node_modules (
   )
 )
 echo.
-echo Infinity Castle Elements aberto em http://localhost:3000
+echo Infinity Castle Elements - INSANITY TEST em http://localhost:3000
 echo Para encerrar o servidor, pressione CTRL+C nesta janela.
 start "" powershell -NoProfile -WindowStyle Hidden -Command "Start-Sleep -Seconds 2; Start-Process 'http://localhost:3000'"
 call npm start
