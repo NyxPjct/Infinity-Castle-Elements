@@ -137,6 +137,12 @@ io.on('connection', socket => {
     socket.to(room.code).emit('remote-state', { id: socket.id, ...payload });
   });
 
+  socket.on('enemy-defeated', ({ id, level } = {}) => {
+    const room = getSocketRoom(socket);
+    if (!room || Number(level) !== room.level || !Number.isFinite(Number(id))) return;
+    socket.to(room.code).emit('enemy-defeated', { id: Number(id), level: room.level });
+  });
+
   socket.on('rune-state', ({ atRune, level } = {}) => {
     const room = getSocketRoom(socket);
     if (!room || room.level % 100 !== 0 || Number(level) !== room.level || room.bossDefeated) return;
