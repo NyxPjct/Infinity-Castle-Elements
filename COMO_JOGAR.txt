@@ -1,14 +1,73 @@
-TERRA & AR — CASTELO INFINITO 3.3 — DEVIL MODE / AUDITORIA 1000 FASES
+INFINITY CASTLE ELEMENTS 4.0 — COMO JOGAR
 
 INICIAR
-1. No Windows, clique duas vezes em INICIAR_JOGO.bat.
-2. Na primeira execução, o projeto instala automaticamente as dependências.
+1. No Windows, abra INICIAR_JOGO.bat.
+2. Na primeira execução, as dependências são instaladas.
 3. O navegador abre em http://localhost:3000.
 
-A IDEIA DESTA VERSÃO
-O castelo continua sendo um plataforma troll completo: o cenário tenta fazer você confiar em algo e depois muda a regra. A 3.3 acrescenta auditoria completa das 1000 fases e validação anti-fase-impossível: morrer deve ensinar a pegadinha, nunca revelar que a sala estava quebrada.
+A PROPOSTA
+Infinity Castle Elements continua sendo um plataforma troll brutal: chão falso, espinhos surpresa, portas mentirosas, paredes que atacam, saída que foge, controles invertidos e outras pegadinhas. Agora o castelo também possui inimigos, quatro elementos jogáveis, moedas, loja, boosts e cosméticos.
 
-AS 10 REGIÕES DO CASTELO
+ELEMENTOS
+TERRA 🪨
+- Resiste a raízes.
+- Movimento mais pesado.
+- E = Impacto Sísmico, capaz de destruir/atordoar ameaças próximas.
+
+AR 💨
+- Mais leve e rápido.
+- Imune a rajadas de vento.
+- E = Impulso Aéreo, aumentando mobilidade temporariamente.
+
+LUZ ☀️
+- Resiste a maldições.
+- E = Clarão Protetor.
+- O clarão também atinge inimigos próximos.
+
+ESCURIDÃO 🌑
+- Ignora zonas que invertem os controles.
+- E = Passo Sombrio, permitindo atravessar perigos por um curto período.
+
+SINGLEPLAYER
+- Escolha um elemento na tela inicial.
+- Você joga apenas com esse elemento.
+- Não existe troca de personagem.
+- Portas de pressão ficam travadas abertas quando você ativa a placa naquela tentativa.
+- Nos chefes, mantenha seu personagem em uma das runas até o ritual terminar.
+- Seu progresso e elemento ficam salvos no navegador.
+
+MULTIPLAYER
+1. Cada jogador escolhe o elemento que quer usar.
+2. Jogador 1 cria a sala e envia o código.
+3. Jogador 2 entra usando o código.
+4. Os elementos podem ser diferentes ou iguais.
+5. Nos chefes, um jogador segura a Runa I e o outro a Runa II.
+
+MOEDAS
+- Concluir fases rende moedas.
+- Derrotar inimigos também rende moedas.
+- O saldo fica salvo no navegador.
+
+LOJA ARCANA
+Depois de morrer você pode gastar moedas em:
+- Runa de Escudo: absorve 1 golpe fatal na próxima tentativa.
+- Botas do Vento: aumenta velocidade na próxima tentativa.
+- Salto Arcano: melhora o salto na próxima tentativa.
+- Coroa do Castelo: cosmético permanente.
+- Aura Elemental: cosmético permanente.
+
+INIMIGOS
+As salas normais recebem sentinelas, morcegos e espectros. A quantidade e variedade aumentam com a progressão. A geração impede inimigos de ocuparem spawn, saída e áreas críticas de portões.
+
+CONTROLES
+A/D ou ← → = mover
+W / ↑ / espaço = pular
+E = habilidade elemental
+R = reiniciar
+Botão ⛶ Tela cheia = fullscreen
+Esc = sair do fullscreen
+
+REGIÕES
 001–100   Portão e Pátio Real
 101–200   Galeria Nobre
 201–300   Masmorras Profundas
@@ -20,65 +79,4 @@ AS 10 REGIÕES DO CASTELO
 801–900   Trono Rubro
 901–1000  Coração Impossível
 
-Cada região possui fundo, arquitetura, iluminação, títulos de salas e conjunto de armadilhas próprios. A cada 100 fases existe um chefe cooperativo.
-
-PEGADINHAS / MECÂNICAS
-- Espinhos que surgem somente depois de cruzar o gatilho.
-- Chão falso que começa a cair quando você se aproxima.
-- Pontes que quebram depois de pisar.
-- Plataformas extras que desaparecem.
-- Lustres que despencam.
-- Blocos de pedra que caem do teto.
-- Paredes que avançam de surpresa e depois recuam.
-- Portas falsas e saídas-isca.
-- Saída que foge quando o jogador chega perto.
-- Controles invertidos em salas avançadas.
-- Ventania nas muralhas.
-- Fantasmas, armaduras vivas, esmagadores e dragões.
-- Combinações cada vez mais cruéis nas últimas 200 fases.
-
-MODO SINGLEPLAYER
-- Clique em NOVA AVENTURA SOLO.
-- Q ou TAB = alternar entre Terra e Ar.
-- F = segurar/liberar a posição do personagem ativo quando estiver no chão.
-- O personagem parado continua pressionando placas e runas.
-- Terra e Ar precisam chegar juntos à saída.
-- O progresso fica salvo automaticamente no navegador.
-
-MODO MULTIPLAYER
-1. Jogador 1 cria uma sala privada.
-2. Envia o código de 6 caracteres.
-3. Jogador 2 entra com o código.
-4. Cada jogador controla um personagem.
-
-CONTROLES
-A/D ou setas = mover
-W / seta para cima / espaço = pular
-E = habilidade especial
-Q / TAB = trocar personagem no singleplayer
-F = segurar posição no singleplayer
-R = reiniciar a sala
-
-TERRA
-- Mais pesado.
-- Resiste a raízes.
-- E = impacto sísmico, que pode atordoar armaduras vivas ao contato.
-
-AR
-- Mais leve e rápido.
-- Não é empurrado pelas rajadas das muralhas.
-- E = impulso aéreo, aumentando velocidade e sustentação por alguns instantes.
-
-PORTÕES DE PRESSÃO
-Quando aparecer um portão, existe uma placa de cada lado. A placa é automática: basta ficar em cima dela. No solo: deixe um personagem na placa 1 com F, atravesse com o outro, segure a placa 2, volte para o primeiro e atravesse. No multiplayer, façam o mesmo revezamento.
-
-A versão 3.3 reserva o espaço ao redor das placas e remove qualquer geometria procedural que pudesse bloqueá-las.
-
-A campanha só termina depois que a fase 1000 for realmente vencida.
-
-
-TELA CHEIA (v3.3)
-- Durante a partida, clique em “⛶ Tela cheia” no HUD.
-- Pressione Esc para sair da tela cheia.
-- F11 continua disponível para o modo de tela cheia do próprio navegador.
-- O canvas se redimensiona automaticamente, mantendo a proporção 16:9.
+A campanha só termina quando a fase 1000 for vencida.
