@@ -2,9 +2,15 @@
 
 **Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A versão **INSANITY 0.0** é a primeira versão definitiva do projeto e também a base oficial da edição desktop para Windows.
+A versão **INSANITY 0.0** é a primeira versão definitiva do projeto e a edição oficial para Windows.
 
-**Build oficial Windows:** instalador e versão portátil em `.exe`, gerados automaticamente pelo projeto.
+## Downloads para Windows
+
+1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0/Infinity-Castle-Elements-Setup-0.0.exe)
+2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0/Infinity-Castle-Elements-Portable-0.0.exe)
+3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0/Infinity-Castle-Elements-Windows-0.0.zip)
+
+---
 
 ## Abertura e identidade
 
@@ -14,7 +20,7 @@ Ao iniciar o jogo, a apresentação acontece em três etapas:
 2. tela cinematográfica de **INFINITY CASTLE ELEMENTS — INSANITY**, com os quatro elementos diante do castelo em clima de aventura fantástica;
 3. menu principal com **Singleplayer, Multiplayer, Loja, Configurações e Sair**.
 
-Na versão desktop, **Sair** fecha o executável diretamente.
+Na versão desktop, **Sair** fecha o jogo diretamente.
 
 ## Campanha com 1000 fases
 
@@ -57,9 +63,9 @@ O progresso solo inclui fase atual, mortes, elemento, moedas, boosts e cosmétic
 
 ## Multiplayer
 
-O multiplayer foi criado para **2 jogadores**, com salas privadas por código e escolha independente de elemento. O servidor sincroniza jogadores, fase, mortes, chefes, runas, inimigos derrotados e reinícios.
+O multiplayer foi criado para **2 jogadores**, com salas privadas por código e escolha independente de elemento. O sistema sincroniza jogadores, fase, mortes, chefes, runas, inimigos derrotados e reinícios.
 
-Na edição desktop 0.0, o jogo inclui o servidor Node.js dentro do aplicativo. Para multiplayer entre computadores diferentes pela internet, ambos os jogadores precisam utilizar a mesma instância de servidor hospedado; a infraestrutura pública de matchmaking não está incluída nesta versão inicial.
+Na edição desktop 0.0, o jogo já inclui a estrutura de servidor necessária. Para partidas entre computadores diferentes pela internet, os jogadores precisam se conectar à mesma instância de servidor multiplayer hospedada.
 
 ## Sistema de moedas e Loja Arcana
 
@@ -73,7 +79,9 @@ Moedas são recebidas ao concluir fases e derrotar inimigos. Elas podem ser usad
 
 ## Inimigos e ameaças
 
-A campanha possui sentinelas, morcegos, espectros e ameaças especiais como armaduras vivas, fantasmas, dragões, projéteis e objetos que despencam do cenário. A quantidade e a combinação de ameaças aumentam conforme o jogador avança.
+A campanha possui sentinelas, morcegos, espectros e ameaças especiais como armaduras vivas, fantasmas, dragões, projéteis e objetos que despencam do cenário.
+
+A quantidade e a combinação de ameaças aumentam conforme o jogador avança.
 
 ## Pegadinhas INSANITY
 
@@ -102,21 +110,30 @@ Entre as mecânicas atuais estão:
 
 ## Chefes
 
-Há chefes nas fases **100, 200, 300, 400, 500, 600, 700, 800, 900 e 1000**. Eles utilizam barreiras, runas, rituais, projéteis e arenas próprias, com comportamento adaptado para solo e multiplayer.
+Há chefes nas fases **100, 200, 300, 400, 500, 600, 700, 800, 900 e 1000**.
+
+Eles utilizam barreiras, runas, rituais, projéteis e arenas próprias, com comportamento adaptado para singleplayer e multiplayer.
 
 ## Sistema anti-fase-impossível
 
-O gerador protege áreas críticas como spawn, saída, placas, portões, runas e caminhos obrigatórios. Também existe uma **sala de emergência**: se uma geração for detectada como estruturalmente inválida, aquela fase é substituída por um layout seguro em vez de deixar a partida quebrada.
+O gerador protege áreas críticas como spawn, saída, placas, portões, runas e caminhos obrigatórios.
+
+Também existe uma **sala de emergência**: se uma geração for detectada como estruturalmente inválida, aquela fase é substituída por um layout seguro em vez de deixar a partida quebrada.
 
 ## Auditoria das 1000 fases
 
 A build possui auditoria própria para geração, renderização, estruturas críticas, inimigos e runtime dos quatro elementos.
 
-```bash
-npm run test:levels
-```
+Na INSANITY 0.0, o processo de validação verifica:
 
-Na INSANITY 0.0, a auditoria definida pelo projeto verifica as **1000 fases**, os **10 chefes**, as **240 fases com portões**, os **12 arquétipos**, as **10 regiões**, renderização e **4000 frames de runtime** dos quatro elementos.
+- **1000 fases**;
+- **10 chefes**;
+- **240 fases com portões**;
+- **12 arquétipos**;
+- **10 regiões**;
+- renderização das fases;
+- runtime dos quatro elementos;
+- áreas críticas de spawn e saída.
 
 ## Controles
 
@@ -124,31 +141,35 @@ Na INSANITY 0.0, a auditoria definida pelo projeto verifica as **1000 fases**, o
 - **W**, **↑** ou **Espaço** — pular
 - **E** — habilidade elemental
 - **R** — reiniciar fase
-- **F11** — alternar tela cheia no desktop
+- **F11** — alternar tela cheia
 - **Esc** — sair da tela cheia
+
+---
 
 # Especificações de execução
 
-## Versão desktop para Windows
+## Versão oficial
 
-A versão desktop utiliza **Electron** e já leva o runtime necessário junto do jogo. Por isso, quem instalar o `.exe` **não precisa instalar Node.js, npm, Express ou Socket.IO separadamente**.
+A versão oficial é distribuída para **Windows 64 bits** em três opções:
 
-O projeto gera dois formatos:
+- **Setup** — instalador tradicional do Windows;
+- **Portable** — executável que abre diretamente, sem instalação;
+- **Pacote ZIP** — contém o Setup e o Portable juntos.
 
-- **Infinity-Castle-Elements-Setup-0.0.exe** — instalador para Windows;
-- **Infinity-Castle-Elements-Portable-0.0.exe** — versão portátil, sem instalação.
+O jogo já inclui os componentes necessários para funcionar. **O jogador não precisa instalar Node.js, npm, Express ou Socket.IO separadamente.**
 
-Requisitos recomendados para a build desktop:
+## Requisitos recomendados
 
-- Windows 10 ou Windows 11 de 64 bits;
-- processador x64;
-- 4 GB de RAM ou mais;
-- aceleração gráfica compatível com Chromium;
-- espaço livre para o aplicativo e os dados locais de save.
+- **Windows 10 ou Windows 11 — 64 bits**
+- processador **x64**
+- **4 GB de RAM** ou mais
+- aceleração gráfica compatível
+- espaço livre para o jogo e os dados locais de save
+- conexão com a internet somente para os recursos multiplayer online
 
-## Tecnologias
+## Tecnologias utilizadas
 
-O projeto utiliza:
+O jogo utiliza internamente:
 
 - **Electron**
 - **Node.js**
@@ -159,41 +180,31 @@ O projeto utiliza:
 - **Express**
 - **Socket.IO**
 
-## Rodar pelo código-fonte
+Essas tecnologias fazem parte do aplicativo e não precisam ser instaladas manualmente pelo jogador.
 
-Para executar a versão web pelo código-fonte, é necessário ter **Node.js 18 ou superior** e **npm**.
+## Instalação
 
-```bash
-npm install
-npm start
-```
+### Instalador
+Baixe:
 
-Depois abra:
+**Infinity-Castle-Elements-Setup-0.0.exe**
 
-```text
-http://localhost:3000
-```
+Abra o arquivo, escolha a pasta de instalação e conclua o assistente. O instalador pode criar atalhos na Área de Trabalho e no Menu Iniciar.
 
-No Windows também é possível usar:
+### Portable
+Baixe:
 
-```text
-INICIAR_JOGO.bat
-```
+**Infinity-Castle-Elements-Portable-0.0.exe**
 
-## Rodar a versão desktop em desenvolvimento
+Abra o executável diretamente. Não é necessário instalar o jogo.
 
-Depois de instalar as dependências:
+### Pacote completo
+Baixe:
 
-```bash
-npm install
-npm run desktop
-```
+**Infinity-Castle-Elements-Windows-0.0.zip**
 
-## Gerar os executáveis do Windows
+Extraia o arquivo para encontrar as versões Setup e Portable.
 
-```bash
-npm install
-npm run dist:win
-```
+## Windows SmartScreen
 
-Os arquivos finais são colocados na pasta `dist`.
+A versão 0.0 ainda não utiliza certificado comercial de assinatura de código. Por isso, dependendo das configurações do Windows, o SmartScreen pode exibir um aviso de **editor desconhecido** ao abrir o executável pela primeira vez.
