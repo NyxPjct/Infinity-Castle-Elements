@@ -1,5 +1,6 @@
 {
-  "url": "",
-  "version": "0.0.1",
-  "note": "Central multiplayer endpoint. Updated after cloud deployment."
+  "url": "https://infinity-castle-elements-server-production.up.railway.app",
+  "provider": "Railway",
+  "environment": "production",
+  "updatedAt": "2026-09-30T22:49:00-03:00"
 }
