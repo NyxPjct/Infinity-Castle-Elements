@@ -149,7 +149,8 @@ function installDownloadedUpdate() {
   if (updateState.installMode !== 'installer' || !updateState.installerPath || !fs.existsSync(updateState.installerPath)) return false;
   try {
     const escaped = updateState.installerPath.replace(/'/g, "''");
-    const command = `Start-Sleep -Seconds 2; Start-Process -FilePath '${escaped}' -ArgumentList '/S'`;
+    const appExe = process.execPath.replace(/'/g, "''");
+    const command = `Start-Sleep -Seconds 2; $installer = Start-Process -FilePath '${escaped}' -ArgumentList '/S' -PassThru -Wait; if (Test-Path '${appExe}') { Start-Process -FilePath '${appExe}' }`;
     const child = spawn('powershell.exe', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command', command], {
       detached: true,
       stdio: 'ignore',
