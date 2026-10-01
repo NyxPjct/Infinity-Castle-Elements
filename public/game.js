@@ -157,6 +157,7 @@ $('#joinBtn').onclick = () => { state.mode='multiplayer'; socket.emit('join-room
 $('#roomCodeInput').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
 $('#copyCode').onclick = async () => { try { await navigator.clipboard.writeText(state.roomCode); $('#copyCode').textContent='Copiado!'; setTimeout(()=>$('#copyCode').textContent='Copiar código',900); } catch{} };
 $('#readyBtn').onclick = () => { state.ready = !state.ready; socket.emit('ready', { ready: state.ready }); $('#readyBtn').textContent = state.ready ? 'Cancelar pronto' : 'Estou pronto'; };
+$('#roomBackToMenuBtn').onclick = () => { leaveMultiplayerSession(); showMainMenu(); };
 $('#restartBtn').onclick = restartGame;
 
 // Tela cheia: mantém HUD, controles e canvas juntos.
@@ -558,10 +559,10 @@ function consumeShield(){
 function die(p=player){
   if(performance.now()<state.invulnUntil)return;if(consumeShield())return;
   if(state.mode==='singleplayer'){
-    if(state.soloResetPending||p.dead)return;p.dead=true;state.soloResetPending=true;state.deaths+=1;saveSoloProgress(false);burst(p.x+21,p.y+25,18);
+    if(state.soloResetPending||p.dead)return;p.dead=true;state.soloResetPending=true;state.deaths+=1;addCoins(5);saveSoloProgress(false);burst(p.x+21,p.y+25,18);
     state.screenShake=18;state.running=false;showOverlay('☠️ PEGADINHA DO CASTELO',deathLine(),520);openShop({death:true});return;
   }
-  if(player.dead)return;player.dead=true;burst(player.x+21,player.y+25,18);socket.emit('player-death');
+  if(player.dead)return;player.dead=true;addCoins(5);burst(player.x+21,player.y+25,18);socket.emit('player-death');
 }
 function platePressed(plate){
   if(!plate)return false;
