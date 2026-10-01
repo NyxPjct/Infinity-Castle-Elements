@@ -339,7 +339,7 @@ function openShop({death=false,multiplayer=false}={}){
   if(state.mode==='menu'&&mainMenu&&!mainMenu.classList.contains('hidden'))return;
   state.shopOpen=true;$('#shopModal').classList.remove('hidden');$('#shopTitle').textContent=death?'☠️ Morreu. Quer trapacear de volta?':'Loja Arcana';
   $('#retryBtn').textContent=multiplayer?'Recomeçando...':death?'Tentar novamente':state.mode==='menu'?'Voltar ao menu':'Voltar ao jogo';$('#retryBtn').disabled=multiplayer;
-  $('#shopCountdown').textContent=multiplayer?'A dupla retorna em 5 segundos. Aproveite a lojinha.':'';refreshEconomyUI();
+  $('#shopCountdown').textContent=multiplayer?(state.mode==='chaos'?'O quarteto retorna em 5 segundos. Aproveitem a lojinha.':'A dupla retorna em 5 segundos. Aproveite a lojinha.') : '';refreshEconomyUI();
 }
 function closeShop(){state.shopOpen=false;$('#shopModal').classList.add('hidden');$('#shopCountdown').textContent='';}
 function applySettings(){
@@ -576,10 +576,11 @@ socket.on('game-finished', ({deaths,mode}) => {
   state.running=false;state.deaths=deaths;saveOnlineProgress(true);updateHud();showOverlay('🏆 1000/1000',state.mode==='chaos'?`O quarteto elemental venceu o Caos após ${deaths} mortes compartilhadas.`:`Infinity Castle caiu após ${deaths} mortes compartilhadas.`,0);
 });
 socket.on('enemy-defeated', ({id,level}={}) => {if(Number(level)!==state.level)return;const e=(state.levelData?.enemies||[]).find(x=>x.id===id);if(e)defeatEnemy(e,true);});
-socket.on('chaos-seal-activated', ({role,level}={}) => {
+socket.on('chaos-seal-activated', ({role,level,count}={}) => {
   if(state.mode!=='chaos'||Number(level)!==state.level)return;
   const e=ELEMENTS[role]||ELEMENTS.earth;burst(player.x+21,player.y+25,8);
-  showOverlay(`${e.icon} SELO DE ${e.name.toUpperCase()} ATIVADO`,`O grupo despertou ${(state.room?.chaosSeals||[]).length}/4 selos.`,420);
+  const activated=Math.max(1,Math.min(4,Number(count)||((state.room?.chaosSeals||[]).length+1)));
+  showOverlay(`${e.icon} SELO DE ${e.name.toUpperCase()} ATIVADO`,`O grupo despertou ${activated}/4 selos.`,420);
 });
 socket.on('chaos-unlocked', ({level}={}) => {
   if(state.mode!=='chaos'||Number(level)!==state.level)return;
@@ -916,9 +917,11 @@ function applyChaosMutators(ld,level){
     };
     return ld;
   }
+  const reach=reachablePlatformSet(ld);
+  const reachable=(reach.ps||[]).filter((p,i)=>reach.seen.has(i)&&p&&p.w>=90&&p.x>210&&p.x<1405).sort((a,b)=>a.x-b.x);
   const supports=(ld.platforms||[]).filter(p=>p&&p.w>=90&&p.x>210&&p.x<1405).sort((a,b)=>a.x-b.x);
   const fallback=(ld.platforms||[]).filter(p=>p&&p.w>=90).sort((a,b)=>a.x-b.x);
-  const pool=supports.length>=4?supports:fallback;
+  const pool=reachable.length>=4?reachable:supports.length>=4?supports:fallback;
   const roles=['earth','air','light','darkness'],seals={};
   roles.forEach((role,i)=>{
     const idx=pool.length>1?Math.round(i*(pool.length-1)/3):0,p=pool[idx]||{x:260+i*300,y:790,w:180};
