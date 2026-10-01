@@ -69,7 +69,7 @@ let desktopUpdateState=null;
 let updateDismissed=false;
 
 function updateStatusMessage(s){
-  const current=s?.currentVersion||window.electronAPI?.version||'0.0.1';
+  const current=s?.currentVersion||window.electronAPI?.version||'0.0.2';
   if(!s)return `Versão atual ${current}`;
   if(s.status==='checking')return 'Verificando atualizações...';
   if(s.status==='available')return `Nova versão ${s.latestVersion} disponível · instalada ${current}`;
@@ -90,7 +90,7 @@ function renderUpdateState(s){
     badge.textContent=s.status==='downloaded'?'⬇ Atualização pronta':s.status==='downloading'?(`⬇ Baixando ${s.progress||0}%`):(`⬇ Atualização ${s.latestVersion||''}`);
   }
   const current=$('#updateCurrentVersion'),latest=$('#updateLatestVersion'),notes=$('#updateNotes'),status=$('#updateStatusText');
-  if(current)current.textContent=s.currentVersion||window.electronAPI?.version||'0.0.1';
+  if(current)current.textContent=s.currentVersion||window.electronAPI?.version||'0.0.2';
   if(latest)latest.textContent=s.latestVersion||'—';
   if(notes)notes.textContent=s.notes||'Correções, melhorias e ajustes da nova versão.';
   if(status)status.textContent=s.status==='error'?(s.error||'Falha ao verificar atualização.'):
