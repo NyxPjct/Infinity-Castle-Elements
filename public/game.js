@@ -64,6 +64,86 @@ socket.on('disconnect', () => setConnectionStatus(false));
 
 document.querySelectorAll('.character-choice').forEach(btn=>btn.addEventListener('click',()=>selectElement(btn.dataset.element)));
 
+let desktopUpdateState=null;
+let updateDismissed=false;
+
+function updateStatusMessage(s){
+  const current=s?.currentVersion||window.electronAPI?.version||'0.0.1';
+  if(!s)return `Versão atual ${current}`;
+  if(s.status==='checking')return 'Verificando atualizações...';
+  if(s.status==='available')return `Nova versão ${s.latestVersion} disponível · instalada ${current}`;
+  if(s.status==='downloading')return `Baixando versão ${s.latestVersion} · ${s.progress||0}%`;
+  if(s.status==='downloaded')return `Versão ${s.latestVersion} pronta para instalar`;
+  if(s.status==='portable-opened')return `Download da versão ${s.latestVersion} aberto no navegador`;
+  if(s.status==='up-to-date')return `Você está na versão mais recente (${current})`;
+  if(s.status==='error')return `Não foi possível verificar: ${s.error||'erro desconhecido'}`;
+  return `Versão atual ${current}`;
+}
+function renderUpdateState(s){
+  if(!s)return;desktopUpdateState=s;
+  const badge=$('#menuUpdateBadge'),settingsText=$('#updateSettingsText');
+  if(settingsText)settingsText.textContent=updateStatusMessage(s);
+  if(badge){
+    const show=s.status==='available'||s.status==='downloading'||s.status==='downloaded';
+    badge.classList.toggle('hidden',!show);
+    badge.textContent=s.status==='downloaded'?'⬇ Atualização pronta':s.status==='downloading'?(`⬇ Baixando ${s.progress||0}%`):(`⬇ Atualização ${s.latestVersion||''}`);
+  }
+  const current=$('#updateCurrentVersion'),latest=$('#updateLatestVersion'),notes=$('#updateNotes'),status=$('#updateStatusText');
+  if(current)current.textContent=s.currentVersion||window.electronAPI?.version||'0.0.1';
+  if(latest)latest.textContent=s.latestVersion||'—';
+  if(notes)notes.textContent=s.notes||'Correções, melhorias e ajustes da nova versão.';
+  if(status)status.textContent=s.status==='error'?(s.error||'Falha ao verificar atualização.'):
+    s.installMode==='portable'?'Você está usando a versão Portable. O download da nova versão será aberto para substituição manual.':
+    s.status==='downloaded'?'Download concluído. Seus saves ficam preservados; reinicie para instalar.':
+    s.status==='downloading'?'Baixando a atualização em segundo plano...':
+    'A atualização será instalada sem apagar seus saves.';
+  const progressWrap=$('#updateProgressWrap'),percent=$('#updateProgressPercent'),bar=$('#updateProgressBar'),progressText=$('#updateProgressText');
+  const showProgress=s.status==='downloading'||s.status==='downloaded';
+  progressWrap?.classList.toggle('hidden',!showProgress);
+  if(percent)percent.textContent=(s.progress||0)+'%';
+  if(bar?.style)bar.style.width=(s.progress||0)+'%';
+  if(progressText)progressText.textContent=s.status==='downloaded'?'Download concluído':'Baixando atualização...';
+  const updateBtn=$('#updateNowBtn'),installBtn=$('#installUpdateBtn');
+  if(updateBtn){
+    updateBtn.classList.toggle('hidden',s.status==='downloaded');
+    updateBtn.disabled=s.status==='downloading'||s.status==='checking'||s.status==='error'||s.status==='up-to-date';
+    updateBtn.textContent=s.installMode==='portable'?'Baixar nova versão':s.status==='downloading'?'Baixando...':'Atualizar agora';
+  }
+  if(installBtn){
+    installBtn.classList.toggle('hidden',s.status!=='downloaded'||s.installMode!=='installer');
+  }
+  if(s.status==='available'&&!updateDismissed&&mainMenu&&!mainMenu.classList.contains('hidden'))openUpdateModal(false);
+  if(s.status==='downloaded'&&mainMenu&&!mainMenu.classList.contains('hidden'))openUpdateModal(false);
+}
+function openUpdateModal(resetDismissed=true){
+  if(resetDismissed)updateDismissed=false;
+  if(!desktopUpdateState||!['available','downloading','downloaded','portable-opened','error'].includes(desktopUpdateState.status))return;
+  renderUpdateState(desktopUpdateState);
+  $('#updateModal')?.classList.remove('hidden');
+}
+function closeUpdateModal(){
+  updateDismissed=true;
+  $('#updateModal')?.classList.add('hidden');
+}
+async function checkUpdatesFromUI(){
+  if(!window.electronAPI?.checkForUpdates)return;
+  updateDismissed=false;
+  try{renderUpdateState(await window.electronAPI.checkForUpdates());}catch{}
+}
+async function downloadDesktopUpdate(){
+  if(!window.electronAPI?.downloadUpdate)return;
+  try{renderUpdateState(await window.electronAPI.downloadUpdate());}catch{}
+}
+async function installDesktopUpdate(){
+  if(!window.electronAPI?.installUpdate)return;
+  const btn=$('#installUpdateBtn');if(btn){btn.disabled=true;btn.textContent='Reiniciando...';}
+  try{await window.electronAPI.installUpdate();}catch{if(btn){btn.disabled=false;btn.textContent='Reiniciar e instalar';}}
+}
+function maybeShowUpdateNotice(){
+  if(desktopUpdateState?.status==='available'&&!updateDismissed)openUpdateModal(false);
+  else if(desktopUpdateState?.status==='downloaded')openUpdateModal(false);
+}
+
 let splashTimer=null;
 function hideCinematicScreens(){for(const el of [studioSplash,titleScreen,mainMenu,exitScreen])el?.classList.add('hidden');}
 function showTitleScreen(){
@@ -76,6 +156,7 @@ function showMainMenu(){
   if(typeof closePauseMenu==='function')closePauseMenu(false);if(typeof closeSettings==='function')closeSettings(false);
   hideCinematicScreens();mainMenu?.classList.remove('hidden');appShell?.classList.add('hidden');
   document.body?.classList.remove('game-active','setup-active');document.body?.classList.add('boot-sequence');
+  setTimeout(maybeShowUpdateNotice,180);
 }
 function showSetup(kind){
   closeShop();closeSettings(false);closePauseMenu(false);
@@ -283,6 +364,12 @@ function closeSettings(restorePause=true){
   state.settingsFromPause=false;
 }
 $('#closeSettingsBtn').onclick=()=>closeSettings();
+$('#checkUpdatesBtn').onclick=checkUpdatesFromUI;
+$('#menuUpdateBadge').onclick=()=>openUpdateModal(true);
+$('#closeUpdateBtn').onclick=closeUpdateModal;
+$('#updateLaterBtn').onclick=closeUpdateModal;
+$('#updateNowBtn').onclick=downloadDesktopUpdate;
+$('#installUpdateBtn').onclick=installDesktopUpdate;
 $('#settingScreenShake').addEventListener('change',e=>{profile.settings.screenShake=!!e.target.checked;saveProfile();});
 $('#settingReducedMotion').addEventListener('change',e=>{profile.settings.reducedMotion=!!e.target.checked;saveProfile();});
 $('#settingResolution').addEventListener('change',async e=>{profile.settings.resolution=e.target.value;saveProfile();await applyResolutionSetting(e.target.value);});
@@ -297,6 +384,14 @@ $('#shopBtnLobby').onclick=()=>openShop();$('#shopBtnHud').onclick=()=>openShop(
 $('#closeShopBtn').onclick=()=>{if($('#retryBtn').disabled)return;const retry=state.mode==='singleplayer'&&!state.running;closeShop();if(retry)startLevel(state.level);};
 $('#retryBtn').onclick=()=>{if($('#retryBtn').disabled)return;const wasRunning=state.running;closeShop();if(state.mode==='singleplayer'&&!wasRunning)startLevel(state.level);};
 profile.selectedRole=ELEMENTS[profile.selectedRole]?profile.selectedRole:'earth';state.selectedRole=profile.selectedRole;selectElement(state.selectedRole);refreshEconomyUI();applySettings();
+if(typeof window!=='undefined'&&window.electronAPI?.getUpdateState){
+  try{
+    window.electronAPI.onUpdateState?.(renderUpdateState);
+    window.electronAPI.getUpdateState().then(renderUpdateState).catch(()=>{});
+  }catch{}
+}else{
+  const updateRow=$('#checkUpdatesBtn')?.closest?.('.setting-row');if(updateRow)updateRow.classList.add('hidden');
+}
 if(typeof location!=='undefined'&&new URLSearchParams(location.search).has('menu'))showMainMenu();else splashTimer=setTimeout(showTitleScreen,2850);
 
 function loadSoloSave(){
