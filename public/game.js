@@ -20,16 +20,17 @@ const SHOP_ITEMS = {
 const state = {
   id: null, roomCode: null, role: 'earth', selectedRole: 'earth', slot: 0, ready: false, level: 1, deaths: 0,
   mode: 'menu', soloResetPending: false, soloTransition: false,
-  running: false, room: null, remote: null, lastNet: 0, lastGoalSent: false,
+  running: false, room: null, remotePlayers: new Map(), lastNet: 0, lastGoalSent: false,
   levelData: null, trapState: new Map(), particles: [], levelStart: 0,
   bossCharge: 0, bossDefeated: false, lastRuneSent: null, lastAbility: 0, abilityUntil: 0,
   invulnUntil: 0, levelAttempts: new Map(), attempt: 1, screenShake: 0,
   activeBoosts:{shield:false,speed:false,jump:false}, shopOpen:false, shopTimer:null, lastRewardedLevel:0,
-  paused:false, pauseWasRunning:false, settingsFromPause:false
+  paused:false, pauseWasRunning:false, settingsFromPause:false, setupKind:'singleplayer', lastChaosSealSent:false
 };
 
 const SOLO_SAVE_KEY = 'infinity-castle-elements-solo-v1';
 const MULTI_SAVE_KEY = 'infinity-castle-elements-multiplayer-v1';
+const CHAOS_SAVE_KEY = 'infinity-castle-elements-chaos-v1';
 const LEGACY_SOLO_SAVE_KEY = 'terra-ar-castelo-infinito-solo-v1';
 const PROFILE_KEY = 'infinity-castle-elements-profile-v1';
 
@@ -155,18 +156,19 @@ function showMainMenu(){
   clearTimeout(splashTimer);state.running=false;state.mode='menu';state.shopOpen=false;closeShop();
   if(typeof closePauseMenu==='function')closePauseMenu(false);if(typeof closeSettings==='function')closeSettings(false);
   hideCinematicScreens();mainMenu?.classList.remove('hidden');appShell?.classList.add('hidden');
-  document.body?.classList.remove('game-active','setup-active');document.body?.classList.add('boot-sequence');
+  document.body?.classList.remove('game-active','setup-active','chaos-active');document.body?.classList.add('boot-sequence');
   setTimeout(maybeShowUpdateNotice,180);
 }
 function showSetup(kind){
   closeShop();closeSettings(false);closePauseMenu(false);
-  state.shopOpen=false;
-  hideCinematicScreens();document.body?.classList.remove('boot-sequence','game-active');document.body?.classList.add('setup-active');appShell?.classList.remove('hidden');
-  lobby?.classList.remove('hidden');roomEl?.classList.add('hidden');gameWrap?.classList.add('hidden');
+  state.shopOpen=false;state.setupKind=kind;
+  hideCinematicScreens();document.body?.classList.remove('boot-sequence','game-active','chaos-active');document.body?.classList.add('setup-active');appShell?.classList.remove('hidden');
+  lobby?.classList.remove('hidden');roomEl?.classList.add('hidden');roomEl?.classList.remove('chaos-room');gameWrap?.classList.add('hidden');
   state.running=false;state.mode='menu';$('#backToMenuBtn').style.display='';
-  const solo=kind==='singleplayer';$('#soloSetup').classList.toggle('hidden',!solo);$('#multiSetup').classList.toggle('hidden',solo);
-  const t=uiT();$('#setupEyebrow').textContent=(solo?t.single:t.multi).toUpperCase()+' · '+t.choose;
-  $('#errorText').textContent='';refreshSoloSaveButton();refreshMultiplayerSaveButton();
+  const solo=kind==='singleplayer',multi=kind==='multiplayer',chaos=kind==='chaos';
+  $('#soloSetup').classList.toggle('hidden',!solo);$('#multiSetup').classList.toggle('hidden',!multi);$('#chaosSetup').classList.toggle('hidden',!chaos);
+  const t=uiT();$('#setupEyebrow').textContent=(chaos?'MODO CAOS · 4 ELEMENTOS':(solo?t.single:t.multi).toUpperCase())+' · '+t.choose;
+  $('#errorText').textContent='';refreshSoloSaveButton();refreshMultiplayerSaveButton();refreshChaosSaveButton();
 }
 function showExitScreen(){
   if(window.electronAPI?.quit){window.electronAPI.quit();return;}
@@ -202,17 +204,21 @@ function saveFromPause(){
   }else if(state.mode==='multiplayer'){
     saveMultiplayerProgress(false);
     if($('#pauseMessage'))$('#pauseMessage').textContent=`Multiplayer salvo na fase ${state.level}. Ao continuar será criada uma nova sala nessa fase.`;
+  }else if(state.mode==='chaos'){
+    saveChaosProgress(false);
+    if($('#pauseMessage'))$('#pauseMessage').textContent=`Modo Caos salvo na fase ${state.level}. Uma nova sala de 4 jogadores poderá continuar daqui.`;
   }else if($('#pauseMessage'))$('#pauseMessage').textContent=t.profileSaved;
 }
 function leaveMultiplayerSession(){
-  if(state.mode!=='multiplayer')return;
+  if(state.mode!=='multiplayer'&&state.mode!=='chaos'&&!state.roomCode)return;
   try{socket.disconnect();setTimeout(()=>socket.connect(),80);}catch{}
-  state.room=null;state.roomCode=null;state.remote=null;state.ready=false;
+  state.room=null;state.roomCode=null;state.remotePlayers.clear();state.ready=false;
 }
 function pauseToMainMenu(){closeSettings(false);closePauseMenu(false);clearTimeout(state.shopTimer);closeShop();leaveMultiplayerSession();showMainMenu();}
 function pauseToDesktop(){if(window.electronAPI?.quit)window.electronAPI.quit();else showExitScreen();}
 $('#menuSingleBtn').onclick=()=>{closeShop();showSetup('singleplayer');};
 $('#menuMultiBtn').onclick=()=>{closeShop();showSetup('multiplayer');};
+$('#menuChaosBtn').onclick=()=>{closeShop();showSetup('chaos');};
 $('#menuSettingsBtn').onclick=()=>openSettings();
 $('#menuExitBtn').onclick=showExitScreen;
 $('#exitBackBtn').onclick=showMainMenu;
@@ -232,10 +238,14 @@ addEventListener('keydown',e=>{
 });
 $('#soloBtn').onclick = () => startSolo(false);
 $('#continueSoloBtn').onclick = () => startSolo(true);
-$('#createBtn').onclick = () => { state.mode='multiplayer'; socket.emit('create-room', { name: playerName(), element: state.selectedRole }, handleJoin); };
+$('#createBtn').onclick = () => { state.mode='multiplayer'; socket.emit('create-room', { name: playerName(), element: state.selectedRole, mode:'multiplayer' }, handleJoin); };
 $('#continueMultiBtn').onclick = continueMultiplayer;
-$('#joinBtn').onclick = () => { state.mode='multiplayer'; socket.emit('join-room', { code: $('#roomCodeInput').value, name: playerName(), element: state.selectedRole }, handleJoin); };
+$('#joinBtn').onclick = () => { state.mode='multiplayer'; socket.emit('join-room', { code: $('#roomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'multiplayer' }, handleJoin); };
+$('#createChaosBtn').onclick = () => { state.mode='chaos'; socket.emit('create-room', { name: playerName(), element: state.selectedRole, mode:'chaos' }, handleJoin); };
+$('#continueChaosBtn').onclick = continueChaos;
+$('#joinChaosBtn').onclick = () => { state.mode='chaos'; socket.emit('join-room', { code: $('#chaosRoomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'chaos' }, handleJoin); };
 $('#roomCodeInput').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
+$('#chaosRoomCodeInput').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
 $('#copyCode').onclick = async () => { try { await navigator.clipboard.writeText(state.roomCode); $('#copyCode').textContent='Copiado!'; setTimeout(()=>$('#copyCode').textContent='Copiar código',900); } catch{} };
 $('#readyBtn').onclick = () => { state.ready = !state.ready; socket.emit('ready', { ready: state.ready }); $('#readyBtn').textContent = state.ready ? 'Cancelar pronto' : 'Estou pronto'; };
 $('#roomBackToMenuBtn').onclick = () => { leaveMultiplayerSession(); showMainMenu(); };
@@ -280,7 +290,10 @@ $('#chatgptBtn').onclick = async () => {
   $('#errorText').textContent = r.enabled ? 'Integração disponível.' : 'Vínculo ChatGPT preparado, mas precisa das credenciais aprovadas do app.';
 };
 
-function playerName(){ return ($('#playerName').value || 'Jogador').trim().slice(0,18); }
+function playerName(){
+  const input=(state.mode==='chaos'||state.setupKind==='chaos')?$('#chaosPlayerName'):$('#playerName');
+  return (input?.value || 'Jogador').trim().slice(0,18);
+}
 
 function defaultProfile(){return {coins:25,selectedRole:'earth',boosts:{shield:0,speed:0,jump:0},owned:{crown:false,aura:false},settings:{screenShake:true,reducedMotion:false,resolution:'native',language:'pt-BR',fullscreen:true}};}
 const UI_I18N={"pt-BR":{"single":"Singleplayer","multi":"Multiplayer","shop":"Loja","settings":"Configurações","exit":"Sair","save":"Salvar jogo","menu":"Sair para o menu","desktop":"Sair para desktop","paused":"JOGO PAUSADO","esc":"ESC para continuar a tentativa.","choose":"ESCOLHA SEU ELEMENTO","newGame":"Nova aventura solo","continue":"Continuar","level":"fase","resolution":"Resolução","language":"Idioma","fullscreen":"Tela cheia","saved":"Jogo salvo.","profileSaved":"Perfil local salvo. A sala multiplayer continua no servidor."},"en-US":{"single":"Singleplayer","multi":"Multiplayer","shop":"Shop","settings":"Settings","exit":"Exit","save":"Save game","menu":"Exit to menu","desktop":"Exit to desktop","paused":"GAME PAUSED","esc":"Press ESC to continue.","choose":"CHOOSE YOUR ELEMENT","newGame":"New solo adventure","continue":"Continue","level":"level","resolution":"Resolution","language":"Language","fullscreen":"Fullscreen","saved":"Game saved.","profileSaved":"Local profile saved. The multiplayer room remains on the server."},"es-ES":{"single":"Un jugador","multi":"Multijugador","shop":"Tienda","settings":"Configuración","exit":"Salir","save":"Guardar partida","menu":"Salir al menú","desktop":"Salir al escritorio","paused":"JUEGO EN PAUSA","esc":"Pulsa ESC para continuar.","choose":"ELIGE TU ELEMENTO","newGame":"Nueva aventura","continue":"Continuar","level":"fase","resolution":"Resolución","language":"Idioma","fullscreen":"Pantalla completa","saved":"Partida guardada.","profileSaved":"Perfil local guardado. La sala multijugador sigue en el servidor."},"fr-FR":{"single":"Solo","multi":"Multijoueur","shop":"Boutique","settings":"Paramètres","exit":"Quitter","save":"Sauvegarder","menu":"Retour au menu","desktop":"Quitter vers le bureau","paused":"JEU EN PAUSE","esc":"Appuyez sur Échap pour continuer.","choose":"CHOISISSEZ VOTRE ÉLÉMENT","newGame":"Nouvelle aventure solo","continue":"Continuer","level":"niveau","resolution":"Résolution","language":"Langue","fullscreen":"Plein écran","saved":"Partie sauvegardée.","profileSaved":"Profil local sauvegardé. La salle multijoueur reste sur le serveur."},"de-DE":{"single":"Einzelspieler","multi":"Mehrspieler","shop":"Shop","settings":"Einstellungen","exit":"Beenden","save":"Spiel speichern","menu":"Zum Menü","desktop":"Zum Desktop","paused":"SPIEL PAUSIERT","esc":"ESC zum Fortsetzen.","choose":"WÄHLE DEIN ELEMENT","newGame":"Neues Solo-Abenteuer","continue":"Fortsetzen","level":"Level","resolution":"Auflösung","language":"Sprache","fullscreen":"Vollbild","saved":"Spiel gespeichert.","profileSaved":"Lokales Profil gespeichert. Der Mehrspielerraum bleibt auf dem Server."},"it-IT":{"single":"Giocatore singolo","multi":"Multigiocatore","shop":"Negozio","settings":"Impostazioni","exit":"Esci","save":"Salva partita","menu":"Torna al menu","desktop":"Esci al desktop","paused":"GIOCO IN PAUSA","esc":"Premi ESC per continuare.","choose":"SCEGLI IL TUO ELEMENTO","newGame":"Nuova avventura","continue":"Continua","level":"livello","resolution":"Risoluzione","language":"Lingua","fullscreen":"Schermo intero","saved":"Partita salvata.","profileSaved":"Profilo locale salvato. La stanza multiplayer resta sul server."},"nl-NL":{"single":"Singleplayer","multi":"Multiplayer","shop":"Winkel","settings":"Instellingen","exit":"Afsluiten","save":"Spel opslaan","menu":"Naar menu","desktop":"Naar bureaublad","paused":"SPEL GEPAUZEERD","esc":"Druk op ESC om door te gaan.","choose":"KIES JE ELEMENT","newGame":"Nieuw solo-avontuur","continue":"Doorgaan","level":"level","resolution":"Resolutie","language":"Taal","fullscreen":"Volledig scherm","saved":"Spel opgeslagen.","profileSaved":"Lokaal profiel opgeslagen. De multiplayerruimte blijft op de server."},"pl-PL":{"single":"Jeden gracz","multi":"Wielu graczy","shop":"Sklep","settings":"Ustawienia","exit":"Wyjście","save":"Zapisz grę","menu":"Wyjdź do menu","desktop":"Wyjdź na pulpit","paused":"GRA WSTRZYMANA","esc":"Naciśnij ESC, aby kontynuować.","choose":"WYBIERZ SWÓJ ŻYWIOŁ","newGame":"Nowa przygoda solo","continue":"Kontynuuj","level":"poziom","resolution":"Rozdzielczość","language":"Język","fullscreen":"Pełny ekran","saved":"Gra zapisana.","profileSaved":"Profil lokalny zapisany. Pokój multiplayer pozostaje na serwerze."},"ru-RU":{"single":"Одиночная игра","multi":"Сетевая игра","shop":"Магазин","settings":"Настройки","exit":"Выход","save":"Сохранить игру","menu":"Выйти в меню","desktop":"Выйти на рабочий стол","paused":"ИГРА ПРИОСТАНОВЛЕНА","esc":"Нажмите ESC, чтобы продолжить.","choose":"ВЫБЕРИТЕ СТИХИЮ","newGame":"Новое приключение","continue":"Продолжить","level":"уровень","resolution":"Разрешение","language":"Язык","fullscreen":"Полный экран","saved":"Игра сохранена.","profileSaved":"Локальный профиль сохранён. Комната остаётся на сервере."},"tr-TR":{"single":"Tek oyunculu","multi":"Çok oyunculu","shop":"Mağaza","settings":"Ayarlar","exit":"Çıkış","save":"Oyunu kaydet","menu":"Menüye dön","desktop":"Masaüstüne çık","paused":"OYUN DURAKLATILDI","esc":"Devam etmek için ESC.","choose":"ELEMENTİNİ SEÇ","newGame":"Yeni solo macera","continue":"Devam et","level":"seviye","resolution":"Çözünürlük","language":"Dil","fullscreen":"Tam ekran","saved":"Oyun kaydedildi.","profileSaved":"Yerel profil kaydedildi. Çok oyunculu oda sunucuda kalır."},"ja-JP":{"single":"シングルプレイ","multi":"マルチプレイ","shop":"ショップ","settings":"設定","exit":"終了","save":"ゲームを保存","menu":"メニューへ戻る","desktop":"デスクトップへ終了","paused":"一時停止","esc":"ESCでゲームに戻ります。","choose":"エレメントを選択","newGame":"新しい冒険","continue":"続ける","level":"ステージ","resolution":"解像度","language":"言語","fullscreen":"フルスクリーン","saved":"保存しました。","profileSaved":"ローカルプロフィールを保存しました。マルチプレイルームはサーバーに残ります。"},"ko-KR":{"single":"싱글플레이","multi":"멀티플레이","shop":"상점","settings":"설정","exit":"종료","save":"게임 저장","menu":"메뉴로 나가기","desktop":"바탕화면으로 나가기","paused":"게임 일시정지","esc":"ESC를 눌러 계속합니다.","choose":"원소를 선택하세요","newGame":"새 솔로 모험","continue":"계속하기","level":"스테이지","resolution":"해상도","language":"언어","fullscreen":"전체 화면","saved":"게임이 저장되었습니다.","profileSaved":"로컬 프로필이 저장되었습니다. 멀티플레이 방은 서버에 유지됩니다."},"zh-CN":{"single":"单人游戏","multi":"多人游戏","shop":"商店","settings":"设置","exit":"退出","save":"保存游戏","menu":"返回主菜单","desktop":"退出到桌面","paused":"游戏暂停","esc":"按 ESC 继续。","choose":"选择你的元素","newGame":"新的单人冒险","continue":"继续","level":"关卡","resolution":"分辨率","language":"语言","fullscreen":"全屏","saved":"游戏已保存。","profileSaved":"本地资料已保存。多人房间仍保留在服务器。"},"zh-TW":{"single":"單人遊戲","multi":"多人遊戲","shop":"商店","settings":"設定","exit":"退出","save":"儲存遊戲","menu":"返回主選單","desktop":"退出到桌面","paused":"遊戲暫停","esc":"按 ESC 繼續。","choose":"選擇你的元素","newGame":"新的單人冒險","continue":"繼續","level":"關卡","resolution":"解析度","language":"語言","fullscreen":"全螢幕","saved":"遊戲已儲存。","profileSaved":"本機資料已儲存。多人房間仍保留在伺服器。"},"ar-SA":{"single":"لاعب واحد","multi":"متعدد اللاعبين","shop":"المتجر","settings":"الإعدادات","exit":"خروج","save":"حفظ اللعبة","menu":"العودة إلى القائمة","desktop":"الخروج إلى سطح المكتب","paused":"اللعبة متوقفة","esc":"اضغط ESC للمتابعة.","choose":"اختر عنصرك","newGame":"مغامرة فردية جديدة","continue":"متابعة","level":"المرحلة","resolution":"الدقة","language":"اللغة","fullscreen":"ملء الشاشة","saved":"تم حفظ اللعبة.","profileSaved":"تم حفظ الملف المحلي. تبقى غرفة اللعب الجماعي على الخادم."},"hi-IN":{"single":"एकल खिलाड़ी","multi":"मल्टीप्लेयर","shop":"दुकान","settings":"सेटिंग्स","exit":"बाहर निकलें","save":"गेम सेव करें","menu":"मेनू पर जाएँ","desktop":"डेस्कटॉप पर जाएँ","paused":"गेम रुका हुआ है","esc":"जारी रखने के लिए ESC दबाएँ।","choose":"अपना तत्व चुनें","newGame":"नई एकल यात्रा","continue":"जारी रखें","level":"स्तर","resolution":"रिज़ॉल्यूशन","language":"भाषा","fullscreen":"पूर्ण स्क्रीन","saved":"गेम सेव हो गया।","profileSaved":"स्थानीय प्रोफ़ाइल सेव हो गई। मल्टीप्लेयर रूम सर्वर पर बना रहेगा।"},"sv-SE":{"single":"Enspelare","multi":"Flerspelare","shop":"Butik","settings":"Inställningar","exit":"Avsluta","save":"Spara spelet","menu":"Till menyn","desktop":"Till skrivbordet","paused":"SPELET ÄR PAUSAT","esc":"Tryck ESC för att fortsätta.","choose":"VÄLJ DITT ELEMENT","newGame":"Nytt soloäventyr","continue":"Fortsätt","level":"nivå","resolution":"Upplösning","language":"Språk","fullscreen":"Helskärm","saved":"Spelet sparades.","profileSaved":"Lokal profil sparades. Flerspelarrummet finns kvar på servern."},"da-DK":{"single":"Singleplayer","multi":"Multiplayer","shop":"Butik","settings":"Indstillinger","exit":"Afslut","save":"Gem spil","menu":"Til menuen","desktop":"Til skrivebordet","paused":"SPILLET ER PAUSET","esc":"Tryk ESC for at fortsætte.","choose":"VÆLG DIT ELEMENT","newGame":"Nyt solo-eventyr","continue":"Fortsæt","level":"niveau","resolution":"Opløsning","language":"Sprog","fullscreen":"Fuld skærm","saved":"Spillet er gemt.","profileSaved":"Lokal profil gemt. Multiplayer-rummet forbliver på serveren."},"fi-FI":{"single":"Yksinpeli","multi":"Moninpeli","shop":"Kauppa","settings":"Asetukset","exit":"Poistu","save":"Tallenna peli","menu":"Poistu valikkoon","desktop":"Poistu työpöydälle","paused":"PELI TAUOLLA","esc":"Jatka painamalla ESC.","choose":"VALITSE ELEMENTTISI","newGame":"Uusi sooloseikkailu","continue":"Jatka","level":"taso","resolution":"Resoluutio","language":"Kieli","fullscreen":"Koko näyttö","saved":"Peli tallennettu.","profileSaved":"Paikallinen profiili tallennettu. Moninpelihuone pysyy palvelimella."},"cs-CZ":{"single":"Jeden hráč","multi":"Více hráčů","shop":"Obchod","settings":"Nastavení","exit":"Ukončit","save":"Uložit hru","menu":"Zpět do menu","desktop":"Ukončit na plochu","paused":"HRA POZASTAVENA","esc":"Pokračujte klávesou ESC.","choose":"VYBERTE SVŮJ ŽIVEL","newGame":"Nové sólo dobrodružství","continue":"Pokračovat","level":"úroveň","resolution":"Rozlišení","language":"Jazyk","fullscreen":"Celá obrazovka","saved":"Hra uložena.","profileSaved":"Místní profil uložen. Multiplayerová místnost zůstává na serveru."}};
