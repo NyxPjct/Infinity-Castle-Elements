@@ -52,11 +52,12 @@
         </div>
         <nav class="main-nav" aria-label="Opções do jogo">
           <button id="menuSingleBtn" class="menu-choice primary-choice"><span class="menu-index">01</span><span><b>Singleplayer</b><small>Entre sozinho. O castelo não terá pena.</small></span><em>›</em></button>
-          <button id="menuMultiBtn" class="menu-choice"><span class="menu-index">02</span><span><b>Multiplayer</b><small>Divida o sofrimento com outro elemento.</small></span><em>›</em></button>
-          <button id="menuSettingsBtn" class="menu-choice"><span class="menu-index">03</span><span><b>Configurações</b><small>Visual, movimento e tela cheia.</small></span><em>›</em></button>
-          <button id="menuExitBtn" class="menu-choice danger-choice"><span class="menu-index">04</span><span><b>Sair</b><small>Fuja enquanto ainda consegue.</small></span><em>›</em></button>
+          <button id="menuMultiBtn" class="menu-choice"><span class="menu-index">02</span><span><b>Multiplayer</b><small>Campanha cooperativa online para 2 jogadores.</small></span><em>›</em></button>
+          <button id="menuChaosBtn" class="menu-choice chaos-choice"><span class="menu-index">03</span><span><b>Modo Caos</b><small>4 jogadores · 4 elementos · uma campanha sem misericórdia.</small></span><em>⚡</em></button>
+          <button id="menuSettingsBtn" class="menu-choice"><span class="menu-index">04</span><span><b>Configurações</b><small>Visual, movimento e tela cheia.</small></span><em>›</em></button>
+          <button id="menuExitBtn" class="menu-choice danger-choice"><span class="menu-index">05</span><span><b>Sair</b><small>Fuja enquanto ainda consegue.</small></span><em>›</em></button>
         </nav>
-        <div class="menu-footer"><span id="menuConnectionPill">● Conectando</span><button id="menuUpdateBadge" class="menu-update-badge hidden" type="button">⬇ Atualização disponível</button><span>INSANITY 0.0.1</span></div>
+        <div class="menu-footer"><span id="menuConnectionPill">● Conectando</span><button id="menuUpdateBadge" class="menu-update-badge hidden" type="button">⬇ Atualização disponível</button><span>INSANITY 0.0.2</span></div>
       </aside>
       <div class="menu-story-card">
         <p>O CASTELO DESPERTOU</p>
@@ -79,7 +80,7 @@
         <div class="brand-mark">✦</div>
         <div>
           <h1>INFINITY CASTLE <span>ELEMENTS</span></h1>
-          <p>INSANITY 0.0.1 · 1000 FASES · ELEMENTOS · INIMIGOS · SOLO + CO-OP</p>
+          <p>INSANITY 0.0.2 · 1000 FASES · SOLO · CO-OP · MODO CAOS 4P</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -152,6 +153,31 @@
           <p class="fine">Cada jogador escolhe seu próprio elemento antes de entrar. Os dois podem até usar o mesmo elemento.</p>
           <button id="chatgptBtn" class="ghost" title="Disponível quando o app tiver credenciais aprovadas">◉ Vincular conta ChatGPT</button>
         </div>
+
+        <div id="chaosSetup" class="hidden chaos-setup">
+          <p class="mode-title chaos-title">⚡ MODO CAOS · 4 PLAYERS ONLINE</p>
+          <div class="chaos-warning">
+            <b>OS QUATRO ELEMENTOS DEVEM ENTRAR.</b>
+            <small>Terra, Ar, Luz e Escuridão são únicos na sala. Se outro jogador já escolheu seu elemento, escolha um dos restantes.</small>
+          </div>
+          <label>Seu nome</label>
+          <input id="chaosPlayerName" maxlength="18" placeholder="Ex.: Leonardo" autocomplete="nickname" />
+          <button id="createChaosBtn" class="primary chaos-primary">⚡ Criar sala Caos</button>
+          <button id="continueChaosBtn" class="ghost hidden">↻ Continuar campanha Caos</button>
+          <div class="or"><span>ou</span></div>
+          <label>Código da sala Caos</label>
+          <div class="join-row">
+            <input id="chaosRoomCodeInput" maxlength="6" placeholder="CHA0S4" />
+            <button id="joinChaosBtn">Entrar</button>
+          </div>
+          <div class="chaos-rules">
+            <span>4 jogadores obrigatórios</span>
+            <span>4 elementos únicos</span>
+            <span>Selos elementais por fase</span>
+            <span>Chefes com 4 runas simultâneas</span>
+          </div>
+          <p class="fine">Uma morte reinicia a tentativa para todos. A saída só libera depois que os quatro selos elementais forem ativados.</p>
+        </div>
         <p id="errorText" class="error"></p>
       </div>
     </section>
@@ -159,7 +185,7 @@
     <section id="room" class="panel hidden room-panel">
       <div class="room-head">
         <div>
-          <p class="eyebrow">SALA PRIVADA</p>
+          <p id="roomModeLabel" class="eyebrow">SALA PRIVADA</p>
           <h2 id="roomCode">------</h2>
           <button id="copyCode" class="small">Copiar código</button>
         </div>
@@ -171,7 +197,7 @@
       <div id="players" class="players"></div>
       <button id="readyBtn" class="primary big">Estou pronto</button>
       <button id="roomBackToMenuBtn" class="ghost big" type="button">← Voltar ao menu inicial</button>
-      <p class="fine center">A fase começa quando os dois estiverem prontos.</p>
+      <p id="roomRequirementText" class="fine center">A fase começa quando os dois estiverem prontos.</p>
     </section>
 
     <section id="gameWrap" class="game-wrap hidden">
@@ -183,7 +209,7 @@
           <span class="coin-hud">🪙 <b id="hudCoins">0</b></span>
         </div>
         <div class="hud-right">
-          <span id="difficultyLabel">PORTÃO REAL</span>
+          <span id="chaosHudBadge" class="chaos-hud-badge hidden">⚡ CAOS 4P</span><span id="difficultyLabel">PORTÃO REAL</span>
           <span id="mechanicLabel">O CASTELO OBSERVA</span>
           <button id="shopBtnHud" class="small" type="button">🛒 Loja</button>
           <button id="restartBtn" class="small">↻ Reiniciar</button>
