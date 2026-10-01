@@ -80,7 +80,7 @@ Na edição desktop 0.0, o jogo já inclui a estrutura de servidor necessária. 
 
 ## Sistema de moedas e Loja Arcana
 
-Moedas são recebidas ao concluir fases e derrotar inimigos. Elas podem ser usadas na **Loja Arcana** para comprar:
+Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer: na versão **0.0.1**, o personagem recebe **+5 moedas por morte**. Elas podem ser usadas na **Loja Arcana** para comprar:
 
 - **Runa de Escudo** — absorve um golpe fatal;
 - **Botas do Vento** — aumenta temporariamente a velocidade;
