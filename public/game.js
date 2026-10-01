@@ -676,9 +676,12 @@ function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':
 const keys={};
 addEventListener('keydown',e=>{
   if(state.paused||!$('#settingsModal')?.classList.contains('hidden'))return;
-  const k=e.key.toLowerCase(); keys[k]=true;
+  const k=e.key.toLowerCase();keys[k]=true;
   if(k==='r'&&!e.repeat)restartGame();
-  if(k==='e'&&!e.repeat)activateAbility();
+  if(k===' '&&!e.repeat){
+    if(gameplayVisible())e.preventDefault();
+    activateAbility();
+  }
 });
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 
@@ -697,7 +700,7 @@ const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,
   },
   update(dt){
     if(!state.running||this.dead)return;
-    const ld=state.levelData,cfg=ELEMENTS[state.role]||ELEMENTS.earth;let left=keys['arrowleft']||keys['a'],right=keys['arrowright']||keys['d'];const jump=keys['arrowup']||keys['w']||keys[' '];
+    const ld=state.levelData,cfg=ELEMENTS[state.role]||ELEMENTS.earth;let left=keys['arrowleft']||keys['a'],right=keys['arrowright']||keys['d'];const jump=keys['w'];
     const reversed=state.role!=='darkness'&&ld.reverseZones?.some(z=>overlap(this,z));if(reversed){const t=left;left=right;right=t;}
     const ability=performance.now()<state.abilityUntil;let accel=cfg.accel,max=cfg.max,gravity=cfg.gravity,jumpPower=cfg.jump;
     if(state.role==='air'&&ability){max=520;gravity=780;}if(state.activeBoosts.speed){accel*=1.15;max*=1.2;}if(state.activeBoosts.jump)jumpPower*=1.15;
