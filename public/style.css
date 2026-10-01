@@ -441,3 +441,74 @@ body.chaos-active #gameWrap.game-wrap{
 @media(max-width:650px){
   .chaos-rules{grid-template-columns:1fr}
 }
+
+
+/* =========================================================
+   INSANITY 0.0.2 — HABILIDADES ELEMENTAIS
+   ========================================================= */
+.ability-hud{
+  display:grid;
+  grid-template-columns:auto auto;
+  grid-template-areas:
+    "key text"
+    "bar bar";
+  align-items:center;
+  gap:2px 7px;
+  min-width:148px;
+  padding:5px 8px 4px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:9px;
+  background:rgba(4,7,12,.66);
+  font-size:8px;
+  line-height:1;
+  letter-spacing:.06em;
+  transition:border-color .16s ease,opacity .16s ease,box-shadow .16s ease;
+}
+.ability-hud>b{
+  grid-area:key;
+  color:#f2f5fb;
+  font-size:8px;
+  letter-spacing:.09em;
+}
+.ability-hud>span{
+  grid-area:text;
+  color:#9fa9b9;
+  white-space:nowrap;
+  text-align:right;
+}
+.ability-hud>i{
+  grid-area:bar;
+  position:relative;
+  height:3px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,255,255,.08);
+}
+.ability-hud>i>em{
+  display:block;
+  width:100%;
+  height:100%;
+  border-radius:999px;
+  background:currentColor;
+  box-shadow:0 0 9px currentColor;
+  transition:width .08s linear;
+}
+.ability-hud.ready{
+  color:#7ee9ae;
+  border-color:rgba(126,233,174,.32);
+  box-shadow:0 0 18px rgba(126,233,174,.07);
+}
+.ability-hud.active{
+  color:#e2a2ff;
+  border-color:rgba(226,162,255,.42);
+  box-shadow:0 0 22px rgba(211,100,255,.13);
+}
+.ability-hud.cooldown{
+  color:#667185;
+  opacity:.78;
+}
+body.game-active #gameWrap .ability-hud{display:grid}
+@media(max-width:1200px){
+  .ability-hud{min-width:118px}
+  .ability-hud>span{display:none}
+}
