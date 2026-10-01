@@ -85,9 +85,11 @@ function renderUpdateState(s){
   const badge=$('#menuUpdateBadge'),settingsText=$('#updateSettingsText');
   if(settingsText)settingsText.textContent=updateStatusMessage(s);
   if(badge){
-    const show=s.status==='available'||s.status==='downloading'||s.status==='downloaded';
+    const show=s.status==='available'||s.status==='downloading'||s.status==='downloaded'||s.status==='error';
     badge.classList.toggle('hidden',!show);
-    badge.textContent=s.status==='downloaded'?'⬇ Atualização pronta':s.status==='downloading'?(`⬇ Baixando ${s.progress||0}%`):(`⬇ Atualização ${s.latestVersion||''}`);
+    badge.textContent=s.status==='error'?'⚠ Falha na atualização':
+      s.status==='downloaded'?'⬇ Atualização pronta':
+      s.status==='downloading'?(`⬇ Baixando ${s.progress||0}%`):(`⬇ Atualização ${s.latestVersion||''}`);
   }
   const current=$('#updateCurrentVersion'),latest=$('#updateLatestVersion'),notes=$('#updateNotes'),status=$('#updateStatusText');
   if(current)current.textContent=s.currentVersion||window.electronAPI?.version||'0.0.2';
@@ -95,9 +97,9 @@ function renderUpdateState(s){
   if(notes)notes.textContent=s.notes||'Correções, melhorias e ajustes da nova versão.';
   if(status)status.textContent=s.status==='error'?(s.error||'Falha ao verificar atualização.'):
     s.installMode==='portable'?'Você está usando a versão Portable. O download da nova versão será aberto para substituição manual.':
-    s.status==='downloaded'?'Download concluído. Seus saves ficam preservados; reinicie para instalar.':
-    s.status==='downloading'?'Baixando a atualização em segundo plano...':
-    'A atualização será instalada sem apagar seus saves.';
+    s.status==='downloaded'?'Download concluído. Seus saves ficam preservados. Clique em Reiniciar e instalar.':
+    s.status==='downloading'?'Baixando a atualização em segundo plano... Não feche o jogo.':
+    'A atualização será baixada e instalada sem apagar seus saves.';
   const progressWrap=$('#updateProgressWrap'),percent=$('#updateProgressPercent'),bar=$('#updateProgressBar'),progressText=$('#updateProgressText');
   const showProgress=s.status==='downloading'||s.status==='downloaded';
   progressWrap?.classList.toggle('hidden',!showProgress);
@@ -107,19 +109,29 @@ function renderUpdateState(s){
   const updateBtn=$('#updateNowBtn'),installBtn=$('#installUpdateBtn');
   if(updateBtn){
     updateBtn.classList.toggle('hidden',s.status==='downloaded');
-    updateBtn.disabled=s.status==='downloading'||s.status==='checking'||s.status==='error'||s.status==='up-to-date';
-    updateBtn.textContent=s.installMode==='portable'?'Baixar nova versão':s.status==='downloading'?'Baixando...':'Atualizar agora';
+    updateBtn.disabled=s.status==='downloading'||s.status==='checking'||s.status==='up-to-date';
+    updateBtn.textContent=s.status==='error'?'Tentar novamente':
+      s.installMode==='portable'?'Baixar nova versão':
+      s.status==='downloading'?'Baixando...':'Atualizar agora';
   }
   if(installBtn){
     installBtn.classList.toggle('hidden',s.status!=='downloaded'||s.installMode!=='installer');
+    if(s.status!=='downloaded'){installBtn.disabled=false;installBtn.textContent='Reiniciar e instalar';}
   }
-  if(s.status==='available'&&!updateDismissed&&mainMenu&&!mainMenu.classList.contains('hidden'))openUpdateModal(false);
-  if(s.status==='downloaded'&&mainMenu&&!mainMenu.classList.contains('hidden'))openUpdateModal(false);
+
+  // IMPORTANTE: não chama openUpdateModal() daqui para evitar recursão infinita.
+  // Apenas torna o modal visível quando a notificação deve aparecer.
+  const shouldAutoOpen=(s.status==='available'&&!updateDismissed)||s.status==='downloaded'||s.status==='error';
+  if(shouldAutoOpen&&mainMenu&&!mainMenu.classList.contains('hidden')){
+    $('#updateModal')?.classList.remove('hidden');
+  }
 }
 function openUpdateModal(resetDismissed=true){
   if(resetDismissed)updateDismissed=false;
   if(!desktopUpdateState||!['available','downloading','downloaded','portable-opened','error'].includes(desktopUpdateState.status))return;
-  renderUpdateState(desktopUpdateState);
+  // O estado já foi renderizado por renderUpdateState(). Aqui só abrimos a janela.
+  // Na 0.0.1 este método chamava renderUpdateState(), que chamava este método de novo
+  // e causava um loop antes do modal aparecer.
   $('#updateModal')?.classList.remove('hidden');
 }
 function closeUpdateModal(){
@@ -133,7 +145,28 @@ async function checkUpdatesFromUI(){
 }
 async function downloadDesktopUpdate(){
   if(!window.electronAPI?.downloadUpdate)return;
-  try{renderUpdateState(await window.electronAPI.downloadUpdate());}catch{}
+  const btn=$('#updateNowBtn');
+  if(desktopUpdateState?.status==='error'){
+    try{
+      const checked=await window.electronAPI.checkForUpdates?.();
+      if(checked)renderUpdateState(checked);
+      if(checked?.status!=='available')return;
+    }catch(error){
+      renderUpdateState({...desktopUpdateState,status:'error',error:String(error?.message||error||'Falha ao verificar atualização.')});
+      return;
+    }
+  }
+  if(btn){btn.disabled=true;btn.textContent='Preparando download...';}
+  try{
+    const next=await window.electronAPI.downloadUpdate();
+    renderUpdateState(next);
+    openUpdateModal(false);
+  }catch(error){
+    renderUpdateState({...desktopUpdateState,status:'error',error:String(error?.message||error||'Falha ao baixar atualização.')});
+    openUpdateModal(false);
+  }finally{
+    if(btn&&desktopUpdateState?.status==='available'){btn.disabled=false;btn.textContent='Atualizar agora';}
+  }
 }
 async function installDesktopUpdate(){
   if(!window.electronAPI?.installUpdate)return;
