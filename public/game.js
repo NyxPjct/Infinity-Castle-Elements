@@ -534,68 +534,109 @@ function handleJoin(res){
 }
 
 socket.on('room-state', room => {
-  state.room=room; state.level=room.level; state.deaths=room.deaths;
+  state.room=room;state.mode=room.mode==='chaos'?'chaos':'multiplayer';state.level=room.level;state.deaths=room.deaths;
   const me=room.players.find(p=>p.id===state.id);if(me){state.role=me.role;state.slot=me.slot||0;}
+  const liveIds=new Set(room.players.map(p=>p.id));for(const id of state.remotePlayers.keys())if(!liveIds.has(id))state.remotePlayers.delete(id);
   $('#roomLevel').textContent=room.level;$('#roomDeaths').textContent=room.deaths;
-  saveMultiplayerProgress(false);
-  const players=$('#players'); players.innerHTML='';
+  roomEl.classList.toggle('chaos-room',state.mode==='chaos');document.body?.classList.toggle('chaos-active',state.mode==='chaos');
+  $('#roomModeLabel').textContent=state.mode==='chaos'?'⚡ SALA CAOS · 4 PLAYERS':'SALA PRIVADA · 2 PLAYERS';
+  $('#roomRequirementText').textContent=state.mode==='chaos'
+    ?`Aguardando ${Math.max(0,4-room.players.length)} jogador(es). Os quatro elementos precisam estar presentes e prontos.`
+    :'A fase começa quando os dois estiverem prontos.';
+  saveOnlineProgress(false);
+  const players=$('#players');players.innerHTML='';
   room.players.forEach(p=>{
     const e=ELEMENTS[p.role]||ELEMENTS.earth,div=document.createElement('div');div.className=`player-card ${p.role}`;
-    div.innerHTML=`<span class="ready-dot">${p.ready?'● PRONTO':'○'}</span><div class="avatar">${e.icon}</div><h3>${escapeHtml(p.name)}${p.id===state.id?' (você)':''}</h3><p>${e.name.toUpperCase()} · ${e.ability}</p>`;
+    const seal=state.mode==='chaos'?(room.chaosSeals||[]).includes(p.role)?' · SELO ✓':' · SELO ○':'';
+    div.innerHTML=`<span class="ready-dot">${p.ready?'● PRONTO':'○'}</span><div class="avatar">${e.icon}</div><h3>${escapeHtml(p.name)}${p.id===state.id?' (você)':''}</h3><p>${e.name.toUpperCase()} · ${e.ability}${seal}</p>`;
     players.appendChild(div);
   });
   updateHud();
 });
 
-socket.on('start-level', ({level,deaths}) => { state.level=level; state.deaths=deaths; startLevel(level); });
-socket.on('reset-level', ({deaths,manual}={}) => {
-  state.deaths=deaths;state.running=false;saveMultiplayerProgress(false);
-  if(manual){showOverlay('↻ SALA REINICIADA','Tentem uma rota diferente.',320);setTimeout(()=>startLevel(state.level),340);return;}
-  showOverlay('☠️ O CASTELO COBROU OUTRA ALMA',deathLine(),520);openShop({death:true,multiplayer:true});
+socket.on('start-level', ({level,deaths,mode}) => {
+  if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
+  state.level=level;state.deaths=deaths;startLevel(level);
+});
+socket.on('reset-level', ({deaths,manual,mode}={}) => {
+  if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
+  state.deaths=deaths;state.running=false;saveOnlineProgress(false);
+  if(manual){showOverlay('↻ SALA REINICIADA',state.mode==='chaos'?'O caos foi recalibrado para os quatro elementos.':'Tentem uma rota diferente.',320);setTimeout(()=>startLevel(state.level),340);return;}
+  showOverlay(state.mode==='chaos'?'⚡ O CAOS DEVOROU O GRUPO':'☠️ O CASTELO COBROU OUTRA ALMA',deathLine(),520);openShop({death:true,multiplayer:true});
   clearTimeout(state.shopTimer);state.shopTimer=setTimeout(()=>{closeShop();startLevel(state.level);},5000);
 });
-socket.on('level-complete', ({level,finished,completedLevel}) => {
+socket.on('level-complete', ({level,finished,completedLevel,mode}) => {
+  if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
   rewardLevel(completedLevel||Math.max(1,(finished?1000:level-1)));state.level=level;
-  saveMultiplayerProgress(!!finished);
-  showOverlay(finished?'🏆 INFINITY CASTLE CONQUISTADO':'✓ SALA SUPERADA', finished?'Vocês conquistaram as 1000 salas de Infinity Castle Elements.':`Próxima: fase ${level}`, finished?0:700);
+  saveOnlineProgress(!!finished);
+  showOverlay(finished?(state.mode==='chaos'?'⚡ CAOS CONQUISTADO':'🏆 INFINITY CASTLE CONQUISTADO'):'✓ SALA SUPERADA', finished?(state.mode==='chaos'?'Os quatro elementos atravessaram as 1000 salas do Modo Caos.':'Vocês conquistaram as 1000 salas de Infinity Castle Elements.'):`Próxima: fase ${level}`, finished?0:700);
 });
-socket.on('game-finished', ({deaths}) => { state.running=false;state.deaths=deaths;saveMultiplayerProgress(true);updateHud();showOverlay('🏆 1000/1000',`Infinity Castle caiu após ${deaths} mortes compartilhadas.`,0); });
+socket.on('game-finished', ({deaths,mode}) => {
+  if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
+  state.running=false;state.deaths=deaths;saveOnlineProgress(true);updateHud();showOverlay('🏆 1000/1000',state.mode==='chaos'?`O quarteto elemental venceu o Caos após ${deaths} mortes compartilhadas.`:`Infinity Castle caiu após ${deaths} mortes compartilhadas.`,0);
+});
 socket.on('enemy-defeated', ({id,level}={}) => {if(Number(level)!==state.level)return;const e=(state.levelData?.enemies||[]).find(x=>x.id===id);if(e)defeatEnemy(e,true);});
-socket.on('partner-left', () => { if(state.mode!=='multiplayer')return; closeShop();clearTimeout(state.shopTimer);state.running=false; showOverlay('Parceiro desconectou', 'Aguardando alguém entrar novamente na sala.', 0); gameWrap.classList.add('hidden'); roomEl.classList.remove('hidden'); state.ready=false; $('#readyBtn').textContent='Estou pronto'; });
-socket.on('remote-state', data => { if(state.mode==='multiplayer'&&data.id!==state.id) state.remote=data; });
+socket.on('chaos-seal-activated', ({role,level}={}) => {
+  if(state.mode!=='chaos'||Number(level)!==state.level)return;
+  const e=ELEMENTS[role]||ELEMENTS.earth;burst(player.x+21,player.y+25,8);
+  showOverlay(`${e.icon} SELO DE ${e.name.toUpperCase()} ATIVADO`,`O grupo despertou ${(state.room?.chaosSeals||[]).length}/4 selos.`,420);
+});
+socket.on('chaos-unlocked', ({level}={}) => {
+  if(state.mode!=='chaos'||Number(level)!==state.level)return;
+  showOverlay('⚡ QUATRO SELOS DESPERTOS','A saída do Caos foi liberada. Agora os quatro precisam alcançá-la.',850);
+});
+socket.on('partner-left', ({mode,maxPlayers,currentPlayers}={}) => {
+  if(state.mode!=='multiplayer'&&state.mode!=='chaos')return;
+  if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
+  closeShop();clearTimeout(state.shopTimer);state.running=false;state.remotePlayers.clear();
+  showOverlay(state.mode==='chaos'?'⚡ UM ELEMENTO CAIU FORA DO CAOS':'Parceiro desconectou',state.mode==='chaos'?`A sala precisa de 4 jogadores. Conectados: ${currentPlayers||1}/${maxPlayers||4}.`:'Aguardando alguém entrar novamente na sala.',0);
+  gameWrap.classList.add('hidden');roomEl.classList.remove('hidden');state.ready=false;$('#readyBtn').textContent='Estou pronto';
+});
+socket.on('remote-state', data => {
+  if((state.mode==='multiplayer'||state.mode==='chaos')&&data.id!==state.id)state.remotePlayers.set(data.id,data);
+});
 socket.on('boss-defeated', ({level}={}) => {
-  if(state.mode!=='multiplayer'||level!==state.level||!state.levelData?.boss)return;
+  if((state.mode!=='multiplayer'&&state.mode!=='chaos')||level!==state.level||!state.levelData?.boss)return;
   state.bossDefeated=true;state.bossCharge=state.levelData.boss.required;
   burst(state.levelData.boss.x+80,state.levelData.boss.y+90,42);
-  showOverlay('⚔️ PROTEÇÃO QUEBRADA','Corram para a saída!',850);
+  showOverlay('⚔️ PROTEÇÃO QUEBRADA',state.mode==='chaos'?'As quatro runas responderam. CORRAM!':'Corram para a saída!',850);
 });
 
 function startLevel(level){
-  closePauseMenu(false);document.body?.classList.remove('boot-sequence','setup-active');document.body?.classList.add('game-active');roomEl.classList.add('hidden'); gameWrap.classList.remove('hidden'); hideOverlay();
+  closePauseMenu(false);document.body?.classList.remove('boot-sequence','setup-active');document.body?.classList.add('game-active');document.body?.classList.toggle('chaos-active',state.mode==='chaos');roomEl.classList.add('hidden');gameWrap.classList.remove('hidden');hideOverlay();
   ensureGameplayDisplayMode();
-  state.running=true; state.lastGoalSent=false; state.remote=null; state.trapState.clear();
-  state.bossCharge=0; state.bossDefeated=false; state.lastRuneSent=null; state.levelStart=performance.now();
-  state.soloResetPending=false; state.soloTransition=false;
+  state.running=true;state.lastGoalSent=false;state.remotePlayers.clear();state.trapState.clear();
+  state.bossCharge=0;state.bossDefeated=false;state.lastRuneSent=null;state.lastChaosSealSent=false;state.levelStart=performance.now();
+  state.soloResetPending=false;state.soloTransition=false;
   level=Math.max(1,Math.min(1000,Number(level)||1));state.level=level;
-  state.attempt=(state.levelAttempts.get(level)||0)+1; state.levelAttempts.set(level,state.attempt);
-  state.levelData=safeGenerateLevel(level);applyAttemptBoosts();closeShop();
+  state.attempt=(state.levelAttempts.get(level)||0)+1;state.levelAttempts.set(level,state.attempt);
+  state.levelData=safeGenerateLevel(level);if(state.mode==='chaos')applyChaosMutators(state.levelData,level);applyAttemptBoosts();closeShop();
   player.reset();
   updateHud();
   const enteringZone=((level-1)%100===0)&&state.attempt===1;
-  if (state.levelData.boss) showOverlay(`👑 ${state.levelData.boss.name}`, state.mode==='singleplayer'?'Mantenha seu elemento em uma runa e sobreviva ao ritual.':'Cada jogador segura uma runa enquanto o chefe ataca.', 1350);
+  if(state.levelData.boss)showOverlay(`👑 ${state.levelData.boss.name}`,state.mode==='singleplayer'?'Mantenha seu elemento em uma runa e sobreviva ao ritual.':state.mode==='chaos'?'QUATRO RUNAS. QUATRO ELEMENTOS. Todos precisam sustentar o ritual ao mesmo tempo.':'Cada jogador segura uma runa enquanto o chefe ataca.',1500);
+  else if(state.mode==='chaos'&&state.attempt===1)showOverlay('⚡ MODO CAOS',`Fase ${level}: cada elemento precisa ativar seu próprio selo antes da saída.`,1050);
   else if(level===5&&state.attempt===1)showOverlay('😈 AGORA COMEÇA','A partir daqui o castelo deixa de fingir que é seu amigo.',1450);
   else if(enteringZone){const z=castleRegion(level);showOverlay(`🏰 ${z.name}`,`${z.subtitle} · O castelo mudou as regras.`,1250);}
 }
 
 function updateHud(){
   const e=ELEMENTS[state.role]||ELEMENTS.earth,roleText=`${e.icon} ${e.name.toUpperCase()}`;
-  $('#hudRole').textContent = state.mode==='singleplayer'?`SOLO · ${roleText}`:roleText;
-  $('#hudLevel').textContent=state.level; $('#hudDeaths').textContent=state.deaths;refreshEconomyUI();
+  $('#hudRole').textContent=state.mode==='singleplayer'?`SOLO · ${roleText}`:state.mode==='chaos'?`CAOS · ${roleText}`:roleText;
+  $('#chaosHudBadge')?.classList.toggle('hidden',state.mode!=='chaos');
+  $('#hudLevel').textContent=state.level;$('#hudDeaths').textContent=state.deaths;refreshEconomyUI();
   $('#difficultyLabel').textContent=difficultyName(state.level);
-  const mechanic=$('#mechanicLabel'); if(mechanic) mechanic.textContent=mechanicName(state.level);
+  const mechanic=$('#mechanicLabel');if(mechanic)mechanic.textContent=mechanicName(state.level);
 }
-function difficultyName(l){ return castleRegion(l).name; }
-function mechanicName(l){ if(l%100===0)return'CHEFE • RITUAL • INIMIGOS'; if(l<5)return'CALMARIA SUSPEITA'; if(l<15)return'PEGADINHAS • INIMIGOS • FALSA SEGURANÇA'; return `${castleRegion(l).mechanics} • INIMIGOS`; }
+function difficultyName(l){return castleRegion(l).name;}
+function mechanicName(l){
+  if(state.mode==='chaos'){
+    if(l%100===0)return'4 RUNAS • CHEFE • MORTE COMPARTILHADA';
+    const seals=Math.min(4,(state.room?.chaosSeals||[]).length);
+    return`SELOS ${seals}/4 • QUARTETO ELEMENTAL • ${castleRegion(l).mechanics}`;
+  }
+  if(l%100===0)return'CHEFE • RITUAL • INIMIGOS';if(l<5)return'CALMARIA SUSPEITA';if(l<15)return'PEGADINHAS • INIMIGOS • FALSA SEGURANÇA';return`${castleRegion(l).mechanics} • INIMIGOS`;
+}
 function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 
 const keys={};
@@ -616,7 +657,10 @@ function activateAbility(){
 }
 
 const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,
-  reset(){this.x=90;this.y=690;this.vx=this.vy=0;this.dead=false;},
+  reset(){
+    const starts=state.mode==='chaos'?[28,75,122,169]:state.mode==='multiplayer'?[70,125]:[90];
+    this.x=starts[Math.min(starts.length-1,state.slot||0)]||90;this.y=690;this.vx=this.vy=0;this.dead=false;
+  },
   update(dt){
     if(!state.running||this.dead)return;
     const ld=state.levelData,cfg=ELEMENTS[state.role]||ELEMENTS.earth;let left=keys['arrowleft']||keys['a'],right=keys['arrowright']||keys['d'];const jump=keys['arrowup']||keys['w']||keys[' '];
@@ -629,7 +673,7 @@ const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,
     this.vy+=gravity*dt;this.vy=Math.min(this.vy,900);
     this.x+=this.vx*dt;collideWorld(this,'x');this.y+=this.vy*dt;this.onGround=false;collideWorld(this,'y');
     this.x=Math.max(0,Math.min(W-this.w,this.x));if(this.y>H+100)return die(this);
-    processHazards(this,state.role);processTrolls(this);processSetPieces(this,dt,state.role);processBoss(dt);
+    processHazards(this,state.role);processTrolls(this);processSetPieces(this,dt,state.role);processBoss(dt);processChaosSeal();
     const at=goalAccessible()&&overlap(this,currentGoal());
     if(state.mode==='singleplayer'){if(at)completeSoloLevel();return;}
     if(at!==state.lastGoalSent){state.lastGoalSent=at;socket.emit('goal-state',{atGoal:at});}
