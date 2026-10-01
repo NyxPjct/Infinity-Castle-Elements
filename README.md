@@ -6,12 +6,60 @@ A versão **INSANITY 0.0.2** inaugura o **MODO CAOS**, mantendo a edição ofici
 
 **Versão atual do jogo:** `0.0.2`
 
-## Novidades da versão 0.0.1
+## Novidades da versão 0.0.2
+
+A **INSANITY 0.0.2** é a atualização do **MODO CAOS** e também consolida a infraestrutura online e o sistema de atualização do desktop.
+
+### ⚡ Modo Caos — 4 jogadores
+
+- nova campanha online para **4 jogadores**;
+- a sala exige **Terra, Ar, Luz e Escuridão** ao mesmo tempo;
+- elementos não podem ser repetidos dentro da sala Caos;
+- a partida só começa quando os **4/4 jogadores** estiverem presentes e prontos;
+- cada fase normal possui **quatro selos elementais**;
+- cada personagem ativa somente o selo correspondente ao próprio elemento;
+- a saída permanece bloqueada até os **4 selos** terem sido ativados;
+- chefes do Modo Caos usam **quatro runas simultâneas**, uma para cada elemento;
+- uma morte reinicia a tentativa para o quarteto inteiro;
+- fases do Caos recebem pressão extra de inimigos;
+- sincronização visual e de estado ampliada para até **4 personagens**;
+- campanha Caos com **save próprio**, separado do singleplayer e do multiplayer de 2 jogadores;
+- opção **Continuar Caos — fase X**, criando uma nova sala online a partir do progresso salvo.
+
+### 🌐 Multiplayer online
+
+- servidor multiplayer central hospedado na **Railway**;
+- salas privadas por código funcionando entre computadores diferentes pela internet;
+- o jogador não precisa abrir servidor, terminal, Node.js ou deixar um PC atuando como host;
+- campanha multiplayer de 2 jogadores continua disponível separadamente do Modo Caos;
+- saves persistentes para singleplayer, multiplayer e campanha Caos.
+
+### ⬇ Atualizações pelo próprio jogo
+
+- verificação automática de novas versões pelo **GitHub Releases**;
+- aviso de atualização disponível no menu principal;
+- opção **Verificar atualizações** em Configurações;
+- tela com versão instalada, versão nova e notas da atualização;
+- download com progresso dentro do jogo na versão Setup;
+- opção **Reiniciar e instalar** após o download;
+- saves permanecem preservados durante atualizações;
+- correção do fluxo do atualizador para evitar travamento/loop ao abrir a janela de atualização.
+
+### 🎮 Controles revisados
+
+- **W** agora é a única tecla de pulo;
+- **Espaço** ativa a habilidade elemental;
+- **E** não ativa mais a habilidade;
+- **↑** não executa mais o pulo;
+- movimento continua em **A / D** ou **← / →**;
+- **R**, **ESC** e **F11** permanecem sem alteração.
+
+### 💾 Outros ajustes mantidos
 
 - botão **Voltar ao menu inicial** dentro da sala multiplayer;
 - **+5 moedas** para o personagem que morrer em uma fase;
-- preparação do cliente desktop para servidor multiplayer central;
-- manutenção dos saves de campanha singleplayer e multiplayer.
+- sistema persistente de saves no desktop;
+- menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações e Sair**.
 
 ## Downloads para Windows
 
@@ -76,7 +124,7 @@ O progresso solo inclui fase atual, mortes, elemento, moedas, boosts e cosmétic
 
 O multiplayer foi criado para **2 jogadores**, com salas privadas por código e escolha independente de elemento. O sistema sincroniza jogadores, fase, mortes, chefes, runas, inimigos derrotados e reinícios.
 
-Na edição desktop 0.0, o jogo já inclui a estrutura de servidor necessária. Para partidas entre computadores diferentes pela internet, os jogadores precisam se conectar à mesma instância de servidor multiplayer hospedada.
+Na edição desktop **0.0.2**, o multiplayer utiliza o servidor online do projeto hospedado na **Railway**. Jogadores em computadores diferentes podem criar e entrar em salas pela internet usando o código da sala, sem precisar iniciar servidor manualmente.
 
 ## Modo Caos — 4 jogadores
 
@@ -99,7 +147,7 @@ A campanha Caos possui save separado e pode ser retomada criando uma nova sala a
 
 ## Sistema de moedas e Loja Arcana
 
-Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer: na versão **0.0.1**, o personagem recebe **+5 moedas por morte**. Elas podem ser usadas na **Loja Arcana** para comprar:
+Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer: na versão **0.0.2**, o personagem continua recebendo **+5 moedas por morte**. Elas podem ser usadas na **Loja Arcana** para comprar:
 
 - **Runa de Escudo** — absorve um golpe fatal;
 - **Botas do Vento** — aumenta temporariamente a velocidade;
@@ -189,11 +237,13 @@ Pressionar **ESC novamente** fecha o menu de pausa e continua a tentativa.
 ## Controles
 
 - **A / D** ou **← / →** — movimento
-- **W**, **↑** ou **Espaço** — pular
-- **E** — habilidade elemental
+- **W** — pular
+- **Espaço** — habilidade elemental
 - **R** — reiniciar fase
 - **ESC** — abrir/fechar menu de pausa
 - **F11** — alternar tela cheia
+
+> Na **0.0.2**, o pulo foi simplificado para **W somente**. A habilidade elemental saiu do **E** e passou para o **Espaço**.
 
 ---
 
