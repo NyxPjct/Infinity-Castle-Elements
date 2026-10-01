@@ -25,10 +25,10 @@ Campanha online para 4 jogadores.
 - O Modo Caos possui save de campanha separado.
 
 ELEMENTOS
-Terra 🪨 — resistente a raízes; ESPAÇO = Impacto Sísmico.
-Ar 💨 — rápido; imune a vento; ESPAÇO = Impulso Aéreo.
-Luz ☀️ — resistente a maldições; ESPAÇO = Clarão Protetor.
-Escuridão 🌑 — ignora controles invertidos; ESPAÇO = Passo Sombrio.
+Terra 🪨 — resistente a raízes; ESPAÇO = Raízes do Abismo (1,9s, até 2 alvos).
+Ar 💨 — rápido; imune a vento; ESPAÇO = Mini Furacão (2,2s, até 2 alvos).
+Luz ☀️ — resistente a maldições; ESPAÇO = Coroa Solar (2,8s, até 3 alvos).
+Escuridão 🌑 — ignora controles invertidos; ESPAÇO = Fogo Negro (2,6s, até 2 alvos).
 
 MOEDAS E LOJA
 Passe fases, derrote inimigos e sobreviva às tentativas para ganhar moedas. A Loja Arcana oferece boosts e cosméticos.
@@ -37,6 +37,7 @@ CONTROLES
 A/D ou ← → = mover
 W ou ↑ = pular
 ESPAÇO = habilidade elemental
+COOLDOWN DAS HABILIDADES = 5 segundos após o efeito terminar
 R = reiniciar fase
 ESC = menu de pausa
 F11 = alternar tela cheia
