@@ -9,6 +9,8 @@ on:
       - "build/**"
       - "server.js"
       - "package.json"
+      - "tools/**"
+      - ".github/workflows/build-windows.yml"
       - "README.md"
       - "COMO_JOGAR.txt"
   workflow_dispatch:
