@@ -132,16 +132,16 @@ function joinRoom(socket,room,rawName,requestedElement,ack){
   ack({ok:true,code:room.code,role,slot,id:socket.id,level:room.level,deaths:room.deaths});emitRoom(room);
 }
 
-function startServer(port = PORT, host = '0.0.1.0') {
+function startServer(port = PORT, host = '0.0.0.0') {
   if (server.listening) return server;
   server.listen(port, host, () => {
     const addr = server.address();
     const actualPort = typeof addr === 'object' && addr ? addr.port : port;
-    console.log(`Infinity Castle Elements INSANITY 0.0 running on http://localhost:${actualPort}`);
+    console.log(`Infinity Castle Elements multiplayer server listening on 0.0.0.0:${actualPort}`);
   });
   return server;
 }
 
-if (require.main === module) startServer(PORT);
+if (require.main === module) startServer(PORT, '0.0.0.0');
 
 module.exports = { app, server, io, startServer };
