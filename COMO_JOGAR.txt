@@ -35,7 +35,7 @@ Passe fases, derrote inimigos e sobreviva às tentativas para ganhar moedas. A L
 
 CONTROLES
 A/D ou ← → = mover
-W = pular
+W ou ↑ = pular
 ESPAÇO = habilidade elemental
 R = reiniciar fase
 ESC = menu de pausa
