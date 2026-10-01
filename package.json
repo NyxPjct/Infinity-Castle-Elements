@@ -10,7 +10,8 @@
     "test:levels": "node tools/audit-levels.js",
     "desktop": "electron .",
     "dist:win": "electron-builder --win nsis portable",
-    "start:multiplayer": "MULTIPLAYER_ONLY=1 node server.js"
+    "start:multiplayer": "MULTIPLAYER_ONLY=1 node server.js",
+    "test:chaos": "node tools/test-chaos-multiplayer.js"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -21,7 +22,8 @@
   },
   "devDependencies": {
     "electron": "44.5.1",
-    "electron-builder": "26.17.0"
+    "electron-builder": "26.17.0",
+    "socket.io-client": "^4.8.1"
   },
   "build": {
     "appId": "com.nyxprojectr.infinitycastleelements",
