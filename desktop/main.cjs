@@ -79,7 +79,7 @@ function createWindow(port) {
     fullscreen: true,
     backgroundColor: '#000000',
     autoHideMenuBar: true,
-    title: 'Infinity Castle Elements — INSANITY 0.0.0',
+    title: 'Infinity Castle Elements — INSANITY 0.0.1',
     icon: path.join(__dirname, '..', 'build', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
