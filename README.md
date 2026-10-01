@@ -1,10 +1,10 @@
-# Infinity Castle Elements — INSANITY 0.0.1
+# Infinity Castle Elements — INSANITY 0.0.2
 
-**Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
+**Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer cooperativo, **Modo Caos para 4 jogadores online**, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A versão **INSANITY 0.0.1** é a primeira versão definitiva do projeto e a edição oficial para Windows.
+A versão **INSANITY 0.0.2** inaugura o **MODO CAOS**, mantendo a edição oficial para Windows e o sistema de atualização dentro do próprio jogo.
 
-**Versão atual do jogo:** `0.0.1`
+**Versão atual do jogo:** `0.0.2`
 
 ## Novidades da versão 0.0.1
 
@@ -15,9 +15,9 @@ A versão **INSANITY 0.0.1** é a primeira versão definitiva do projeto e a edi
 
 ## Downloads para Windows
 
-1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.1.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.1/Infinity-Castle-Elements-Setup-0.0.1.exe)
-2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.1.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.1/Infinity-Castle-Elements-Portable-0.0.1.exe)
-3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.1.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.1/Infinity-Castle-Elements-Windows-0.0.1.zip)
+1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.2.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.2/Infinity-Castle-Elements-Setup-0.0.2.exe)
+2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.2.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.2/Infinity-Castle-Elements-Portable-0.0.2.exe)
+3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.2.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.2/Infinity-Castle-Elements-Windows-0.0.2.zip)
 
 ---
 
@@ -27,7 +27,7 @@ Ao iniciar o jogo, a apresentação acontece em três etapas:
 
 1. tela preta da **NYX PROJECT R**, com a coruja roxa de olhos vermelhos e a assinatura **Apresenta:**;
 2. tela cinematográfica de **INFINITY CASTLE ELEMENTS — INSANITY**, com os quatro elementos diante do castelo em clima de aventura fantástica;
-3. menu principal com **Singleplayer, Multiplayer, Configurações e Sair**. A Loja Arcana continua disponível dentro do jogo.
+3. menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações e Sair**. A Loja Arcana continua disponível dentro do jogo.
 
 Na versão desktop, **Sair** fecha o jogo diretamente.
 
@@ -77,6 +77,25 @@ O progresso solo inclui fase atual, mortes, elemento, moedas, boosts e cosmétic
 O multiplayer foi criado para **2 jogadores**, com salas privadas por código e escolha independente de elemento. O sistema sincroniza jogadores, fase, mortes, chefes, runas, inimigos derrotados e reinícios.
 
 Na edição desktop 0.0, o jogo já inclui a estrutura de servidor necessária. Para partidas entre computadores diferentes pela internet, os jogadores precisam se conectar à mesma instância de servidor multiplayer hospedada.
+
+## Modo Caos — 4 jogadores
+
+O **Modo Caos** é uma campanha online paralela para exatamente **4 jogadores**. A sala só começa quando os quatro participantes estiverem presentes e prontos.
+
+Cada sala deve conter os quatro elementos, sem repetição:
+
+- 🪨 **Terra**
+- 💨 **Ar**
+- ☀️ **Luz**
+- 🌑 **Escuridão**
+
+Nas fases normais, quatro **selos elementais** são distribuídos pelo cenário. Cada jogador só ativa o selo do próprio elemento. A saída permanece bloqueada até os quatro selos serem despertados.
+
+Nos chefes, o ritual cooperativo é ampliado para **quatro runas simultâneas**, uma para cada elemento. Os quatro jogadores precisam ocupar suas runas ao mesmo tempo e sobreviver ao ritual.
+
+O Modo Caos também aumenta a presença de inimigos e transforma uma morte em falha coletiva: se um integrante morrer, a tentativa é reiniciada para todo o quarteto.
+
+A campanha Caos possui save separado e pode ser retomada criando uma nova sala a partir da fase salva.
 
 ## Sistema de moedas e Loja Arcana
 
@@ -135,7 +154,7 @@ Também existe uma **sala de emergência**: se uma geração for detectada como 
 
 A build possui auditoria própria para geração, renderização, estruturas críticas, inimigos e runtime dos quatro elementos.
 
-Na INSANITY 0.0.1, o processo de validação verifica:
+Na INSANITY 0.0.2, o processo de validação verifica:
 
 - **1000 fases**;
 - **10 chefes**;
@@ -219,21 +238,21 @@ Essas tecnologias fazem parte do aplicativo e não precisam ser instaladas manua
 ### Instalador
 Baixe:
 
-**Infinity-Castle-Elements-Setup-0.0.1.exe**
+**Infinity-Castle-Elements-Setup-0.0.2.exe**
 
 Abra o arquivo, escolha a pasta de instalação e conclua o assistente. O instalador pode criar atalhos na Área de Trabalho e no Menu Iniciar.
 
 ### Portable
 Baixe:
 
-**Infinity-Castle-Elements-Portable-0.0.1.exe**
+**Infinity-Castle-Elements-Portable-0.0.2.exe**
 
 Abra o executável diretamente. Não é necessário instalar o jogo.
 
 ### Pacote completo
 Baixe:
 
-**Infinity-Castle-Elements-Windows-0.0.1.zip**
+**Infinity-Castle-Elements-Windows-0.0.2.zip**
 
 Extraia o arquivo para encontrar as versões Setup e Portable.
 
