@@ -53,6 +53,20 @@ A **INSANITY 0.0.2** é a atualização do **MODO CAOS** e também consolida a i
 - **E** não ativa mais a habilidade;
 - **R**, **ESC** e **F11** permanecem sem alteração.
 
+### ✨ Habilidades elementais — novo pacote visual e de combate
+
+As quatro habilidades agora possuem animação própria, janela ativa e cooldown visível na HUD. O objetivo é fazer cada elemento parecer realmente diferente sem transformar o jogo em spam de poder.
+
+- o **cooldown é de 5 segundos depois que o efeito termina**;
+- a HUD mostra **PODER PRONTO**, tempo ativo e tempo restante de recarga;
+- **Luz — Coroa Solar:** aura em formato de pequeno sol ao redor da personagem, dura **2,8s**, alcança inimigos próximos em pulsos e pode derrotar no máximo **3 inimigos por ativação**;
+- **Escuridão — Fogo Negro:** chamas negras/roxas emanam do personagem por **2,6s**, atacando inimigos próximos; pode derrotar no máximo **2 inimigos por ativação** e mantém apenas uma curta janela inicial de fase/proteção;
+- **Terra — Raízes do Abismo:** raízes brotam do chão e procuram inimigos próximos por **1,9s**, alcançando até **2 alvos por ativação**;
+- **Ar — Mini Furacão:** um pequeno tornado é lançado na direção em que o jogador está olhando por **2,2s**, podendo atingir no máximo **2 inimigos por ativação**;
+- o Ar continua recebendo mobilidade adicional enquanto sua habilidade está ativa;
+- Luz e Escuridão não ficam invulneráveis durante toda a duração do poder: existe apenas uma pequena proteção inicial para evitar que a ativação vire morte instantânea;
+- o sistema foi deliberadamente limitado por alcance, duração, quantidade de alvos e recarga para preservar a dificuldade **INSANITY**.
+
 ### 💾 Outros ajustes mantidos
 
 - botão **Voltar ao menu inicial** dentro da sala multiplayer;
@@ -100,16 +114,16 @@ O jogo possui **12 arquétipos de layout**, **10 regiões** e um chefe a cada 10
 ## Elementos jogáveis
 
 ### 🪨 Terra
-Mais pesado e controlado, resistente a raízes e equipado com **Impacto Sísmico**, capaz de destruir ou neutralizar ameaças próximas.
+Mais pesado e controlado, resistente a raízes e equipado com **Raízes do Abismo**. Ao pressionar **Espaço**, raízes brotam do chão em direção aos inimigos próximos. A habilidade dura **1,9s**, pode atingir até **2 alvos** e entra em recarga por **5s após terminar**.
 
 ### 💨 Ar
-Mais rápido e móvel, imune a vendavais e equipado com **Impulso Aéreo**, que melhora temporariamente velocidade, gravidade e controle no ar.
+Mais rápido e móvel, imune a vendavais e equipado com **Mini Furacão**. Ao pressionar **Espaço**, um pequeno tornado avança na direção em que o personagem está olhando enquanto a mobilidade aérea aumenta temporariamente. O efeito dura **2,2s**, pode atingir até **2 inimigos** e recarrega por **5s após terminar**.
 
 ### ☀️ Luz
-Resistente a maldições e equipada com **Clarão Protetor**, que fornece proteção temporária e pode atingir inimigos próximos.
+Resistente a maldições e equipada com **Coroa Solar**. Ao pressionar **Espaço**, uma aura solar pulsante envolve a personagem e ataca inimigos próximos. O efeito dura **2,8s**, pode derrotar até **3 inimigos** e possui **5s de recarga depois que termina**. A proteção defensiva existe somente por um instante no começo da ativação.
 
 ### 🌑 Escuridão
-Ignora zonas de controles invertidos e usa **Passo Sombrio**, ficando temporariamente capaz de atravessar diversos perigos.
+Ignora zonas de controles invertidos e usa **Fogo Negro**. Ao pressionar **Espaço**, chamas negras e roxas emanam do corpo e atacam inimigos próximos por **2,6s**. A habilidade pode derrotar até **2 inimigos** por uso e concede somente uma curta janela inicial de fase/proteção, seguida de **5s de recarga após o efeito terminar**.
 
 ## Singleplayer
 
