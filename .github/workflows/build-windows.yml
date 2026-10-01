@@ -44,6 +44,10 @@ jobs:
         shell: pwsh
         run: npm run test:levels
 
+      - name: Test four-player Chaos multiplayer
+        shell: pwsh
+        run: npm run test:chaos
+
       - name: Build Windows EXE
         shell: pwsh
         run: npm run dist:win -- --publish never
