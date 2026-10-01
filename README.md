@@ -47,11 +47,10 @@ A **INSANITY 0.0.2** é a atualização do **MODO CAOS** e também consolida a i
 
 ### 🎮 Controles revisados
 
-- **W** agora é a única tecla de pulo;
+- movimento em **A / D** ou **← / →**;
+- pulo em **W** ou **↑**;
 - **Espaço** ativa a habilidade elemental;
 - **E** não ativa mais a habilidade;
-- **↑** não executa mais o pulo;
-- movimento continua em **A / D** ou **← / →**;
 - **R**, **ESC** e **F11** permanecem sem alteração.
 
 ### 💾 Outros ajustes mantidos
@@ -237,13 +236,13 @@ Pressionar **ESC novamente** fecha o menu de pausa e continua a tentativa.
 ## Controles
 
 - **A / D** ou **← / →** — movimento
-- **W** — pular
+- **W** ou **↑** — pular
 - **Espaço** — habilidade elemental
 - **R** — reiniciar fase
 - **ESC** — abrir/fechar menu de pausa
 - **F11** — alternar tela cheia
 
-> Na **0.0.2**, o pulo foi simplificado para **W somente**. A habilidade elemental saiu do **E** e passou para o **Espaço**.
+> Na **0.0.2**, a habilidade elemental saiu do **E** e passou para o **Espaço**. O pulo pode ser feito com **W** ou **↑**.
 
 ---
 
