@@ -1,6 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const { app, BrowserWindow, ipcMain, shell, screen } = require('electron');
+const { Readable, Transform } = require('stream');
+const { pipeline } = require('stream/promises');
+const { spawn } = require('child_process');
 
 let mainWindow = null;
 let gameServer = null;
@@ -8,6 +11,159 @@ let quitting = false;
 let preferredResolution = 'native';
 let multiplayerServerUrl = process.env.ICE_MULTIPLAYER_URL || '';
 const MULTIPLAYER_DISCOVERY_URL = 'https://raw.githubusercontent.com/NyxPjct/Infinity-Castle-Elements/main/multiplayer-server.json';
+const UPDATE_API_URL = 'https://api.github.com/repos/NyxPjct/Infinity-Castle-Elements/releases/latest';
+let updateState = {
+  status: 'idle',
+  currentVersion: app.getVersion(),
+  latestVersion: null,
+  releaseName: null,
+  notes: '',
+  releaseUrl: null,
+  downloadUrl: null,
+  assetName: null,
+  progress: 0,
+  downloadedBytes: 0,
+  totalBytes: 0,
+  installerPath: null,
+  error: null,
+  installMode: app.isPackaged ? (process.env.PORTABLE_EXECUTABLE_FILE ? 'portable' : 'installer') : 'development'
+};
+
+function publicUpdateState() {
+  return {...updateState, installerPath: updateState.installerPath ? true : false};
+}
+function sendUpdateState() {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('ice:update-state', publicUpdateState());
+}
+function normalizeVersion(value) {
+  return String(value || '').trim().replace(/^v/i, '').split('-')[0];
+}
+function versionParts(value) {
+  const parts = normalizeVersion(value).split('.').slice(0, 4).map(v => Number.parseInt(v, 10) || 0);
+  while (parts.length < 4) parts.push(0);
+  return parts;
+}
+function isVersionNewer(candidate, current) {
+  const a = versionParts(candidate), b = versionParts(current);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    if ((a[i] || 0) > (b[i] || 0)) return true;
+    if ((a[i] || 0) < (b[i] || 0)) return false;
+  }
+  return false;
+}
+async function checkForUpdates() {
+  updateState = {...updateState, status:'checking', error:null, progress:0};
+  sendUpdateState();
+  try {
+    const response = await fetch(UPDATE_API_URL, {
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'Infinity-Castle-Elements-Updater'
+      },
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error(`GitHub respondeu HTTP ${response.status}`);
+    const release = await response.json();
+    const latestVersion = normalizeVersion(release.tag_name || release.name);
+    const setupAsset = Array.isArray(release.assets) ? release.assets.find(a => /Infinity-Castle-Elements-Setup-.*\.exe$/i.test(a.name || '')) : null;
+    const portableAsset = Array.isArray(release.assets) ? release.assets.find(a => /Infinity-Castle-Elements-Portable-.*\.exe$/i.test(a.name || '')) : null;
+    const preferredAsset = updateState.installMode === 'portable' ? portableAsset : setupAsset;
+    const available = Boolean(latestVersion && isVersionNewer(latestVersion, app.getVersion()));
+    updateState = {
+      ...updateState,
+      status: available ? 'available' : 'up-to-date',
+      currentVersion: app.getVersion(),
+      latestVersion: latestVersion || app.getVersion(),
+      releaseName: release.name || `Infinity Castle Elements ${latestVersion}`,
+      notes: String(release.body || '').trim(),
+      releaseUrl: release.html_url || null,
+      downloadUrl: preferredAsset?.browser_download_url || null,
+      assetName: preferredAsset?.name || null,
+      progress: 0,
+      downloadedBytes: 0,
+      totalBytes: Number(preferredAsset?.size) || 0,
+      installerPath: null,
+      error: available && !preferredAsset ? 'A atualização existe, mas o arquivo de Windows ainda não foi publicado.' : null
+    };
+    if (updateState.error) updateState.status = 'error';
+  } catch (error) {
+    updateState = {...updateState, status:'error', error:String(error?.message || error || 'Falha ao verificar atualizações.')};
+  }
+  sendUpdateState();
+  return publicUpdateState();
+}
+async function downloadUpdate() {
+  if (updateState.status !== 'available' || !updateState.downloadUrl) return publicUpdateState();
+  if (updateState.installMode === 'portable') {
+    await shell.openExternal(updateState.downloadUrl);
+    updateState = {...updateState, status:'portable-opened'};
+    sendUpdateState();
+    return publicUpdateState();
+  }
+  if (updateState.installMode !== 'installer') {
+    if (updateState.releaseUrl) await shell.openExternal(updateState.releaseUrl);
+    return publicUpdateState();
+  }
+  const updatesDir = path.join(app.getPath('userData'), 'updates');
+  fs.mkdirSync(updatesDir, {recursive:true});
+  const filename = updateState.assetName || `Infinity-Castle-Elements-Setup-${updateState.latestVersion}.exe`;
+  const finalPath = path.join(updatesDir, filename);
+  const tempPath = finalPath + '.part';
+  try {
+    fs.rmSync(tempPath, {force:true});
+    updateState = {...updateState, status:'downloading', progress:0, downloadedBytes:0, installerPath:null, error:null};
+    sendUpdateState();
+    const response = await fetch(updateState.downloadUrl, {
+      headers: {'User-Agent':'Infinity-Castle-Elements-Updater'},
+      redirect: 'follow'
+    });
+    if (!response.ok || !response.body) throw new Error(`Falha no download: HTTP ${response.status}`);
+    const total = Number(response.headers.get('content-length')) || updateState.totalBytes || 0;
+    let downloaded = 0;
+    let lastEmit = 0;
+    const meter = new Transform({
+      transform(chunk, _encoding, callback) {
+        downloaded += chunk.length;
+        const now = Date.now();
+        if (now - lastEmit > 120 || (total && downloaded >= total)) {
+          lastEmit = now;
+          updateState.downloadedBytes = downloaded;
+          updateState.totalBytes = total;
+          updateState.progress = total ? Math.min(100, Math.round(downloaded / total * 100)) : 0;
+          sendUpdateState();
+        }
+        callback(null, chunk);
+      }
+    });
+    await pipeline(Readable.fromWeb(response.body), meter, fs.createWriteStream(tempPath));
+    fs.renameSync(tempPath, finalPath);
+    updateState = {...updateState, status:'downloaded', progress:100, downloadedBytes:downloaded, totalBytes:total, installerPath:finalPath};
+  } catch (error) {
+    try { fs.rmSync(tempPath, {force:true}); } catch {}
+    updateState = {...updateState, status:'error', error:String(error?.message || error || 'Falha ao baixar atualização.')};
+  }
+  sendUpdateState();
+  return publicUpdateState();
+}
+function installDownloadedUpdate() {
+  if (updateState.installMode !== 'installer' || !updateState.installerPath || !fs.existsSync(updateState.installerPath)) return false;
+  try {
+    const escaped = updateState.installerPath.replace(/'/g, "''");
+    const command = `Start-Sleep -Seconds 2; Start-Process -FilePath '${escaped}' -ArgumentList '/S'`;
+    const child = spawn('powershell.exe', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command', command], {
+      detached: true,
+      stdio: 'ignore',
+      windowsHide: true
+    });
+    child.unref();
+    setTimeout(() => app.quit(), 150);
+    return true;
+  } catch (error) {
+    updateState = {...updateState, status:'error', error:String(error?.message || error || 'Falha ao iniciar o instalador.')};
+    sendUpdateState();
+    return false;
+  }
+}
 
 async function resolveMultiplayerServerUrl() {
   if (multiplayerServerUrl) return multiplayerServerUrl;
@@ -164,6 +320,12 @@ ipcMain.on('ice:storage-remove', (event, key) => {
 });
 
 ipcMain.on('ice:get-multiplayer-url', (event) => { event.returnValue = multiplayerServerUrl; });
+ipcMain.on('ice:get-app-version', (event) => { event.returnValue = app.getVersion(); });
+ipcMain.on('ice:get-install-mode', (event) => { event.returnValue = updateState.installMode; });
+ipcMain.handle('ice:get-update-state', () => publicUpdateState());
+ipcMain.handle('ice:check-for-updates', () => checkForUpdates());
+ipcMain.handle('ice:download-update', () => downloadUpdate());
+ipcMain.handle('ice:install-update', () => installDownloadedUpdate());
 ipcMain.on('ice:quit', () => app.quit());
 ipcMain.handle('ice:toggle-fullscreen', () => {
   if (!mainWindow) return false;
@@ -191,6 +353,7 @@ app.whenReady().then(async () => {
     await resolveMultiplayerServerUrl();
     const port = await startEmbeddedServer();
     createWindow(port);
+    setTimeout(() => { checkForUpdates().catch(() => {}); }, 3500);
   } catch (error) {
     console.error('Falha ao iniciar Infinity Castle Elements:', error);
     app.quit();
