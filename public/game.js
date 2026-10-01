@@ -7,10 +7,16 @@ const canvas = $('#game'), ctx = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 
 const ELEMENTS = {
-  earth: {name:'Terra',icon:'🪨',color:'#a8c66c',accent:'#6f5139',accel:1450,max:330,gravity:1580,jump:-595,ability:'Impacto sísmico'},
-  air: {name:'Ar',icon:'💨',color:'#9bdcff',accent:'#e9f8ff',accel:1620,max:365,gravity:1240,jump:-645,ability:'Impulso aéreo'},
-  light: {name:'Luz',icon:'☀️',color:'#ffe477',accent:'#fff8d0',accel:1520,max:350,gravity:1450,jump:-620,ability:'Clarão protetor'},
-  darkness: {name:'Escuridão',icon:'🌑',color:'#a46cff',accent:'#241233',accel:1540,max:345,gravity:1480,jump:-615,ability:'Passo sombrio'}
+  earth: {name:'Terra',icon:'🪨',color:'#a8c66c',accent:'#6f5139',accel:1450,max:330,gravity:1580,jump:-595,ability:'Raízes do Abismo'},
+  air: {name:'Ar',icon:'💨',color:'#9bdcff',accent:'#e9f8ff',accel:1620,max:365,gravity:1240,jump:-645,ability:'Mini Furacão'},
+  light: {name:'Luz',icon:'☀️',color:'#ffe477',accent:'#fff8d0',accel:1520,max:350,gravity:1450,jump:-620,ability:'Coroa Solar'},
+  darkness: {name:'Escuridão',icon:'🌑',color:'#a46cff',accent:'#241233',accel:1540,max:345,gravity:1480,jump:-615,ability:'Fogo Negro'}
+};
+const ABILITY_RULES = {
+  earth:{duration:1900,cooldown:5000,pulse:850,radius:330,maxHits:2,label:'RAÍZES'},
+  air:{duration:2200,cooldown:5000,pulse:0,radius:46,maxHits:2,label:'FURACÃO'},
+  light:{duration:2800,cooldown:5000,pulse:800,radius:155,maxHits:3,label:'AURA SOLAR'},
+  darkness:{duration:2600,cooldown:5000,pulse:750,radius:120,maxHits:2,label:'FOGO NEGRO'}
 };
 const SHOP_ITEMS = {
   shield:{cost:12,type:'boost'}, speed:{cost:10,type:'boost'}, jump:{cost:10,type:'boost'},
@@ -22,7 +28,8 @@ const state = {
   mode: 'menu', soloResetPending: false, soloTransition: false,
   running: false, room: null, remotePlayers: new Map(), lastNet: 0, lastGoalSent: false,
   levelData: null, trapState: new Map(), particles: [], levelStart: 0,
-  bossCharge: 0, bossDefeated: false, lastRuneSent: null, lastAbility: 0, abilityUntil: 0,
+  bossCharge: 0, bossDefeated: false, lastRuneSent: null, abilityStartedAt: 0, abilityUntil: 0,
+  abilityCooldownUntil:0, abilityPhaseUntil:0, abilityLastPulse:0, abilityHits:0, abilityRootFx:null,
   invulnUntil: 0, levelAttempts: new Map(), attempt: 1, screenShake: 0,
   activeBoosts:{shield:false,speed:false,jump:false}, shopOpen:false, shopTimer:null, lastRewardedLevel:0,
   paused:false, pauseWasRunning:false, settingsFromPause:false, setupKind:'singleplayer', lastChaosSealSent:false
@@ -641,6 +648,7 @@ function startLevel(level){
   ensureGameplayDisplayMode();
   state.running=true;state.lastGoalSent=false;state.remotePlayers.clear();state.trapState.clear();
   state.bossCharge=0;state.bossDefeated=false;state.lastRuneSent=null;state.lastChaosSealSent=false;state.levelStart=performance.now();
+  state.abilityUntil=0;state.abilityPhaseUntil=0;state.abilityLastPulse=0;state.abilityHits=0;state.abilityRootFx=null;
   state.soloResetPending=false;state.soloTransition=false;
   level=Math.max(1,Math.min(1000,Number(level)||1));state.level=level;
   state.attempt=(state.levelAttempts.get(level)||0)+1;state.levelAttempts.set(level,state.attempt);
@@ -661,6 +669,7 @@ function updateHud(){
   $('#hudLevel').textContent=state.level;$('#hudDeaths').textContent=state.deaths;refreshEconomyUI();
   $('#difficultyLabel').textContent=difficultyName(state.level);
   const mechanic=$('#mechanicLabel');if(mechanic)mechanic.textContent=mechanicName(state.level);
+  updateAbilityHud(performance.now());
 }
 function difficultyName(l){return castleRegion(l).name;}
 function mechanicName(l){
@@ -686,14 +695,93 @@ addEventListener('keydown',e=>{
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 
 function activateAbility(){
-  if(!state.running) return;
-  const now=performance.now();if(now-state.lastAbility<1700)return;
-  state.lastAbility=now;const durations={earth:500,air:650,light:900,darkness:760};state.abilityUntil=now+(durations[state.role]||500);
-  if(state.role==='light'||state.role==='darkness')state.invulnUntil=Math.max(state.invulnUntil,state.abilityUntil);
-  burst(player.x+21,player.y+28,18);attackEnemiesAround(player,state.role);
+  if(!state.running)return;
+  const now=performance.now(),rule=ABILITY_RULES[state.role]||ABILITY_RULES.earth;
+  if(now<state.abilityCooldownUntil)return;
+  state.abilityStartedAt=now;
+  state.abilityUntil=now+rule.duration;
+  // O cooldown começa quando o efeito termina: poder forte, mas sem spam.
+  state.abilityCooldownUntil=state.abilityUntil+rule.cooldown;
+  state.abilityLastPulse=now-rule.pulse;
+  state.abilityHits=0;state.abilityRootFx=null;
+  state.abilityPhaseUntil=now+(state.role==='darkness'?650:state.role==='earth'?360:0);
+  if(state.role==='light'||state.role==='darkness')state.invulnUntil=Math.max(state.invulnUntil,now+320);
+  burst(player.x+21,player.y+28,22,(ELEMENTS[state.role]||ELEMENTS.earth).color);
+  state.screenShake=Math.max(state.screenShake,state.role==='earth'?7:3);
+  processAbilityCombat(now,true);
+  updateAbilityHud(now);
+}
+function abilityProgress(now=performance.now(),started=state.abilityStartedAt,until=state.abilityUntil){
+  if(!started||until<=started)return 0;
+  return Math.max(0,Math.min(1,(now-started)/(until-started)));
+}
+function livingEnemies(){
+  return (state.levelData?.enemies||[]).filter(e=>!state.trapState.get('enemyDead'+e.id));
+}
+function nearestEnemyInRadius(p,radius){
+  let best=null,bestD=Infinity;
+  for(const e of livingEnemies()){
+    const r=enemyRect(e),dx=(r.x+r.w/2)-(p.x+p.w/2),dy=(r.y+r.h/2)-(p.y+p.h/2),d=dx*dx+dy*dy;
+    if(d<=radius*radius&&d<bestD){best={enemy:e,rect:r};bestD=d;}
+  }
+  return best;
+}
+function abilityHitEnemy(hit,color){
+  if(!hit||state.abilityHits>=(ABILITY_RULES[state.role]?.maxHits||1))return false;
+  state.abilityHits+=1;defeatEnemy(hit.enemy);
+  burst(hit.rect.x+hit.rect.w/2,hit.rect.y+hit.rect.h/2,12,color);
+  state.screenShake=Math.max(state.screenShake,4);
+  return true;
+}
+function localAirTornadoRect(now=performance.now()){
+  const p=abilityProgress(now),dir=player.facing||1,cx=player.x+21+dir*(55+p*430),cy=player.y+30+Math.sin(p*Math.PI*5)*18;
+  return {x:cx-34,y:cy-34,w:68,h:68,cx,cy};
+}
+function processAbilityCombat(now=performance.now(),force=false){
+  if(now>=state.abilityUntil||!state.levelData)return;
+  const role=state.role,rule=ABILITY_RULES[role]||ABILITY_RULES.earth;
+  if(state.abilityHits>=rule.maxHits)return;
+  if(role==='air'){
+    const tornado=localAirTornadoRect(now);
+    for(const e of livingEnemies()){
+      if(state.abilityHits>=rule.maxHits)break;
+      const r=enemyRect(e);
+      if(overlap(tornado,r))abilityHitEnemy({enemy:e,rect:r},ELEMENTS.air.color);
+    }
+    return;
+  }
+  if(!force&&now-state.abilityLastPulse<rule.pulse)return;
+  state.abilityLastPulse=now;
+  const hit=nearestEnemyInRadius(player,rule.radius);
+  if(!hit)return;
+  if(role==='earth'){
+    state.abilityRootFx={x:hit.rect.x+hit.rect.w/2,y:hit.rect.y+hit.rect.h/2,until:now+460};
+    abilityHitEnemy(hit,ELEMENTS.earth.color);
+  }else if(role==='light'){
+    abilityHitEnemy(hit,'#fff2a0');
+  }else if(role==='darkness'){
+    abilityHitEnemy(hit,'#7c3cff');
+  }
+}
+function updateAbilityHud(now=performance.now()){
+  const hud=$('#abilityHud'),text=$('#abilityHudText'),bar=$('#abilityCooldownBar');if(!hud||!text||!bar)return;
+  const rule=ABILITY_RULES[state.role]||ABILITY_RULES.earth;
+  hud.classList.remove('ready','active','cooldown');
+  if(now<state.abilityUntil){
+    const remaining=Math.max(0,(state.abilityUntil-now)/1000);
+    hud.classList.add('active');text.textContent=`${rule.label} ${remaining.toFixed(1)}s`;
+    bar.style.width=`${Math.max(0,100*(state.abilityUntil-now)/rule.duration)}%`;
+    return;
+  }
+  if(now<state.abilityCooldownUntil){
+    const remaining=Math.max(0,(state.abilityCooldownUntil-now)/1000);
+    const pct=Math.max(0,Math.min(100,100*(1-(state.abilityCooldownUntil-now)/rule.cooldown)));
+    hud.classList.add('cooldown');text.textContent=`RECARGA ${remaining.toFixed(1)}s`;bar.style.width=pct+'%';return;
+  }
+  hud.classList.add('ready');text.textContent='PODER PRONTO';bar.style.width='100%';
 }
 
-const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,
+const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,facing:1,
   reset(){
     const starts=state.mode==='chaos'?[28,75,122,169]:state.mode==='multiplayer'?[70,125]:[90];
     this.x=starts[Math.min(starts.length-1,state.slot||0)]||90;this.y=690;this.vx=this.vy=0;this.dead=false;
@@ -704,17 +792,23 @@ const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,
     const reversed=state.role!=='darkness'&&ld.reverseZones?.some(z=>overlap(this,z));if(reversed){const t=left;left=right;right=t;}
     const ability=performance.now()<state.abilityUntil;let accel=cfg.accel,max=cfg.max,gravity=cfg.gravity,jumpPower=cfg.jump;
     if(state.role==='air'&&ability){max=520;gravity=780;}if(state.activeBoosts.speed){accel*=1.15;max*=1.2;}if(state.activeBoosts.jump)jumpPower*=1.15;
+    if(left&&!right)this.facing=-1;if(right&&!left)this.facing=1;
     if(left)this.vx-=accel*dt;if(right)this.vx+=accel*dt;if(!left&&!right)this.vx*=Math.pow(.001,dt);this.vx=Math.max(-max,Math.min(max,this.vx));
     if(jump&&this.onGround){this.vy=jumpPower;this.onGround=false;}
     if(state.role==='air'&&ability&&jump&&this.vy>0)this.vy-=900*dt;
     this.vy+=gravity*dt;this.vy=Math.min(this.vy,900);
     this.x+=this.vx*dt;collideWorld(this,'x');this.y+=this.vy*dt;this.onGround=false;collideWorld(this,'y');
     this.x=Math.max(0,Math.min(W-this.w,this.x));if(this.y>H+100)return die(this);
+    processAbilityCombat(performance.now());
     processHazards(this,state.role);processTrolls(this);processSetPieces(this,dt,state.role);processBoss(dt);processChaosSeal();
     const at=goalAccessible()&&overlap(this,currentGoal());
     if(state.mode==='singleplayer'){if(at)completeSoloLevel();return;}
     if(at!==state.lastGoalSent){state.lastGoalSent=at;socket.emit('goal-state',{atGoal:at});}
-    const now=performance.now();if(now-state.lastNet>32){state.lastNet=now;socket.emit('player-state',{x:this.x,y:this.y,vx:this.vx,vy:this.vy,role:state.role,slot:state.slot,level:state.level,ability,cosmetics:profile.owned});}
+    const now=performance.now();if(now-state.lastNet>32){
+      state.lastNet=now;
+      const rootFx=state.abilityRootFx&&state.abilityRootFx.until>now?{x:state.abilityRootFx.x,y:state.abilityRootFx.y}:null;
+      socket.emit('player-state',{x:this.x,y:this.y,vx:this.vx,vy:this.vy,role:state.role,slot:state.slot,level:state.level,ability,abilityProgress:ability?abilityProgress(now):0,facing:this.facing,rootFx,cosmetics:profile.owned});
+    }
   }
 };
 
@@ -773,11 +867,11 @@ function collideWorld(p,axis){
 
 function processHazards(p,role=state.role){
   const ld=state.levelData,now=performance.now();if(now<state.invulnUntil)return;
-  const shadowPhase=role==='darkness'&&abilityActiveFor(p,role);
+  const shadowPhase=role==='darkness'&&performance.now()<state.abilityPhaseUntil;
   for(const h of ld.hazards){if(overlap(p,h)&&!roleImmune(h.type,role)&&!shadowPhase)return die(p);}
   for(const sp of activeSpikes())if(overlap(p,sp)&&!shadowPhase)return die(p);
   for(const c of ld.crushers||[])if(overlap(p,dynamicCrusher(c)))return die(p);
-  for(const a of ld.armors||[])if(overlap(p,armorRect(a))){if((role==='earth'||role==='light')&&abilityActiveFor(p,role)){state.trapState.set('armor'+a.id,performance.now()+3000);burst(a.x||a.x0,a.y,9);}else if(!shadowPhase)return die(p);}
+  for(const a of ld.armors||[])if(overlap(p,armorRect(a))){if(role==='earth'&&performance.now()<state.abilityPhaseUntil){state.trapState.set('armor'+a.id,performance.now()+1800);burst(a.x||a.x0,a.y,9,ELEMENTS.earth.color);}else if(!shadowPhase)return die(p);}
   for(const g of ld.ghosts||[])if(overlap(p,ghostRect(g))&&!shadowPhase)return die(p);
   for(const fb of dragonFireballs())if(circleRect(fb,p)&&!shadowPhase)return die(p);
   for(const bf of bossProjectiles())if(circleRect(bf,p)&&!shadowPhase)return die(p);
@@ -882,13 +976,14 @@ function defeatEnemy(e,remote=false){
   burst((e.x0+e.x1)/2,e.y,14);
 }
 function attackEnemiesAround(p,role){
-  const radius=role==='light'?230:role==='earth'?175:0;if(!radius)return;
-  for(const e of state.levelData?.enemies||[]){if(state.trapState.get('enemyDead'+e.id))continue;const r=enemyRect(e),dx=(r.x+r.w/2)-(p.x+p.w/2),dy=(r.y+r.h/2)-(p.y+p.h/2);if(dx*dx+dy*dy<=radius*radius)defeatEnemy(e);}
+  // Compatibilidade com chamadas antigas: o dano contínuo agora é controlado por processAbilityCombat().
+  const rule=ABILITY_RULES[role];if(!rule)return;
+  const hit=nearestEnemyInRadius(p,rule.radius||0);if(hit)abilityHitEnemy(hit,(ELEMENTS[role]||ELEMENTS.earth).color);
 }
 function processEnemies(p,role){
-  const phase=role==='darkness'&&abilityActiveFor(p,role);
+  const phase=role==='darkness'&&performance.now()<state.abilityPhaseUntil;
   for(const e of state.levelData.enemies||[]){if(state.trapState.get('enemyDead'+e.id))continue;const r=enemyRect(e);if(!overlap(p,r))continue;
-    if((role==='earth'||role==='light')&&abilityActiveFor(p,role)){defeatEnemy(e);continue;}if(!phase)return die(p);
+    if(!phase)return die(p);
   }
 }
 function dragonFireballs(){
