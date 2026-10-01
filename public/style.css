@@ -356,3 +356,88 @@ body.game-active .pause-modal{z-index:300}
   .update-actions button{width:100%}
   .update-version-line{gap:8px}
 }
+
+
+/* =========================================================
+   INSANITY 0.0.2 — MODO CAOS 4P
+   ========================================================= */
+.chaos-choice{
+  border-left-color:rgba(232,83,255,.5);
+  background:
+    linear-gradient(90deg,rgba(91,19,112,.34),rgba(24,10,34,.32)),
+    linear-gradient(90deg,rgba(17,13,25,.88),rgba(12,10,18,.32));
+}
+.chaos-choice b{color:#f09aff;text-shadow:0 0 16px rgba(224,75,255,.34)}
+.chaos-choice:hover,.chaos-choice:focus-visible{border-left-color:#ef65ff}
+.chaos-choice:hover:before,.chaos-choice:focus-visible:before{background:linear-gradient(90deg,rgba(215,60,255,.23),rgba(105,41,154,.05))}
+.chaos-title{color:#f084ff;text-shadow:0 0 18px rgba(229,71,255,.32)}
+.chaos-setup{
+  position:relative;
+  border:1px solid rgba(224,84,255,.22);
+  border-radius:16px;
+  padding:16px;
+  background:
+    radial-gradient(circle at 90% 10%,rgba(225,76,255,.10),transparent 34%),
+    linear-gradient(180deg,rgba(29,10,37,.74),rgba(8,10,17,.72));
+}
+.chaos-warning{
+  margin:0 0 14px;
+  padding:12px 13px;
+  border:1px solid rgba(240,114,255,.28);
+  border-radius:12px;
+  background:rgba(118,31,137,.13);
+}
+.chaos-warning b{display:block;color:#f2adff;font-size:10px;letter-spacing:.12em}
+.chaos-warning small{display:block;margin-top:5px;color:#9d91aa;font-size:9px;line-height:1.45}
+.chaos-primary{
+  background:linear-gradient(135deg,#a43fc3,#6330a6);
+  border-color:#d97cf0;
+  box-shadow:0 10px 34px rgba(174,49,204,.18);
+}
+.chaos-primary:hover{filter:brightness(1.13)}
+.chaos-rules{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+  margin:12px 0 10px;
+}
+.chaos-rules span{
+  padding:8px 9px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  background:rgba(6,7,12,.6);
+  color:#a99db1;
+  font-size:8px;
+  letter-spacing:.06em;
+  text-align:center;
+}
+.room-panel.chaos-room{
+  border-color:rgba(223,86,255,.27);
+  box-shadow:0 30px 120px rgba(99,25,125,.12);
+}
+.room-panel.chaos-room .players{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+.room-panel.chaos-room .player-card{
+  min-width:0;
+}
+.chaos-hud-badge{
+  color:#f4a0ff;
+  font-weight:950;
+  letter-spacing:.08em;
+  text-shadow:0 0 13px rgba(238,88,255,.45);
+}
+.chaos-hud-badge.hidden{display:none!important}
+body.chaos-active #gameWrap .hud{
+  border-bottom-color:rgba(235,91,255,.22);
+  background:linear-gradient(180deg,rgba(18,4,24,.95),rgba(8,5,15,.78));
+}
+body.chaos-active #gameWrap.game-wrap{
+  box-shadow:inset 0 0 90px rgba(157,38,194,.06);
+}
+@media(max-width:1000px){
+  .room-panel.chaos-room .players{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+  .chaos-rules{grid-template-columns:1fr}
+}
