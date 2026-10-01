@@ -168,7 +168,7 @@ function showSetup(kind){
   const solo=kind==='singleplayer',multi=kind==='multiplayer',chaos=kind==='chaos';
   $('#soloSetup').classList.toggle('hidden',!solo);$('#multiSetup').classList.toggle('hidden',!multi);$('#chaosSetup').classList.toggle('hidden',!chaos);
   const t=uiT();$('#setupEyebrow').textContent=(chaos?'MODO CAOS · 4 ELEMENTOS':(solo?t.single:t.multi).toUpperCase())+' · '+t.choose;
-  $('#errorText').textContent='';refreshSoloSaveButton();refreshMultiplayerSaveButton();refreshChaosSaveButton();
+  $('#errorText').textContent='';refreshSoloSaveButton();refreshMultiplayerSaveButton();refreshChaosSaveButton();refreshChaosSaveButton();
 }
 function showExitScreen(){
   if(window.electronAPI?.quit){window.electronAPI.quit();return;}
@@ -454,9 +454,38 @@ function refreshMultiplayerSaveButton(){
     const name=$('#playerName');if(name&&!name.value&&save.name)name.value=String(save.name).slice(0,18);
   }else btn.classList.add('hidden');
 }
+function loadChaosSave(){
+  try{return JSON.parse(persistentGet(CHAOS_SAVE_KEY)||'null');}catch{return null;}
+}
+function saveChaosProgress(completed=false){
+  if(state.mode!=='chaos')return;
+  const payload={
+    level:Math.max(1,Math.min(1000,Number(state.level)||1)),
+    deaths:Math.max(0,Number(state.deaths)||0),
+    role:ELEMENTS[state.role]?state.role:state.selectedRole,
+    name:playerName(),
+    completed,
+    updatedAt:Date.now()
+  };
+  persistentSet(CHAOS_SAVE_KEY,JSON.stringify(payload));
+  refreshChaosSaveButton();
+}
+function refreshChaosSaveButton(){
+  const btn=$('#continueChaosBtn');if(!btn)return;
+  const save=loadChaosSave();
+  if(save&&!save.completed&&Number(save.level)>=1){
+    btn.classList.remove('hidden');
+    btn.textContent='↻ Continuar Caos — fase '+Math.min(1000,Number(save.level)||1);
+    const name=$('#chaosPlayerName');if(name&&!name.value&&save.name)name.value=String(save.name).slice(0,18);
+  }else btn.classList.add('hidden');
+}
+function saveOnlineProgress(completed=false){
+  if(state.mode==='chaos')saveChaosProgress(completed);
+  else if(state.mode==='multiplayer')saveMultiplayerProgress(completed);
+}
 function startSolo(useSave){
   const save=useSave?loadSoloSave():null;
-  state.mode='singleplayer';state.id='solo';state.roomCode=null;state.room=null;state.remote=null;state.slot=0;
+  state.mode='singleplayer';state.id='solo';state.roomCode=null;state.room=null;state.remotePlayers.clear();state.slot=0;
   state.level=save?.level||1;state.deaths=save?.deaths||0;state.role=ELEMENTS[save?.role]?save.role:state.selectedRole;
   if(!useSave)saveSoloProgress(false);
   lobby.classList.add('hidden');roomEl.classList.add('hidden');$('#backToMenuBtn').style.display='none';
@@ -469,6 +498,19 @@ function continueMultiplayer(){
   socket.emit('create-room',{
     name:playerName()||save.name||'Jogador',
     element:state.selectedRole,
+    mode:'multiplayer',
+    resumeLevel:Math.max(1,Math.min(1000,Number(save.level)||1)),
+    resumeDeaths:Math.max(0,Number(save.deaths)||0)
+  },handleJoin);
+}
+function continueChaos(){
+  const save=loadChaosSave();
+  if(!save)return refreshChaosSaveButton();
+  state.mode='chaos';
+  socket.emit('create-room',{
+    name:playerName()||save.name||'Jogador',
+    element:ELEMENTS[save.role]?save.role:state.selectedRole,
+    mode:'chaos',
     resumeLevel:Math.max(1,Math.min(1000,Number(save.level)||1)),
     resumeDeaths:Math.max(0,Number(save.deaths)||0)
   },handleJoin);
@@ -483,9 +525,12 @@ function restartGame(){
 refreshSoloSaveButton();refreshMultiplayerSaveButton();
 function handleJoin(res){
   if(!res?.ok){ $('#errorText').textContent = res?.error || 'Não foi possível entrar.'; return; }
-  state.mode='multiplayer';state.id=res.id;state.roomCode=res.code;state.role=res.role;state.slot=res.slot||0;state.level=res.level;state.deaths=Number(res.deaths)||0;
-  $('#errorText').textContent='';document.body?.classList.remove('setup-active'); lobby.classList.add('hidden'); roomEl.classList.remove('hidden');$('#backToMenuBtn').style.display='none';
-  $('#roomCode').textContent=res.code; updateHud();
+  state.mode=res.mode==='chaos'?'chaos':'multiplayer';state.id=res.id;state.roomCode=res.code;state.role=res.role;state.slot=res.slot||0;state.level=res.level;state.deaths=Number(res.deaths)||0;state.remotePlayers.clear();
+  $('#errorText').textContent='';document.body?.classList.remove('setup-active');document.body?.classList.toggle('chaos-active',state.mode==='chaos');lobby.classList.add('hidden');roomEl.classList.remove('hidden');roomEl.classList.toggle('chaos-room',state.mode==='chaos');$('#backToMenuBtn').style.display='none';
+  $('#roomCode').textContent=res.code;
+  $('#roomModeLabel').textContent=state.mode==='chaos'?'⚡ SALA CAOS · 4 PLAYERS':'SALA PRIVADA · 2 PLAYERS';
+  $('#roomRequirementText').textContent=state.mode==='chaos'?'A campanha começa quando os quatro elementos estiverem na sala e todos estiverem prontos.':'A fase começa quando os dois estiverem prontos.';
+  updateHud();
 }
 
 socket.on('room-state', room => {
