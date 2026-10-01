@@ -1,42 +1,53 @@
-INFINITY CASTLE ELEMENTS — INSANITY TEST BUILD
+INFINITY CASTLE ELEMENTS — INSANITY 0.0.2
 
 INICIAR
-1. Abra INICIAR_JOGO.bat.
-2. Na primeira execução, aguarde npm install.
-3. O jogo abre em http://localhost:3000.
+1. Abra o Infinity Castle Elements pelo atalho instalado ou pelo executável Portable.
+2. O jogo inicia em tela cheia.
+3. Não é necessário instalar Node.js, npm ou qualquer servidor manualmente.
 
-DIFICULDADE
-Fases 1–4: introdução e falsa sensação de segurança.
-Fase 5 em diante: o castelo começa a usar inimigos, chão falso, saída móvel, saídas-isca, espinhos surpresa, blocos caindo e combinações cada vez piores.
-
-ELEMENTOS
-Terra 🪨 — resistente a raízes; E = impacto sísmico.
-Ar 💨 — rápido; imune a vento; E = impulso aéreo.
-Luz ☀️ — resistente a maldições; E = clarão protetor/ataque em área.
-Escuridão 🌑 — ignora controles invertidos; E = passo sombrio.
-
+MODOS
 SINGLEPLAYER
-Escolha um único elemento na tela inicial e jogue somente com ele. Portões e chefes se adaptam ao solo.
+Escolha um elemento e enfrente a campanha de 1000 fases sozinho.
 
 MULTIPLAYER
-Cada jogador escolhe o próprio elemento. Elementos podem ser iguais ou diferentes.
+Campanha online para 2 jogadores. Crie uma sala privada, envie o código ao outro jogador e os dois ficam sincronizados pelo servidor online.
+
+MODO CAOS — NOVO NA 0.0.2
+Campanha online para 4 jogadores.
+- A sala exige 4 jogadores.
+- Terra, Ar, Luz e Escuridão devem estar presentes.
+- Não é permitido repetir elemento na mesma sala Caos.
+- Cada fase normal possui quatro selos elementais.
+- Cada personagem ativa apenas o selo do próprio elemento.
+- A saída só é liberada após os quatro selos.
+- Chefes usam quatro runas simultâneas.
+- Uma morte reinicia a tentativa para todo o grupo.
+- O Modo Caos possui save de campanha separado.
+
+ELEMENTOS
+Terra 🪨 — resistente a raízes; E = Impacto Sísmico.
+Ar 💨 — rápido; imune a vento; E = Impulso Aéreo.
+Luz ☀️ — resistente a maldições; E = Clarão Protetor.
+Escuridão 🌑 — ignora controles invertidos; E = Passo Sombrio.
 
 MOEDAS E LOJA
-Passe fases e derrote inimigos para ganhar moedas. Depois da morte, use a Loja Arcana para comprar escudo, velocidade, salto e cosméticos.
+Passe fases, derrote inimigos e sobreviva às tentativas para ganhar moedas. A Loja Arcana oferece boosts e cosméticos.
 
 CONTROLES
 A/D ou ← → = mover
 W / ↑ / espaço = pular
-E = habilidade
-R = reiniciar
-⛶ = tela cheia
-Esc = sair da tela cheia
+E = habilidade elemental
+R = reiniciar fase
+ESC = menu de pausa
+F11 = alternar tela cheia
+
+SALVAR
+O singleplayer, multiplayer e Modo Caos possuem progresso persistente no desktop. Os saves são mantidos durante atualizações do jogo.
+
+ATUALIZAÇÕES
+A versão instalada verifica novas versões automaticamente pelo GitHub Releases. Quando houver uma atualização, o jogo mostra um aviso no menu e em Configurações.
 
 IMPORTANTE
-A dificuldade é troll e brutal, mas as pegadinhas são determinísticas: morrer deve revelar uma regra, não depender de sorte.
+A dificuldade é troll e brutal, mas as pegadinhas são determinísticas: morrer deve revelar uma regra, não depender apenas de sorte.
 
-
-BASE DEFINITIVA 0.0
-- Corrigida tela vazia causada por erro no primeiro frame de gameplay.
-- Auditoria agora executa frames reais nos quatro elementos em todas as 1000 fases.
-- Há fallback de emergência para impedir que uma falha de geração deixe a sala sem geometria.
+NYX PROJECT R
