@@ -31,6 +31,10 @@ jobs:
           node --check server.js
           node --check public/game.js
           node --check tools/audit-levels.js
+          node --check tools/test-chaos-multiplayer.js
 
       - name: Audit all 1000 levels
         run: npm run test:levels
+
+      - name: Test four-player Chaos multiplayer
+        run: npm run test:chaos
