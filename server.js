@@ -24,14 +24,14 @@ const rooms = new Map();
 app.get('/health', (_req, res) => res.status(200).json({
   ok: true,
   service: 'infinity-castle-elements-multiplayer',
-  version: '0.0.2',
+  version: '0.0.3',
   rooms: rooms.size,
   modes: { multiplayer: 2, chaos: 4 }
 }));
 
 app.get('/multiplayer/status', (_req, res) => res.json({
   online: true,
-  version: '0.0.2',
+  version: '0.0.3',
   activeRooms: rooms.size,
   maxPlayersPerRoom: 4,
   modes: { multiplayer: 2, chaos: 4 }
@@ -63,6 +63,7 @@ function publicRoom(room) {
     level: room.level,
     deaths: room.deaths,
     chaosSeals: [...room.chaosSeals],
+    trapStates: [...room.trapStates.entries()].map(([key,activatedAt])=>({key,activatedAt})),
     players: [...room.players.values()].map(p => ({
       id:p.id, name:p.name, role:p.role, slot:p.slot, ready:p.ready, atSeal:p.atSeal
     }))
@@ -83,6 +84,7 @@ function resetAttemptState(room){
   resetGoalFlags(room);
   resetBossState(room);
   resetChaosState(room);
+  room.trapStates.clear();
 }
 function bossRequiredSeconds(level,mode){
   const tier=level/100;
@@ -118,7 +120,8 @@ io.on('connection', socket => {
       resetting:false,
       bossDefeated:false,
       bossTimer:null,
-      chaosSeals:new Set()
+      chaosSeals:new Set(),
+      trapStates:new Map()
     };
     rooms.set(code,room);
     joinRoom(socket,room,name,element,ack);
@@ -152,6 +155,16 @@ io.on('connection', socket => {
   socket.on('enemy-defeated', ({id,level}={}) => {
     const room=getSocketRoom(socket);if(!room||Number(level)!==room.level||!Number.isFinite(Number(id)))return;
     socket.to(room.code).emit('enemy-defeated',{id:Number(id),level:room.level});
+  });
+
+  socket.on('trap-trigger', ({level,key}={}) => {
+    const room=getSocketRoom(socket);if(!room||Number(level)!==room.level)return;
+    const trapKey=String(key||'').slice(0,64);
+    if(!/^(?:f|p|as|br|vp|ch|fb|sw|fg)\d+$|^movingExit$/.test(trapKey))return;
+    if(room.trapStates.has(trapKey))return;
+    const activatedAt=Date.now();
+    room.trapStates.set(trapKey,activatedAt);
+    io.to(room.code).emit('trap-trigger',{level:room.level,key:trapKey,activatedAt});
   });
 
   socket.on('chaos-seal-activate', ({level}={}) => {
@@ -247,7 +260,7 @@ function startServer(port = PORT, host = '0.0.0.0') {
   server.listen(port, host, () => {
     const addr = server.address();
     const actualPort = typeof addr === 'object' && addr ? addr.port : port;
-    console.log(`Infinity Castle Elements 0.0.2 multiplayer server listening on 0.0.0.0:${actualPort}`);
+    console.log(`Infinity Castle Elements 0.0.3 multiplayer server listening on 0.0.0.0:${actualPort}`);
   });
   return server;
 }
