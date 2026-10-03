@@ -1,4 +1,4 @@
-name: Build Windows Desktop 0.0.2
+name: Build Windows Desktop
 
 on:
   push:
@@ -42,6 +42,14 @@ jobs:
         shell: pwsh
         run: npm install --no-audit --no-fund
 
+      - name: Read package version
+        shell: pwsh
+        run: |
+          $version = node -p "require('./package.json').version"
+          if (-not $version) { throw "Could not read package version" }
+          "ICE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Building version $version"
+
       - name: Audit all 1000 levels
         shell: pwsh
         run: npm run test:levels
@@ -57,25 +65,26 @@ jobs:
       - name: Create Windows package ZIP
         shell: pwsh
         run: |
-          $setup = "dist/Infinity-Castle-Elements-Setup-0.0.2.exe"
-          $portable = "dist/Infinity-Castle-Elements-Portable-0.0.2.exe"
+          $setup = "dist/Infinity-Castle-Elements-Setup-$env:ICE_VERSION.exe"
+          $portable = "dist/Infinity-Castle-Elements-Portable-$env:ICE_VERSION.exe"
+          $zip = "dist/Infinity-Castle-Elements-Windows-$env:ICE_VERSION.zip"
           if (!(Test-Path $setup)) { throw "Setup EXE not found: $setup" }
           if (!(Test-Path $portable)) { throw "Portable EXE not found: $portable" }
-          Compress-Archive -Path $setup,$portable -DestinationPath "dist/Infinity-Castle-Elements-Windows-0.0.2.zip" -Force
+          Compress-Archive -Path $setup,$portable -DestinationPath $zip -Force
 
       - name: Show generated downloads
         shell: pwsh
         run: |
-          Get-ChildItem -Path dist -File | Where-Object { $_.Name -in @("Infinity-Castle-Elements-Setup-0.0.2.exe","Infinity-Castle-Elements-Portable-0.0.2.exe","Infinity-Castle-Elements-Windows-0.0.2.zip") } | Format-Table Name,Length
+          Get-ChildItem -Path dist -File | Where-Object { $_.Name -in @("Infinity-Castle-Elements-Setup-$env:ICE_VERSION.exe","Infinity-Castle-Elements-Portable-$env:ICE_VERSION.exe","Infinity-Castle-Elements-Windows-$env:ICE_VERSION.zip") } | Format-Table Name,Length
 
       - name: Upload Windows build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Infinity-Castle-Elements-Windows-0.0.2
+          name: Infinity-Castle-Elements-Windows-${{ env.ICE_VERSION }}
           path: |
-            dist/Infinity-Castle-Elements-Setup-0.0.2.exe
-            dist/Infinity-Castle-Elements-Portable-0.0.2.exe
-            dist/Infinity-Castle-Elements-Windows-0.0.2.zip
+            dist/Infinity-Castle-Elements-Setup-${{ env.ICE_VERSION }}.exe
+            dist/Infinity-Castle-Elements-Portable-${{ env.ICE_VERSION }}.exe
+            dist/Infinity-Castle-Elements-Windows-${{ env.ICE_VERSION }}.zip
           if-no-files-found: error
           compression-level: 0
 
@@ -84,23 +93,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $tag = "v0.0.2"
-          $notes = @"
-          MODO CAOS chegou à INSANITY 0.0.2.
-
-          • Campanha online para 4 jogadores.
-          • Terra, Ar, Luz e Escuridão precisam estar presentes na mesma sala.
-          • Cada elemento é único no Modo Caos.
-          • Quatro selos elementais precisam ser ativados em cada fase.
-          • Chefes agora usam ritual simultâneo de quatro runas no Caos.
-          • Uma morte reinicia a tentativa para todo o quarteto.
-          • Salas privadas por código e save separado da campanha Caos.
-          • Sincronização visual de até quatro personagens.
-          • Atualizador integrado continua preservando os saves.
-          "@
+          $tag = "v$env:ICE_VERSION"
+          $title = "Infinity Castle Elements — INSANITY $env:ICE_VERSION"
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -ne 0) {
-            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Infinity Castle Elements — INSANITY 0.0.2" --notes "$notes"
+            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "$title" --generate-notes
+          } else {
+            gh release edit $tag --repo $env:GITHUB_REPOSITORY --title "$title"
           }
-          gh release edit $tag --repo $env:GITHUB_REPOSITORY --title "Infinity Castle Elements — INSANITY 0.0.2" --notes "$notes"
-          gh release upload $tag "dist/Infinity-Castle-Elements-Setup-0.0.2.exe" "dist/Infinity-Castle-Elements-Portable-0.0.2.exe" "dist/Infinity-Castle-Elements-Windows-0.0.2.zip" --repo $env:GITHUB_REPOSITORY --clobber
+          gh release upload $tag "dist/Infinity-Castle-Elements-Setup-$env:ICE_VERSION.exe" "dist/Infinity-Castle-Elements-Portable-$env:ICE_VERSION.exe" "dist/Infinity-Castle-Elements-Windows-$env:ICE_VERSION.zip" --repo $env:GITHUB_REPOSITORY --clobber
