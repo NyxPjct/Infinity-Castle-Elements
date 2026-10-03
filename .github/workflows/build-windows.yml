@@ -50,6 +50,10 @@ jobs:
           "ICE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "Building version $version"
 
+      - name: Check main-process JavaScript syntax
+        shell: pwsh
+        run: node --check desktop/main.cjs
+
       - name: Audit all 1000 levels
         shell: pwsh
         run: npm run test:levels
