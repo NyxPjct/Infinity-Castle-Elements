@@ -94,12 +94,14 @@ async function main() {
     assert.equal(start.mode, 'chaos');
     assert.equal(start.level, 1);
 
-    const sharedTrapPromise = eventOnce(air, 'trap-trigger');
+    const sharedTrapPromises = [air, light, darkness].map(socket => eventOnce(socket, 'trap-trigger'));
     earth.emit('trap-trigger', { level: 1, key: 'as4242' });
-    const sharedTrap = await sharedTrapPromise;
-    assert.equal(sharedTrap.level, 1);
-    assert.equal(sharedTrap.key, 'as4242');
-    assert.ok(Number.isFinite(sharedTrap.activatedAt));
+    const sharedTraps = await Promise.all(sharedTrapPromises);
+    for (const sharedTrap of sharedTraps) {
+      assert.equal(sharedTrap.level, 1);
+      assert.equal(sharedTrap.key, 'as4242');
+      assert.ok(Number.isFinite(sharedTrap.activatedAt));
+    }
 
     const unlockedPromise = eventOnce(earth, 'chaos-unlocked');
     for (const socket of [earth, air, light, darkness]) {
@@ -118,13 +120,17 @@ async function main() {
     assert.equal(completed.level, 2);
     assert.equal(completed.finished, false);
 
-    const resetPromise = eventOnce(earth, 'reset-level');
+    const resetPromises = [earth, air, light, darkness].map(socket => eventOnce(socket, 'reset-level'));
     light.emit('player-death');
-    const reset = await resetPromise;
-    assert.equal(reset.mode, 'chaos');
-    assert.equal(reset.deaths, 1);
+    const resets = await Promise.all(resetPromises);
+    for (const reset of resets) {
+      assert.equal(reset.mode, 'chaos');
+      assert.equal(reset.deaths, 1);
+      assert.equal(reset.rewardCoins, 5);
+      assert.equal(reset.deathPlayerId, light.id);
+    }
 
-    console.log('Chaos multiplayer integration: PASS — 4 unique elements, ready gate, synchronized traps, seals, shared goal and shared death reset.');
+    console.log('Chaos multiplayer integration: PASS — 4 unique elements, ready gate, traps visible to all peers, seals, shared goal and shared +5 death reward.');
   } finally {
     for (const socket of clients) {
       try { socket.close(); } catch {}
