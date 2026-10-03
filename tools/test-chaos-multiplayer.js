@@ -94,6 +94,13 @@ async function main() {
     assert.equal(start.mode, 'chaos');
     assert.equal(start.level, 1);
 
+    const sharedTrapPromise = eventOnce(air, 'trap-trigger');
+    earth.emit('trap-trigger', { level: 1, key: 'as4242' });
+    const sharedTrap = await sharedTrapPromise;
+    assert.equal(sharedTrap.level, 1);
+    assert.equal(sharedTrap.key, 'as4242');
+    assert.ok(Number.isFinite(sharedTrap.activatedAt));
+
     const unlockedPromise = eventOnce(earth, 'chaos-unlocked');
     for (const socket of [earth, air, light, darkness]) {
       socket.emit('chaos-seal-activate', { level: 1 });
@@ -117,7 +124,7 @@ async function main() {
     assert.equal(reset.mode, 'chaos');
     assert.equal(reset.deaths, 1);
 
-    console.log('Chaos multiplayer integration: PASS — 4 unique elements, ready gate, seals, shared goal and shared death reset.');
+    console.log('Chaos multiplayer integration: PASS — 4 unique elements, ready gate, synchronized traps, seals, shared goal and shared death reset.');
   } finally {
     for (const socket of clients) {
       try { socket.close(); } catch {}
