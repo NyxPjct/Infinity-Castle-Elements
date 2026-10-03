@@ -8,6 +8,7 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 3000;
 const MAX_LEVEL = 1000;
+const DEATH_REWARD_COINS = 5;
 const ELEMENTS = new Set(['earth', 'air', 'light', 'darkness']);
 const ELEMENT_ORDER = ['earth', 'air', 'light', 'darkness'];
 const MULTIPLAYER_ONLY = process.env.MULTIPLAYER_ONLY === '1';
@@ -205,7 +206,7 @@ io.on('connection', socket => {
   socket.on('player-death', () => {
     const room=getSocketRoom(socket);if(!room||room.resetting)return;
     room.resetting=true;room.deaths+=1;resetAttemptState(room);
-    io.to(room.code).emit('reset-level',{deaths:room.deaths,mode:room.mode});emitRoom(room);
+    io.to(room.code).emit('reset-level',{deaths:room.deaths,mode:room.mode,rewardCoins:DEATH_REWARD_COINS,deathPlayerId:socket.id});emitRoom(room);
     setTimeout(()=>{if(rooms.get(room.code)===room)room.resetting=false;},300);
   });
 
