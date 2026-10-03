@@ -1,14 +1,30 @@
-# Infinity Castle Elements — INSANITY 0.0.2
+# Infinity Castle Elements — INSANITY 0.0.3
 
 **Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer cooperativo, **Modo Caos para 4 jogadores online**, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A versão **INSANITY 0.0.2** inaugura o **MODO CAOS**, mantendo a edição oficial para Windows e o sistema de atualização dentro do próprio jogo.
+A versão **INSANITY 0.0.3** adiciona **Fases Coringa**, remove a inversão de controles das fases normais e sincroniza armadilhas entre todos os jogadores da mesma sala online.
 
-**Versão atual do jogo:** `0.0.2`
+**Versão atual do jogo:** `0.0.3`
 
-## Novidades da versão 0.0.2
+## Novidades da versão 0.0.3
 
-A **INSANITY 0.0.2** é a atualização do **MODO CAOS** e também consolida a infraestrutura online e o sistema de atualização do desktop.
+A **INSANITY 0.0.3** mantém o Modo Caos e foca em regras mais claras para as pegadinhas: controles invertidos passam a existir apenas em Fases Coringa e armadilhas acionadas no multiplayer passam a ser compartilhadas pela sala.
+
+### 🃏 Fases Coringa
+
+- controles invertidos não aparecem mais em fases normais;
+- a inversão agora é exclusiva das **Fases Coringa**;
+- as Fases Coringa aparecem de forma determinística ao longo da campanha e são marcadas na HUD;
+- essas salas recebem uma camada visual anômala com olhos acompanhando o jogador, quadros tortos, rasgos de realidade e uma ambientação mais perturbadora;
+- a Escuridão continua ignorando a inversão de controles quando essa regra está ativa;
+- chefes continuam fora da rotação de Fases Coringa.
+
+### 🔗 Armadilhas sincronizadas no multiplayer
+
+- espinhos surpresa, espinhos pop-up, chão falso, pontes quebráveis, plataformas que somem, lustres, blocos que caem, paredes-relâmpago, saída móvel e saída falsa agora compartilham o mesmo estado entre os jogadores;
+- quando um jogador ativa uma armadilha, os demais recebem o evento pela sala online e enxergam a mesma mudança no cenário;
+- o servidor mantém o estado das armadilhas durante a tentativa atual e limpa tudo corretamente quando a fase reinicia;
+- a sincronização vale tanto para o multiplayer de 2 jogadores quanto para o **Modo Caos** de 4 jogadores.
 
 ### ⚡ Modo Caos — 4 jogadores
 
@@ -76,9 +92,9 @@ As quatro habilidades agora possuem animação própria, janela ativa e cooldown
 
 ## Downloads para Windows
 
-1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.2.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.2/Infinity-Castle-Elements-Setup-0.0.2.exe)
-2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.2.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.2/Infinity-Castle-Elements-Portable-0.0.2.exe)
-3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.2.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.2/Infinity-Castle-Elements-Windows-0.0.2.zip)
+1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.3.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.3/Infinity-Castle-Elements-Setup-0.0.3.exe)
+2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.3.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.3/Infinity-Castle-Elements-Portable-0.0.3.exe)
+3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.3.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.3/Infinity-Castle-Elements-Windows-0.0.3.zip)
 
 ---
 
@@ -137,7 +153,7 @@ O progresso solo inclui fase atual, mortes, elemento, moedas, boosts e cosmétic
 
 O multiplayer foi criado para **2 jogadores**, com salas privadas por código e escolha independente de elemento. O sistema sincroniza jogadores, fase, mortes, chefes, runas, inimigos derrotados e reinícios.
 
-Na edição desktop **0.0.2**, o multiplayer utiliza o servidor online do projeto hospedado na **Railway**. Jogadores em computadores diferentes podem criar e entrar em salas pela internet usando o código da sala, sem precisar iniciar servidor manualmente.
+Na edição desktop **0.0.3**, o multiplayer utiliza o servidor online do projeto hospedado na **Railway**. Jogadores em computadores diferentes podem criar e entrar em salas pela internet usando o código da sala, sem precisar iniciar servidor manualmente.
 
 ## Modo Caos — 4 jogadores
 
@@ -160,7 +176,7 @@ A campanha Caos possui save separado e pode ser retomada criando uma nova sala a
 
 ## Sistema de moedas e Loja Arcana
 
-Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer: na versão **0.0.2**, o personagem continua recebendo **+5 moedas por morte**. Elas podem ser usadas na **Loja Arcana** para comprar:
+Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer: na versão **0.0.3**, o personagem continua recebendo **+5 moedas por morte**. Elas podem ser usadas na **Loja Arcana** para comprar:
 
 - **Runa de Escudo** — absorve um golpe fatal;
 - **Botas do Vento** — aumenta temporariamente a velocidade;
@@ -191,7 +207,7 @@ Entre as mecânicas atuais estão:
 - esmagadores;
 - elevadores;
 - estantes móveis;
-- controles invertidos;
+- controles invertidos **somente em Fases Coringa**;
 - rajadas de vento;
 - fantasmas;
 - armaduras vivas;
@@ -215,7 +231,7 @@ Também existe uma **sala de emergência**: se uma geração for detectada como 
 
 A build possui auditoria própria para geração, renderização, estruturas críticas, inimigos e runtime dos quatro elementos.
 
-Na INSANITY 0.0.2, o processo de validação verifica:
+Na INSANITY 0.0.3, o processo de validação verifica:
 
 - **1000 fases**;
 - **10 chefes**;
@@ -256,7 +272,7 @@ Pressionar **ESC novamente** fecha o menu de pausa e continua a tentativa.
 - **ESC** — abrir/fechar menu de pausa
 - **F11** — alternar tela cheia
 
-> Na **0.0.2**, a habilidade elemental saiu do **E** e passou para o **Espaço**. O pulo pode ser feito com **W** ou **↑**.
+> Na **0.0.3**, a habilidade elemental saiu do **E** e passou para o **Espaço**. O pulo pode ser feito com **W** ou **↑**.
 
 ---
 
@@ -301,21 +317,21 @@ Essas tecnologias fazem parte do aplicativo e não precisam ser instaladas manua
 ### Instalador
 Baixe:
 
-**Infinity-Castle-Elements-Setup-0.0.2.exe**
+**Infinity-Castle-Elements-Setup-0.0.3.exe**
 
 Abra o arquivo, escolha a pasta de instalação e conclua o assistente. O instalador pode criar atalhos na Área de Trabalho e no Menu Iniciar.
 
 ### Portable
 Baixe:
 
-**Infinity-Castle-Elements-Portable-0.0.2.exe**
+**Infinity-Castle-Elements-Portable-0.0.3.exe**
 
 Abra o executável diretamente. Não é necessário instalar o jogo.
 
 ### Pacote completo
 Baixe:
 
-**Infinity-Castle-Elements-Windows-0.0.2.zip**
+**Infinity-Castle-Elements-Windows-0.0.3.zip**
 
 Extraia o arquivo para encontrar as versões Setup e Portable.
 
