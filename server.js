@@ -166,6 +166,7 @@ io.on('connection', socket => {
     const activatedAt=Date.now();
     room.trapStates.set(trapKey,activatedAt);
     io.to(room.code).emit('trap-trigger',{level:room.level,key:trapKey,activatedAt});
+    emitRoom(room);
   });
 
   socket.on('chaos-seal-activate', ({level}={}) => {
@@ -206,7 +207,8 @@ io.on('connection', socket => {
   socket.on('player-death', () => {
     const room=getSocketRoom(socket);if(!room||room.resetting)return;
     room.resetting=true;room.deaths+=1;resetAttemptState(room);
-    io.to(room.code).emit('reset-level',{deaths:room.deaths,mode:room.mode,rewardCoins:DEATH_REWARD_COINS,deathPlayerId:socket.id});emitRoom(room);
+    socket.emit('death-reward',{coins:DEATH_REWARD_COINS});
+    io.to(room.code).emit('reset-level',{deaths:room.deaths,mode:room.mode});emitRoom(room);
     setTimeout(()=>{if(rooms.get(room.code)===room)room.resetting=false;},300);
   });
 
