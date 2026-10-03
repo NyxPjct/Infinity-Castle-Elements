@@ -174,8 +174,8 @@ function installDownloadedUpdate() {
       `"[$(Get-Date -Format o)] installer exit: $($proc.ExitCode)" | Out-File -FilePath $log -Encoding utf8 -Append`,
       "if ($proc.ExitCode -ne 0) { exit $proc.ExitCode }",
       "$ready = $false",
-      "for ($i = 0; $i -lt 40; $i++) { if (Test-Path $targetExe) { try { $v = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($targetExe).ProductVersion; if ($v) { "[$(Get-Date -Format o)] installed version: $v" | Out-File -FilePath $log -Encoding utf8 -Append; if (-not $targetVersion -or $v.StartsWith($targetVersion)) { $ready = $true; break } } } catch {} }; Start-Sleep -Milliseconds 250 }",
-      "if (-not $ready) { "[$(Get-Date -Format o)] target executable/version not ready" | Out-File -FilePath $log -Encoding utf8 -Append; exit 3 }",
+      `for ($i = 0; $i -lt 40; $i++) { if (Test-Path $targetExe) { try { $v = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($targetExe).ProductVersion; if ($v) { "[$(Get-Date -Format o)] installed version: $v" | Out-File -FilePath $log -Encoding utf8 -Append; if (-not $targetVersion -or $v.StartsWith($targetVersion)) { $ready = $true; break } } } catch {} }; Start-Sleep -Milliseconds 250 }`,
+      `if (-not $ready) { "[$(Get-Date -Format o)] target executable/version not ready" | Out-File -FilePath $log -Encoding utf8 -Append; exit 3 }`,
       "Start-Process -FilePath $targetExe -ArgumentList '--updated'"
     ].join('; ');
     updateState = {...updateState, status:'installing', error:null};
