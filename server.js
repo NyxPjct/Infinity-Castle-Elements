@@ -25,14 +25,14 @@ const rooms = new Map();
 app.get('/health', (_req, res) => res.status(200).json({
   ok: true,
   service: 'infinity-castle-elements-multiplayer',
-  version: '0.0.4',
+  version: '0.0.5',
   rooms: rooms.size,
   modes: { multiplayer: 2, chaos: 4 }
 }));
 
 app.get('/multiplayer/status', (_req, res) => res.json({
   online: true,
-  version: '0.0.4',
+  version: '0.0.5',
   activeRooms: rooms.size,
   maxPlayersPerRoom: 4,
   modes: { multiplayer: 2, chaos: 4 }
@@ -261,7 +261,7 @@ function startServer(port = PORT, host = '0.0.0.0') {
   server.listen(port, host, () => {
     const addr = server.address();
     const actualPort = typeof addr === 'object' && addr ? addr.port : port;
-    console.log(`Infinity Castle Elements 0.0.4 multiplayer server listening on 0.0.0.0:${actualPort}`);
+    console.log(`Infinity Castle Elements 0.0.5 multiplayer server listening on 0.0.0.0:${actualPort}`);
   });
   return server;
 }
