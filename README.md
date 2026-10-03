@@ -16,7 +16,7 @@ A **INSANITY 0.0.3** mantém o Modo Caos e foca em regras mais claras para as pe
 - a inversão agora é exclusiva das **Fases Coringa**;
 - as Fases Coringa aparecem de forma determinística ao longo da campanha e são marcadas na HUD;
 - essas salas recebem uma camada visual anômala com olhos acompanhando o jogador, quadros tortos, rasgos de realidade e uma ambientação mais perturbadora;
-- a Escuridão continua ignorando a inversão de controles quando essa regra está ativa;
+- **nenhum elemento é imune à inversão** nas Fases Coringa — inclusive a Escuridão;
 - chefes continuam fora da rotação de Fases Coringa.
 
 ### 🔗 Armadilhas sincronizadas no multiplayer
@@ -24,7 +24,7 @@ A **INSANITY 0.0.3** mantém o Modo Caos e foca em regras mais claras para as pe
 - espinhos surpresa, espinhos pop-up, chão falso, pontes quebráveis, plataformas que somem, lustres, blocos que caem, paredes-relâmpago, saída móvel e saída falsa agora compartilham o mesmo estado entre os jogadores;
 - quando um jogador ativa uma armadilha, os demais recebem o evento pela sala online e enxergam a mesma mudança no cenário;
 - o servidor mantém o estado das armadilhas durante a tentativa atual e limpa tudo corretamente quando a fase reinicia;
-- a sincronização vale tanto para o multiplayer de 2 jogadores quanto para o **Modo Caos** de 4 jogadores.
+- a sincronização vale tanto para o multiplayer de 2 jogadores quanto para o **Modo Caos** de 4 jogadores: quando um jogador ativa espinhos ou outra armadilha compartilhada, todos na sala enxergam a ativação.
 
 ### ⚡ Modo Caos — 4 jogadores
 
@@ -86,7 +86,7 @@ As quatro habilidades agora possuem animação própria, janela ativa e cooldown
 ### 💾 Outros ajustes mantidos
 
 - botão **Voltar ao menu inicial** dentro da sala multiplayer;
-- **+5 moedas** para o personagem que morrer em uma fase;
+- **+5 moedas para todos os jogadores da sala** quando qualquer jogador morrer no Multiplayer ou no Modo Caos; no singleplayer, o jogador continua recebendo +5 pela própria morte;
 - sistema persistente de saves no desktop;
 - menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações e Sair**.
 
@@ -176,7 +176,7 @@ A campanha Caos possui save separado e pode ser retomada criando uma nova sala a
 
 ## Sistema de moedas e Loja Arcana
 
-Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer: na versão **0.0.3**, o personagem continua recebendo **+5 moedas por morte**. Elas podem ser usadas na **Loja Arcana** para comprar:
+Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer. No **singleplayer**, a morte rende **+5 moedas** ao próprio jogador. No **Multiplayer** e no **Modo Caos**, quando qualquer jogador morre, **todos os jogadores conectados na sala recebem +5 moedas**. Elas podem ser usadas na **Loja Arcana** para comprar:
 
 - **Runa de Escudo** — absorve um golpe fatal;
 - **Botas do Vento** — aumenta temporariamente a velocidade;
