@@ -1,8 +1,8 @@
 {
   "name": "infinity-castle-elements",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
-  "description": "Infinity Castle Elements — INSANITY 0.0.3. Fases Coringa, controles invertidos exclusivos dessas salas e armadilhas sincronizadas no multiplayer online.",
+  "description": "Infinity Castle Elements — INSANITY 0.0.4. Correção do atualizador interno, instalação silenciosa confiável e reinício automático na versão nova.",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",
