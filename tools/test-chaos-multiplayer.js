@@ -32,6 +32,24 @@ function expectNoEvent(socket, event, timeout = 300) {
   });
 }
 
+function eventWhere(socket, event, predicate, timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      socket.off(event, handler);
+      reject(new Error(`Timeout waiting for matching ${event}`));
+    }, timeout);
+    const handler = payload => {
+      let matched = false;
+      try { matched = Boolean(predicate(payload)); } catch {}
+      if (!matched) return;
+      clearTimeout(timer);
+      socket.off(event, handler);
+      resolve(payload);
+    };
+    socket.on(event, handler);
+  });
+}
+
 function emitAck(socket, event, payload, timeout = 4000) {
   return new Promise((resolve, reject) => {
     socket.timeout(timeout).emit(event, payload, (err, response) => {
@@ -110,7 +128,7 @@ async function main() {
     assert.equal(start.level, 1);
 
     const sharedTrapPromises = [air, light, darkness].map(socket => eventOnce(socket, 'trap-trigger'));
-    const trapSnapshotPromise = eventOnce(air, 'room-state');
+    const trapSnapshotPromise = eventWhere(air, 'room-state', room => Array.isArray(room?.trapStates) && room.trapStates.some(t => t.key === 'as4242'));
     earth.emit('trap-trigger', { level: 1, key: 'as4242' });
     const sharedTraps = await Promise.all(sharedTrapPromises);
     for (const sharedTrap of sharedTraps) {
@@ -178,7 +196,7 @@ async function main() {
     assert.equal(multiStart.level, 1);
 
     const multiTrapPromise = eventOnce(multiB, 'trap-trigger');
-    const multiSnapshotPromise = eventOnce(multiB, 'room-state');
+    const multiSnapshotPromise = eventWhere(multiB, 'room-state', room => Array.isArray(room?.trapStates) && room.trapStates.some(t => t.key === 'sw777'));
     multiA.emit('trap-trigger', { level: 1, key: 'sw777' });
     const [multiTrap, multiSnapshot] = await Promise.all([multiTrapPromise, multiSnapshotPromise]);
     assert.equal(multiTrap.key, 'sw777');
