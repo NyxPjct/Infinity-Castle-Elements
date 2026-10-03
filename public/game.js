@@ -598,10 +598,13 @@ socket.on('start-level', ({level,deaths,mode}) => {
   if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
   state.level=level;state.deaths=deaths;startLevel(level);
 });
-socket.on('reset-level', ({deaths,manual,mode,rewardCoins=0,deathPlayerId=null}={}) => {
+socket.on('death-reward', ({coins=0}={}) => {
+  const amount=Math.max(0,Number(coins)||0);
+  if(amount>0){addCoins(amount);saveOnlineProgress(false);}
+});
+socket.on('reset-level', ({deaths,manual,mode}={}) => {
   if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
   state.deaths=deaths;state.running=false;
-  if(!manual&&Number(rewardCoins)>0)addCoins(Number(rewardCoins));
   saveOnlineProgress(false);
   if(manual){showOverlay('↻ SALA REINICIADA',state.mode==='chaos'?'O caos foi recalibrado para os quatro elementos.':'Tentem uma rota diferente.',320);setTimeout(()=>startLevel(state.level),340);return;}
   showOverlay(state.mode==='chaos'?'⚡ O CAOS DEVOROU O GRUPO':'☠️ O CASTELO COBROU OUTRA ALMA',deathLine(),520);openShop({death:true,multiplayer:true});
