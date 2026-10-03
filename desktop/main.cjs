@@ -145,19 +145,51 @@ async function downloadUpdate() {
   sendUpdateState();
   return publicUpdateState();
 }
+function psQuote(value) {
+  return "'" + String(value ?? '').replace(/'/g, "''") + "'";
+}
 function installDownloadedUpdate() {
   if (updateState.installMode !== 'installer' || !updateState.installerPath || !fs.existsSync(updateState.installerPath)) return false;
   try {
-    const escaped = updateState.installerPath.replace(/'/g, "''");
-    const appExe = process.execPath.replace(/'/g, "''");
-    const command = `Start-Sleep -Seconds 2; $installer = Start-Process -FilePath '${escaped}' -ArgumentList '/S' -PassThru -Wait; if (Test-Path '${appExe}') { Start-Process -FilePath '${appExe}' }`;
-    const child = spawn('powershell.exe', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command', command], {
+    const installerPath = updateState.installerPath;
+    const currentExe = process.execPath;
+    const installDir = path.dirname(currentExe);
+    const targetVersion = normalizeVersion(updateState.latestVersion || '');
+    const logPath = path.join(app.getPath('userData'), 'update-install.log');
+    const parentPid = process.pid;
+    const command = [
+      "$ErrorActionPreference = 'Stop'",
+      `$installer = ${psQuote(installerPath)}`,
+      `$targetExe = ${psQuote(currentExe)}`,
+      `$installDir = ${psQuote(installDir)}`,
+      `$targetVersion = ${psQuote(targetVersion)}`,
+      `$log = ${psQuote(logPath)}`,
+      `$parentPid = ${parentPid}`,
+      `"[$(Get-Date -Format o)] updater start: $targetVersion" | Out-File -FilePath $log -Encoding utf8 -Append`,
+      "while (Get-Process -Id $parentPid -ErrorAction SilentlyContinue) { Start-Sleep -Milliseconds 250 }",
+      "Start-Sleep -Milliseconds 500",
+      `$argLine = '/S --updated "/D=' + $installDir + '"'`,
+      `"[$(Get-Date -Format o)] installer: $installer $argLine" | Out-File -FilePath $log -Encoding utf8 -Append`,
+      "$proc = Start-Process -FilePath $installer -ArgumentList $argLine -PassThru -Wait",
+      `"[$(Get-Date -Format o)] installer exit: $($proc.ExitCode)" | Out-File -FilePath $log -Encoding utf8 -Append`,
+      "if ($proc.ExitCode -ne 0) { exit $proc.ExitCode }",
+      "$ready = $false",
+      "for ($i = 0; $i -lt 40; $i++) { if (Test-Path $targetExe) { try { $v = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($targetExe).ProductVersion; if ($v) { "[$(Get-Date -Format o)] installed version: $v" | Out-File -FilePath $log -Encoding utf8 -Append; if (-not $targetVersion -or $v.StartsWith($targetVersion)) { $ready = $true; break } } } catch {} }; Start-Sleep -Milliseconds 250 }",
+      "if (-not $ready) { "[$(Get-Date -Format o)] target executable/version not ready" | Out-File -FilePath $log -Encoding utf8 -Append; exit 3 }",
+      "Start-Process -FilePath $targetExe -ArgumentList '--updated'"
+    ].join('; ');
+    updateState = {...updateState, status:'installing', error:null};
+    sendUpdateState();
+    const child = spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-Command', command], {
       detached: true,
       stdio: 'ignore',
       windowsHide: true
     });
     child.unref();
-    setTimeout(() => app.quit(), 150);
+    try { mainWindow?.hide(); } catch {}
+    try { if (gameServer?.listening) gameServer.close(); } catch {}
+    quitting = true;
+    setTimeout(() => app.exit(0), 300);
     return true;
   } catch (error) {
     updateState = {...updateState, status:'error', error:String(error?.message || error || 'Falha ao iniciar o instalador.')};
@@ -236,7 +268,7 @@ function createWindow(port) {
     fullscreen: true,
     backgroundColor: '#000000',
     autoHideMenuBar: true,
-    title: 'Infinity Castle Elements — INSANITY 0.0.2',
+    title: `Infinity Castle Elements — INSANITY ${app.getVersion()}`,
     icon: path.join(__dirname, '..', 'build', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
