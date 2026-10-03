@@ -1,8 +1,8 @@
 {
   "name": "infinity-castle-elements",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
-  "description": "Infinity Castle Elements — INSANITY 0.0.2. Atualização MODO CAOS: campanha online para 4 jogadores com os quatro elementos, selos elementais, chefes de quatro runas, além de solo e co-op.",
+  "description": "Infinity Castle Elements — INSANITY 0.0.3. Fases Coringa, controles invertidos exclusivos dessas salas e armadilhas sincronizadas no multiplayer online.",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",
@@ -69,10 +69,10 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Infinity Castle Elements",
       "runAfterFinish": true,
-      "artifactName": "Infinity-Castle-Elements-Setup-0.0.2.${ext}"
+      "artifactName": "Infinity-Castle-Elements-Setup-0.0.3.${ext}"
     },
     "portable": {
-      "artifactName": "Infinity-Castle-Elements-Portable-0.0.2.${ext}"
+      "artifactName": "Infinity-Castle-Elements-Portable-0.0.3.${ext}"
     }
   }
 }

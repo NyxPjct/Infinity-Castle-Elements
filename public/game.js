@@ -574,7 +574,7 @@ function handleJoin(res){
 }
 
 socket.on('room-state', room => {
-  state.room=room;state.mode=room.mode==='chaos'?'chaos':'multiplayer';state.level=room.level;state.deaths=room.deaths;
+  state.room=room;state.mode=room.mode==='chaos'?'chaos':'multiplayer';state.level=room.level;state.deaths=room.deaths;syncRoomTrapSnapshot(room);
   const me=room.players.find(p=>p.id===state.id);if(me){state.role=me.role;state.slot=me.slot||0;}
   const liveIds=new Set(room.players.map(p=>p.id));for(const id of state.remotePlayers.keys())if(!liveIds.has(id))state.remotePlayers.delete(id);
   $('#roomLevel').textContent=room.level;$('#roomDeaths').textContent=room.deaths;
@@ -598,9 +598,11 @@ socket.on('start-level', ({level,deaths,mode}) => {
   if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
   state.level=level;state.deaths=deaths;startLevel(level);
 });
-socket.on('reset-level', ({deaths,manual,mode}={}) => {
+socket.on('reset-level', ({deaths,manual,mode,rewardCoins=0,deathPlayerId=null}={}) => {
   if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
-  state.deaths=deaths;state.running=false;saveOnlineProgress(false);
+  state.deaths=deaths;state.running=false;
+  if(!manual&&Number(rewardCoins)>0)addCoins(Number(rewardCoins));
+  saveOnlineProgress(false);
   if(manual){showOverlay('↻ SALA REINICIADA',state.mode==='chaos'?'O caos foi recalibrado para os quatro elementos.':'Tentem uma rota diferente.',320);setTimeout(()=>startLevel(state.level),340);return;}
   showOverlay(state.mode==='chaos'?'⚡ O CAOS DEVOROU O GRUPO':'☠️ O CASTELO COBROU OUTRA ALMA',deathLine(),520);openShop({death:true,multiplayer:true});
   clearTimeout(state.shopTimer);state.shopTimer=setTimeout(()=>{closeShop();startLevel(state.level);},5000);
@@ -616,6 +618,10 @@ socket.on('game-finished', ({deaths,mode}) => {
   state.running=false;state.deaths=deaths;saveOnlineProgress(true);updateHud();showOverlay('🏆 1000/1000',state.mode==='chaos'?`O quarteto elemental venceu o Caos após ${deaths} mortes compartilhadas.`:`Infinity Castle caiu após ${deaths} mortes compartilhadas.`,0);
 });
 socket.on('enemy-defeated', ({id,level}={}) => {if(Number(level)!==state.level)return;const e=(state.levelData?.enemies||[]).find(x=>x.id===id);if(e)defeatEnemy(e,true);});
+socket.on('trap-trigger', ({level,key,activatedAt}={}) => {
+  if((state.mode!=='multiplayer'&&state.mode!=='chaos')||Number(level)!==state.level)return;
+  applySharedTrapTrigger(key,activatedAt);
+});
 socket.on('chaos-seal-activated', ({role,level,count}={}) => {
   if(state.mode!=='chaos'||Number(level)!==state.level)return;
   const e=ELEMENTS[role]||ELEMENTS.earth;burst(player.x+21,player.y+25,8);
@@ -657,6 +663,7 @@ function startLevel(level){
   updateHud();
   const enteringZone=((level-1)%100===0)&&state.attempt===1;
   if(state.levelData.boss)showOverlay(`👑 ${state.levelData.boss.name}`,state.mode==='singleplayer'?'Mantenha seu elemento em uma runa e sobreviva ao ritual.':state.mode==='chaos'?'QUATRO RUNAS. QUATRO ELEMENTOS. Todos precisam sustentar o ritual ao mesmo tempo.':'Cada jogador segura uma runa enquanto o chefe ataca.',1500);
+  else if(state.levelData.joker&&state.attempt===1)showOverlay('🃏 FASE CORINGA','O castelo rasgou o próprio manual. Aqui a inversão de controles é permitida.',1450);
   else if(state.mode==='chaos'&&state.attempt===1)showOverlay('⚡ MODO CAOS',`Fase ${level}: cada elemento precisa ativar seu próprio selo antes da saída.`,1050);
   else if(level===5&&state.attempt===1)showOverlay('😈 AGORA COMEÇA','A partir daqui o castelo deixa de fingir que é seu amigo.',1450);
   else if(enteringZone){const z=castleRegion(level);showOverlay(`🏰 ${z.name}`,`${z.subtitle} · O castelo mudou as regras.`,1250);}
@@ -676,9 +683,12 @@ function mechanicName(l){
   if(state.mode==='chaos'){
     if(l%100===0)return'4 RUNAS • CHEFE • MORTE COMPARTILHADA';
     const seals=Math.min(4,(state.room?.chaosSeals||[]).length);
+    if(isJokerLevel(l))return`🃏 CORINGA • SELOS ${seals}/4 • CONTROLES INVERTIDOS`;
     return`SELOS ${seals}/4 • QUARTETO ELEMENTAL • ${castleRegion(l).mechanics}`;
   }
-  if(l%100===0)return'CHEFE • RITUAL • INIMIGOS';if(l<5)return'CALMARIA SUSPEITA';if(l<15)return'PEGADINHAS • INIMIGOS • FALSA SEGURANÇA';return`${castleRegion(l).mechanics} • INIMIGOS`;
+  if(l%100===0)return'CHEFE • RITUAL • INIMIGOS';
+  if(isJokerLevel(l))return'🃏 FASE CORINGA • CONTROLES INVERTIDOS • CASTELO INSTÁVEL';
+  if(l<5)return'CALMARIA SUSPEITA';if(l<15)return'PEGADINHAS • INIMIGOS • FALSA SEGURANÇA';return`${castleRegion(l).mechanics} • INIMIGOS`;
 }
 function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 
@@ -792,7 +802,7 @@ const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,facing:1,
   update(dt){
     if(!state.running||this.dead)return;
     const ld=state.levelData,cfg=ELEMENTS[state.role]||ELEMENTS.earth;let left=keys['arrowleft']||keys['a'],right=keys['arrowright']||keys['d'];const jump=keys['w']||keys['arrowup'];
-    const reversed=state.role!=='darkness'&&ld.reverseZones?.some(z=>overlap(this,z));if(reversed){const t=left;left=right;right=t;}
+    const reversed=!!ld.joker&&ld.reverseZones?.some(z=>overlap(this,z));if(reversed){const t=left;left=right;right=t;}
     const ability=performance.now()<state.abilityUntil;let accel=cfg.accel,max=cfg.max,gravity=cfg.gravity,jumpPower=cfg.jump;
     if(state.role==='air'&&ability){max=520;gravity=780;}if(state.activeBoosts.speed){accel*=1.15;max*=1.2;}if(state.activeBoosts.jump)jumpPower*=1.15;
     if(left&&!right)this.facing=-1;if(right&&!left)this.facing=1;
@@ -893,7 +903,7 @@ function die(p=player){
     if(state.soloResetPending||p.dead)return;p.dead=true;state.soloResetPending=true;state.deaths+=1;addCoins(5);saveSoloProgress(false);burst(p.x+21,p.y+25,18);
     state.screenShake=18;state.running=false;showOverlay('☠️ PEGADINHA DO CASTELO',deathLine(),520);openShop({death:true});return;
   }
-  if(player.dead)return;player.dead=true;addCoins(5);burst(player.x+21,player.y+25,18);socket.emit('player-death');
+  if(player.dead)return;player.dead=true;burst(player.x+21,player.y+25,18);socket.emit('player-death');
 }
 function platePressed(plate){
   if(!plate)return false;
@@ -931,20 +941,36 @@ function deathLine(){
   const cruel=['Você confiou no chão. O chão discordou.','A saída parecia perto demais, né?','O castelo anotou esse salto. Tente de novo.','Você decorou a primeira armadilha. Faltam as outras.','Era óbvio. Depois que acontece.','O corredor mentiu para você.','Essa plataforma tinha outros planos.','Você pulou certo. O castelo também.','Não foi reflexo. Era memória.','Quase. Essa é a palavra favorita do castelo.','Agora tenta dormir sem pensar nessa fase.','A saída viu você chegando e mudou de ideia.'];
   const lines=state.level<5?early:cruel;return lines[(state.level+state.deaths+state.attempt)%lines.length];
 }
+function multiplayerTrapSyncEnabled(){return state.mode==='multiplayer'||state.mode==='chaos';}
+function setTrapTrigger(key,when=performance.now(),broadcast=true){
+  const current=state.trapState.get(key);if(current)return current;
+  state.trapState.set(key,when);
+  if(broadcast&&multiplayerTrapSyncEnabled())socket.emit('trap-trigger',{level:state.level,key});
+  return when;
+}
+function applySharedTrapTrigger(key,activatedAt){
+  const normalized=String(key||'');if(!normalized||state.trapState.has(normalized))return;
+  const stamp=Number(activatedAt)||Date.now(),age=Math.max(0,Math.min(60000,Date.now()-stamp));
+  state.trapState.set(normalized,performance.now()-age);
+}
+function syncRoomTrapSnapshot(room){
+  if(!room||!Array.isArray(room.trapStates))return;
+  for(const t of room.trapStates)applySharedTrapTrigger(t?.key,t?.activatedAt);
+}
 function processTrolls(p){
   const ld=state.levelData,now=performance.now();
   if(!ld)return;
-  for(const f of ld.fakeFloors||[]){const key='f'+f.id;let v=state.trapState.get(key)||0;if(v===0&&Math.abs((p.x+p.w/2)-(f.x+f.w/2))<120)v=now;state.trapState.set(key,v);}
-  for(const t of ld.popTraps||[]){const key='p'+t.id;if(!state.trapState.get(key)&&p.x>t.triggerX)state.trapState.set(key,now);}
-  for(const t of ld.ambushSpikes||[]){const key='as'+t.id;if(!state.trapState.get(key)&&p.x>t.triggerX)state.trapState.set(key,now);}
-  for(const t of ld.bridgeTiles||[]){if(!state.trapState.has('br'+t.id)&&overlap(p,{x:t.x-3,y:t.y-30,w:t.w+6,h:t.h+38}))state.trapState.set('br'+t.id,now);}
-  for(const v of ld.vanishPlatforms||[]){if(!state.trapState.has('vp'+v.id)&&overlap(p,{x:v.x-3,y:v.y-48,w:v.w+6,h:v.h+54}))state.trapState.set('vp'+v.id,now);}
-  for(const ch of ld.chandeliers||[]){if(!state.trapState.has('ch'+ch.id)&&p.x>ch.triggerX)state.trapState.set('ch'+ch.id,now);}
-  for(const b of ld.fallingBlocks||[]){if(!state.trapState.has('fb'+b.id)&&p.x>b.triggerX)state.trapState.set('fb'+b.id,now);}
-  for(const w of ld.slamWalls||[]){if(!state.trapState.has('sw'+w.id)&&p.x>w.triggerX)state.trapState.set('sw'+w.id,now);}
-  if(ld.movingExit&&!state.trapState.has('movingExit')){const g=currentGoal();if(Math.abs((p.x+p.w/2)-(g.x+g.w/2))<ld.movingExit.triggerDist)state.trapState.set('movingExit',now);}
+  for(const f of ld.fakeFloors||[]){const key='f'+f.id;if(!state.trapState.get(key)&&Math.abs((p.x+p.w/2)-(f.x+f.w/2))<120)setTrapTrigger(key,now);}
+  for(const t of ld.popTraps||[]){const key='p'+t.id;if(!state.trapState.get(key)&&p.x>t.triggerX)setTrapTrigger(key,now);}
+  for(const t of ld.ambushSpikes||[]){const key='as'+t.id;if(!state.trapState.get(key)&&p.x>t.triggerX)setTrapTrigger(key,now);}
+  for(const t of ld.bridgeTiles||[]){const key='br'+t.id;if(!state.trapState.has(key)&&overlap(p,{x:t.x-3,y:t.y-30,w:t.w+6,h:t.h+38}))setTrapTrigger(key,now);}
+  for(const v of ld.vanishPlatforms||[]){const key='vp'+v.id;if(!state.trapState.has(key)&&overlap(p,{x:v.x-3,y:v.y-48,w:v.w+6,h:v.h+54}))setTrapTrigger(key,now);}
+  for(const ch of ld.chandeliers||[]){const key='ch'+ch.id;if(!state.trapState.has(key)&&p.x>ch.triggerX)setTrapTrigger(key,now);}
+  for(const b of ld.fallingBlocks||[]){const key='fb'+b.id;if(!state.trapState.has(key)&&p.x>b.triggerX)setTrapTrigger(key,now);}
+  for(const w of ld.slamWalls||[]){const key='sw'+w.id;if(!state.trapState.has(key)&&p.x>w.triggerX)setTrapTrigger(key,now);}
+  if(ld.movingExit&&!state.trapState.has('movingExit')){const g=currentGoal();if(Math.abs((p.x+p.w/2)-(g.x+g.w/2))<ld.movingExit.triggerDist)setTrapTrigger('movingExit',now);}
   for(const fd of ld.fakeDoors||[]){const key='fd'+fd.id,last=state.trapState.get(key)||0;if(overlap(p,fd)&&now-last>1800){state.trapState.set(key,now);p.x=Math.max(40,fd.x-260);p.vx=-250;state.screenShake=10;burst(fd.x+fd.w/2,fd.y+40,12);}}
-  for(const fg of ld.fakeGoals||[]){const key='fg'+fg.id;if(!state.trapState.get(key)&&overlap(p,fg)){state.trapState.set(key,now);p.vx=-330;p.vy=-330;state.screenShake=14;burst(fg.x+28,fg.y+45,18);}}
+  for(const fg of ld.fakeGoals||[]){const key='fg'+fg.id;if(!state.trapState.get(key)&&overlap(p,fg)){setTrapTrigger(key,now);p.vx=-330;p.vy=-330;state.screenShake=14;burst(fg.x+28,fg.y+45,18);}}
 }
 function dynamicFallingBlocks(){const out=[],now=performance.now();for(const b of state.levelData.fallingBlocks||[]){const trig=state.trapState.get('fb'+b.id);if(!trig)continue;const age=(now-trig)/1000;if(age<b.delay)continue;const y=Math.min(b.floorY-b.h,b.y+(age-b.delay)*b.speed);out.push({x:b.x,y,w:b.w,h:b.h});}return out;}
 function dynamicSlamWalls(){const out=[],now=performance.now();for(const w of state.levelData.slamWalls||[]){const trig=state.trapState.get('sw'+w.id);if(!trig)continue;const age=(now-trig)/1000;if(age<w.delay)continue;const t=age-w.delay;if(t>w.travel*2+.18)continue;let q=t<=w.travel?t/w.travel:1-(t-w.travel)/w.travel;q=Math.max(0,Math.min(1,q));const eased=1-Math.pow(1-q,3);out.push({x:w.startX+(w.endX-w.startX)*eased,y:w.y,w:w.w,h:w.h});}return out;}
@@ -1270,8 +1296,6 @@ function injectInsanity(ld){
   if(ld.level>=10&&ld.level%5===0)ld.fakeDoors.push({id:nextId++,x:1080+((ld.level%4)*38),y:690,w:56,h:100});
   // Parede-relâmpago no meio/final, nunca no spawn ou na saída.
   if(ld.level>=14&&ld.level%3===1&&!ld.door)ld.slamWalls.push({id:nextId++,triggerX:870,startX:1260,endX:980,y:650,w:42,h:140,delay:.09,travel:.26});
-  // A partir da 18, o jogo ocasionalmente inverte controles no trecho de reação.
-  if(ld.level>=18&&ld.level%5===2)ld.reverseZones.push({x:700,y:500,w:210,h:290});
   return ld;
 }
 function injectEnemies(ld){
@@ -1357,13 +1381,25 @@ function levelIntegrityIssues(ld){
   return [...new Set(issues)];
 }
 
+function isJokerLevel(level){const l=Number(level)||0;return l>=37&&l<1000&&l%37===0&&l%100!==0;}
+function applyJokerMutators(ld,level){
+  if(!ld)return ld;
+  ld.joker=false;ld.jokerVariant=0;ld.reverseZones=[];
+  if(!isJokerLevel(level)||ld.boss)return ld;
+  const variant=(Math.floor(level/37)-1)%4;
+  ld.joker=true;ld.jokerVariant=variant;
+  ld.reverseZones=[{x:560+(variant%2)*55,y:470,w:250,h:320}];
+  if(level>=370)ld.reverseZones.push({x:990-(variant%2)*45,y:500,w:190,h:290});
+  ld.roomTitle=`🃏 ${ld.roomTitle||castleRegion(level).name}`;
+  return ld;
+}
 function safeGenerateLevel(level){
   try{
     const ld=generateLevel(level),issues=levelIntegrityIssues(ld);
-    if(ld&&Array.isArray(ld.platforms)&&ld.platforms.length>=2&&ld.goal&&issues.length===0)return ld;
+    if(ld&&Array.isArray(ld.platforms)&&ld.platforms.length>=2&&ld.goal&&issues.length===0)return applyJokerMutators(ld,level);
     console.error('[Infinity Castle] Fase inválida, usando sala de emergência:',level,issues);
   }catch(err){console.error('[Infinity Castle] Falha ao gerar fase, usando sala de emergência:',level,err);}
-  return buildEmergencyLevel(level);
+  return applyJokerMutators(buildEmergencyLevel(level),level);
 }
 function buildEmergencyLevel(level){
   const region=castleRegion(level),floorY=790,base={
@@ -1422,7 +1458,6 @@ function generateLevel(level){
   // Maldades adicionais ficam progressivamente mais frequentes, mas sempre resetam de forma determinística.
   if(level>=7&&level%5===0)fakeDoors.push({id:id++,x:1110+(level%3)*45,y:690,w:56,h:100});
   if(level>=9&&level%7===0)fakeGoals.push({id:id++,x:1240,y:690,w:56,h:100});
-  if(level>=35&&level%7===0)reverseZones.push({x:650,y:460,w:280,h:330});
   if(level>560&&level%13===0)ambushSpikes.push({id:id++,triggerX:1360,delay:80,spike:{x:1450,y:758,w:64,h:32,dir:'up'}});
   // INSANITY MODE: fases 1-4 ensinam; da fase 5 em diante o castelo começa a mentir de propósito.
   if(level>=5){
@@ -1438,8 +1473,6 @@ function generateLevel(level){
     if(level>=10&&level%4===1)slamWalls.push({id:id++,triggerX:520,startX:-70,endX:360,y:650,w:42,h:140,delay:.16,travel:.32});
     // Saída-isca cedo, mas não sobre a saída real.
     if(level>=8&&level%6===2)fakeGoals.push({id:id++,x:1260,y:690,w:56,h:100});
-    // A partir da 20, uma zona de reversão curta pode aparecer no meio de um salto.
-    if(level>=20&&level%8===3)reverseZones.push({x:760,y:500,w:170,h:290});
   }
   const goal={x:1515,y:690,w:56,h:100};
   const movingExit=level>=5&&level%5===0?{triggerDist:185,toX:1425,toY:690}:null;
@@ -1476,7 +1509,7 @@ function generateBossLevel(level){
   for(let i=0;i<tier;i++)spikes.push({x:555+i*50,y:772,w:28,h:18,dir:'up'});
   const crushers=[];if(tier>=4){crushers.push({axis:'y',x:525,a:250,b:585,w:50,h:92,speed:1.1,phase:0});crushers.push({axis:'y',x:1025,a:250,b:585,w:50,h:92,speed:1.15,phase:2.2});}
   const ghosts=tier>=5?[{x:780,y:520,w:40,h:50,rangeX:230,rangeY:55,speed:1.2,phase:0}]:[],dragons=tier>=8?[{x:1540,y:430,interval:2.3,life:2.5,speed:480,phase:0,fromRight:true}]:[];
-  const ld={level,platforms,hazards,spikes,fakeFloors:[],popTraps:[],ambushSpikes:tier>=7?[{id:900+level,triggerX:1320,delay:100,spike:{x:1395,y:754,w:62,h:36,dir:'up'}}]:[],reverseZones:tier>=9?[{x:650,y:480,w:300,h:310}]:[],plate:null,plate2:null,door:null,goal:{x:1515,y:690,w:56,h:100},elevators:[],chandeliers:[],armors:[],crushers,bookshelves:[],ghosts,bridgeTiles:[],dragons,fakeDoors:[],fakeGoals:[],fallingBlocks:[],slamWalls:[],vanishPlatforms:[],windGusts:[],movingExit:null,boss,archetype:99,roomTitle:'SALÃO DO GUARDIÃO',regionIndex:region.index};
+  const ld={level,platforms,hazards,spikes,fakeFloors:[],popTraps:[],ambushSpikes:tier>=7?[{id:900+level,triggerX:1320,delay:100,spike:{x:1395,y:754,w:62,h:36,dir:'up'}}]:[],reverseZones:[],plate:null,plate2:null,door:null,goal:{x:1515,y:690,w:56,h:100},elevators:[],chandeliers:[],armors:[],crushers,bookshelves:[],ghosts,bridgeTiles:[],dragons,fakeDoors:[],fakeGoals:[],fallingBlocks:[],slamWalls:[],vanishPlatforms:[],windGusts:[],movingExit:null,boss,archetype:99,roomTitle:'SALÃO DO GUARDIÃO',regionIndex:region.index};
   return sanitizeBossLevel(ld);
 }
 function nearestPlatform(platforms,x){let best=platforms[0],d=Infinity;for(const p of platforms){const c=p.x+p.w/2,nd=Math.abs(c-x);if(nd<d){d=nd;best=p;}}return best;}
@@ -1519,14 +1552,33 @@ function castleRegion(level){
     {name:'CAPELA ASSOMBRADA',subtitle:'Nem toda porta quer levar a algum lugar',mechanics:'FANTASMAS • PORTAS-MENTIRA',sky:'#0d1218',wall:'#25303a',accent:'#9da9b8',platform:'#2b3037',edge:'#69727e',hazards:['curse','storm'],rooms:['NAVE DOS SUSSURROS','CATACUMBAS','ALTAR QUEBRADO','CORREDOR DOS SINOS MORTOS']},
     {name:'JARDINS SUSPENSOS',subtitle:'Bonito o bastante para baixar a guarda',mechanics:'RAÍZES • PONTES QUEBRÁVEIS',sky:'#0b1b18',wall:'#1f3a31',accent:'#6eb783',platform:'#2b3933',edge:'#607a6b',hazards:['roots','storm'],rooms:['ESTUFA REAL','JARDIM DA LUA','PÁTIO DAS ESTÁTUAS','PONTE DAS HERAS']},
     {name:'MURALHAS DA TEMPESTADE',subtitle:'Agora o próprio ar tenta jogar vocês fora',mechanics:'VENTANIA • DRAGÕES • PONTES',sky:'#07131f',wall:'#213142',accent:'#70b9df',platform:'#28343f',edge:'#667989',hazards:['storm','curse'],rooms:['AMEIAS DO NORTE','TORRE DO TROVÃO','PONTE EXTERNA','MURALHA PARTIDA']},
-    {name:'TRONO RUBRO',subtitle:'O castelo para de fingir que joga limpo',mechanics:'CONTROLES INVERTIDOS • PAREDES-ARMADILHA',sky:'#210a0d',wall:'#451b21',accent:'#d6535d',platform:'#3e292c',edge:'#8b565c',hazards:['curse','roots','storm'],rooms:['SALÃO DO TRONO','CORREDOR DE SANGUE','CÂMARA DA COROA','GALERIA DO CARRASCO']},
-    {name:'CORAÇÃO IMPOSSÍVEL',subtitle:'Aqui a arquitetura também mente',mechanics:'TODAS AS PEGADINHAS • CAOS',sky:'#160815',wall:'#321334',accent:'#e35fd2',platform:'#322635',edge:'#7c5b81',hazards:['curse','storm','roots'],rooms:['SALÃO QUE NÃO EXISTE','ESCADA SEM FIM','CORREDOR DO AVESSO','CÂMARA DO CASTELO VIVO']}
+    {name:'TRONO RUBRO',subtitle:'O castelo para de fingir que joga limpo',mechanics:'PAREDES-ARMADILHA • CORREDORES VIVOS',sky:'#210a0d',wall:'#451b21',accent:'#d6535d',platform:'#3e292c',edge:'#8b565c',hazards:['curse','roots','storm'],rooms:['SALÃO DO TRONO','CORREDOR DE SANGUE','CÂMARA DA COROA','GALERIA DO CARRASCO']},
+    {name:'CORAÇÃO IMPOSSÍVEL',subtitle:'Aqui a arquitetura também mente',mechanics:'PEGADINHAS EXTREMAS • CAOS',sky:'#160815',wall:'#321334',accent:'#e35fd2',platform:'#322635',edge:'#7c5b81',hazards:['curse','storm','roots'],rooms:['SALÃO QUE NÃO EXISTE','ESCADA SEM FIM','CORREDOR DO AVESSO','CÂMARA DO CASTELO VIVO']}
   ];return {...regions[i],index:i};
 }
 function drawBackground(){
   const z=castleRegion(state.level),g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,z.sky);g.addColorStop(1,'#05070a');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   const n=z.index;if(n===0)bgCourtyard(z);else if(n===1)bgRoyal(z);else if(n===2)bgDungeon(z);else if(n===3)bgClock(z);else if(n===4)bgLibrary(z);else if(n===5)bgChapel(z);else if(n===6)bgGarden(z);else if(n===7)bgRamparts(z);else if(n===8)bgThrone(z);else bgHeart(z);
+  if(state.levelData?.joker)drawJokerAnomaly();
   ctx.fillStyle='rgba(0,0,0,.20)';ctx.fillRect(0,0,W,H);
+}
+function drawJokerAnomaly(){
+  const t=elapsed(),variant=state.levelData?.jokerVariant||0,px=player?.x+21||800,py=player?.y+28||450;
+  ctx.save();
+  const pulse=.06+(Math.sin(t*3.1)+1)*.025;
+  ctx.fillStyle=`rgba(95,0,70,${pulse})`;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,60,155,.16)';ctx.lineWidth=3;
+  for(let i=0;i<7;i++){const x=80+i*245+Math.sin(t*1.3+i)*18,y=115+(i%3)*122;ctx.save();ctx.translate(x,y);ctx.rotate(Math.sin(t*.7+i)*.08+(variant-1.5)*.01);ctx.strokeRect(-74,-28,148,56);ctx.restore();}
+  for(let i=0;i<6;i++){
+    const x=150+i*265,y=190+(i%2)*210+Math.sin(t*1.7+i)*7,rx=30+(i%3)*7,ry=13+(i%2)*3;
+    ctx.fillStyle='rgba(5,3,10,.68)';ctx.beginPath();ctx.moveTo(x-rx,y);ctx.quadraticCurveTo(x,y-ry*1.6,x+rx,y);ctx.quadraticCurveTo(x,y+ry*1.6,x-rx,y);ctx.fill();
+    const lookX=Math.max(-8,Math.min(8,(px-x)/90)),lookY=Math.max(-4,Math.min(4,(py-y)/120));
+    ctx.fillStyle='rgba(255,78,155,.72)';ctx.beginPath();ctx.arc(x+lookX,y+lookY,6,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,230,245,.8)';ctx.beginPath();ctx.arc(x+lookX+1,y+lookY-1,2,0,Math.PI*2);ctx.fill();
+  }
+  ctx.globalAlpha=.13;ctx.fillStyle='#ff4d9e';
+  for(let i=0;i<5;i++){const y=((t*95+i*173+variant*61)%H);ctx.fillRect((i%2)*180,y,W-(i%2)*360,2+(i%3));}
+  ctx.restore();
 }
 function bgStone(z,alpha=.15){ctx.strokeStyle=`rgba(220,220,220,${alpha})`;ctx.lineWidth=2;for(let y=100;y<H;y+=70){const off=(Math.floor(y/70)%2)*52;for(let x=-off;x<W;x+=104)ctx.strokeRect(x,y,104,70);}}
 function bgCourtyard(z){ctx.fillStyle='rgba(112,145,175,.12)';ctx.fillRect(0,0,W,250);ctx.fillStyle=z.wall;for(let i=0;i<8;i++){const x=i*220-35,h=260+(i%3)*70;ctx.fillRect(x,230,160,h);for(let b=0;b<5;b++)ctx.fillRect(x+b*35,205,22,30);}for(let i=0;i<6;i++){ctx.fillStyle=z.accent;ctx.globalAlpha=.28;ctx.fillRect(130+i*270,250,40,150);ctx.globalAlpha=1;}bgStone(z,.06);}
@@ -1558,7 +1610,7 @@ function drawFallingBlock(b){ctx.fillStyle='#55545c';ctx.fillRect(b.x,b.y,b.w,b.
 function drawSlamWall(w){ctx.fillStyle='#51414a';ctx.fillRect(w.x,w.y,w.w,w.h);ctx.fillStyle='#c0a4ad';for(let y=w.y+8;y<w.y+w.h;y+=22)ctx.fillRect(w.x+5,y,w.w-10,4);}
 function drawWindGust(z){ctx.save();ctx.globalAlpha=.18;ctx.strokeStyle='#b9eaff';ctx.lineWidth=3;for(let y=z.y+25;y<z.y+z.h;y+=34){ctx.beginPath();ctx.moveTo(z.x+12,y);ctx.quadraticCurveTo(z.x+z.w*.5,y-18,z.x+z.w-12,y);ctx.stroke();}ctx.restore();}
 function drawFakeGoal(f,triggered){ctx.save();ctx.globalAlpha=triggered?.35:1;ctx.fillStyle='rgba(24,18,14,.9)';ctx.fillRect(f.x,f.y,f.w,f.h);ctx.strokeStyle=triggered?'#ff4f79':'#d7b56d';ctx.lineWidth=3;ctx.strokeRect(f.x,f.y,f.w,f.h);ctx.fillStyle=triggered?'#ff4f79':'#a8c66c';ctx.font='26px sans-serif';ctx.fillText(triggered?'☠':'?',f.x+15,f.y+58);ctx.restore();}
-function drawReverseZone(z){ctx.strokeStyle='rgba(255,211,77,.18)';ctx.setLineDash([9,10]);ctx.strokeRect(z.x,z.y,z.w,z.h);ctx.setLineDash([]);ctx.fillStyle='rgba(255,211,77,.05)';ctx.fillRect(z.x,z.y,z.w,z.h);}
+function drawReverseZone(z){const p=.08+(Math.sin(elapsed()*5)+1)*.035;ctx.save();ctx.strokeStyle='rgba(255,65,160,.42)';ctx.lineWidth=3;ctx.setLineDash([7,6,2,8]);ctx.strokeRect(z.x,z.y,z.w,z.h);ctx.setLineDash([]);ctx.fillStyle=`rgba(110,0,90,${p})`;ctx.fillRect(z.x,z.y,z.w,z.h);ctx.fillStyle='rgba(255,220,245,.45)';ctx.font='900 20px sans-serif';ctx.fillText('←  ?  →',z.x+z.w/2-36,z.y+32);ctx.restore();}
 function drawElevator(e){ctx.fillStyle='#5b4632';ctx.fillRect(e.x,e.y,e.w,e.h);ctx.fillStyle='#c39a62';ctx.fillRect(e.x+8,e.y+4,e.w-16,4);ctx.strokeStyle='rgba(210,190,150,.45)';ctx.beginPath();ctx.moveTo(e.x+8,e.y);ctx.lineTo(e.x+8,70);ctx.moveTo(e.x+e.w-8,e.y);ctx.lineTo(e.x+e.w-8,70);ctx.stroke();}
 function drawChandelier(r,falling){ctx.save();ctx.strokeStyle='#80684e';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(r.x+r.w/2,0);ctx.lineTo(r.x+r.w/2,r.y);ctx.stroke();ctx.translate(r.x+r.w/2,r.y+10);ctx.strokeStyle=falling?'#c99058':'#a17e57';ctx.lineWidth=5;ctx.beginPath();ctx.arc(0,18,22,0,Math.PI);ctx.stroke();for(let i=-1;i<=1;i++){ctx.fillStyle='#ffca68';ctx.beginPath();ctx.arc(i*14,28,5,0,Math.PI*2);ctx.fill();}ctx.restore();}
 function drawCrusher(c){ctx.fillStyle='#4c4d52';ctx.fillRect(c.x,c.y,c.w,c.h);ctx.fillStyle='#9b9da6';for(let y=c.y+8;y<c.y+c.h;y+=18)ctx.fillRect(c.x+4,y,c.w-8,4);drawSpike({x:c.x,y:c.y+c.h-14,w:c.w,h:14});}
@@ -1660,7 +1712,7 @@ function drawMiniTornado(cx,cy,progress=0){
   }
   ctx.globalAlpha=.24;ctx.fillStyle='#cdefff';ctx.beginPath();ctx.moveTo(-12,-34);ctx.lineTo(31,34);ctx.lineTo(-31,34);ctx.closePath();ctx.fill();ctx.restore();
 }
-function drawLevelTitle(){const ld=state.levelData,z=castleRegion(state.level);ctx.fillStyle='rgba(255,255,255,.14)';ctx.font='900 72px sans-serif';ctx.textAlign='center';ctx.fillText(String(state.level).padStart(4,'0'),W/2,103);ctx.font='800 20px sans-serif';ctx.fillStyle=state.mode==='chaos'?'#ef7aff':z.accent;ctx.globalAlpha=.55;ctx.fillText(ld?.roomTitle||z.name,W/2,139);ctx.font='650 13px sans-serif';ctx.fillStyle='rgba(255,255,255,.55)';ctx.globalAlpha=.6;ctx.fillText(`${z.name}  •  TENTATIVA ${state.attempt}${state.mode==='chaos'?'  •  ⚡ CAOS 4P':state.level>=5?'  •  INSANITY':''}`,W/2,163);ctx.globalAlpha=1;ctx.textAlign='left';}
+function drawLevelTitle(){const ld=state.levelData,z=castleRegion(state.level);ctx.fillStyle='rgba(255,255,255,.14)';ctx.font='900 72px sans-serif';ctx.textAlign='center';ctx.fillText(String(state.level).padStart(4,'0'),W/2,103);ctx.font='800 20px sans-serif';ctx.fillStyle=state.mode==='chaos'?'#ef7aff':z.accent;ctx.globalAlpha=.55;ctx.fillText(ld?.roomTitle||z.name,W/2,139);ctx.font='650 13px sans-serif';ctx.fillStyle='rgba(255,255,255,.55)';ctx.globalAlpha=.6;ctx.fillText(`${z.name}  •  TENTATIVA ${state.attempt}${state.levelData?.joker?'  •  🃏 CORINGA':state.mode==='chaos'?'  •  ⚡ CAOS 4P':state.level>=5?'  •  INSANITY':''}`,W/2,163);ctx.globalAlpha=1;ctx.textAlign='left';}
 function burst(x,y,n,color=null){for(let i=0;i<n;i++)state.particles.push({x,y,vx:(Math.random()-.5)*500,vy:(Math.random()-.7)*450,life:1,color});}
 function drawParticles(){for(const p of state.particles){ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.color||(ELEMENTS[state.role]||ELEMENTS.earth).color;ctx.fillRect(p.x,p.y,6,6);}ctx.globalAlpha=1;}
 function updateParticles(dt){for(const p of state.particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=700*dt;p.life-=dt*1.7;}state.particles=state.particles.filter(p=>p.life>0);}
