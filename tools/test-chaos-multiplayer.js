@@ -17,6 +17,21 @@ function eventOnce(socket, event, timeout = 5000) {
   });
 }
 
+function expectNoEvent(socket, event, timeout = 300) {
+  return new Promise((resolve, reject) => {
+    const handler = payload => {
+      clearTimeout(timer);
+      socket.off(event, handler);
+      reject(new Error(`Unexpected ${event}: ${JSON.stringify(payload)}`));
+    };
+    const timer = setTimeout(() => {
+      socket.off(event, handler);
+      resolve();
+    }, timeout);
+    socket.on(event, handler);
+  });
+}
+
 function emitAck(socket, event, payload, timeout = 4000) {
   return new Promise((resolve, reject) => {
     socket.timeout(timeout).emit(event, payload, (err, response) => {
@@ -95,6 +110,7 @@ async function main() {
     assert.equal(start.level, 1);
 
     const sharedTrapPromises = [air, light, darkness].map(socket => eventOnce(socket, 'trap-trigger'));
+    const trapSnapshotPromise = eventOnce(air, 'room-state');
     earth.emit('trap-trigger', { level: 1, key: 'as4242' });
     const sharedTraps = await Promise.all(sharedTrapPromises);
     for (const sharedTrap of sharedTraps) {
@@ -102,6 +118,8 @@ async function main() {
       assert.equal(sharedTrap.key, 'as4242');
       assert.ok(Number.isFinite(sharedTrap.activatedAt));
     }
+    const trapSnapshot = await trapSnapshotPromise;
+    assert.ok(trapSnapshot.trapStates.some(t => t.key === 'as4242'), 'Room snapshot must persist revealed trap state');
 
     const unlockedPromise = eventOnce(earth, 'chaos-unlocked');
     for (const socket of [earth, air, light, darkness]) {
@@ -121,16 +139,63 @@ async function main() {
     assert.equal(completed.finished, false);
 
     const resetPromises = [earth, air, light, darkness].map(socket => eventOnce(socket, 'reset-level'));
+    const lightRewardPromise = eventOnce(light, 'death-reward');
+    const noRewardPromises = [earth, air, darkness].map(socket => expectNoEvent(socket, 'death-reward'));
     light.emit('player-death');
-    const resets = await Promise.all(resetPromises);
+    const [lightReward, resets] = await Promise.all([lightRewardPromise, Promise.all(resetPromises)]);
+    assert.equal(lightReward.coins, 5);
+    await Promise.all(noRewardPromises);
     for (const reset of resets) {
       assert.equal(reset.mode, 'chaos');
       assert.equal(reset.deaths, 1);
-      assert.equal(reset.rewardCoins, 5);
-      assert.equal(reset.deathPlayerId, light.id);
+      assert.equal('rewardCoins' in reset, false);
+      assert.equal('deathPlayerId' in reset, false);
     }
 
-    console.log('Chaos multiplayer integration: PASS — 4 unique elements, ready gate, traps visible to all peers, seals, shared goal and shared +5 death reward.');
+    const multiA = await connect(url); clients.push(multiA);
+    const multiCreated = await emitAck(multiA, 'create-room', {
+      name: 'Multi A',
+      element: 'earth',
+      mode: 'multiplayer'
+    });
+    assert.equal(multiCreated.ok, true);
+    assert.equal(multiCreated.mode, 'multiplayer');
+    assert.equal(multiCreated.maxPlayers, 2);
+
+    const multiB = await connect(url); clients.push(multiB);
+    const multiJoin = await emitAck(multiB, 'join-room', {
+      code: multiCreated.code,
+      name: 'Multi B',
+      element: 'air',
+      mode: 'multiplayer'
+    });
+    assert.equal(multiJoin.ok, true);
+
+    const multiStartPromise = eventOnce(multiA, 'start-level');
+    multiA.emit('ready', { ready: true });
+    multiB.emit('ready', { ready: true });
+    const multiStart = await multiStartPromise;
+    assert.equal(multiStart.level, 1);
+
+    const multiTrapPromise = eventOnce(multiB, 'trap-trigger');
+    const multiSnapshotPromise = eventOnce(multiB, 'room-state');
+    multiA.emit('trap-trigger', { level: 1, key: 'sw777' });
+    const [multiTrap, multiSnapshot] = await Promise.all([multiTrapPromise, multiSnapshotPromise]);
+    assert.equal(multiTrap.key, 'sw777');
+    assert.ok(multiSnapshot.trapStates.some(t => t.key === 'sw777'), 'Two-player room snapshot must persist wall reveal');
+
+    const multiResetA = eventOnce(multiA, 'reset-level');
+    const multiResetB = eventOnce(multiB, 'reset-level');
+    const multiAReward = eventOnce(multiA, 'death-reward');
+    const multiBNoReward = expectNoEvent(multiB, 'death-reward');
+    multiA.emit('player-death');
+    const [multiReward, resetA, resetB] = await Promise.all([multiAReward, multiResetA, multiResetB]);
+    assert.equal(multiReward.coins, 5);
+    assert.equal(resetA.deaths, 1);
+    assert.equal(resetB.deaths, 1);
+    await multiBNoReward;
+
+    console.log('Online integration: PASS — Chaos + 2P traps are room-wide and only the player who dies receives +5 coins.');
   } finally {
     for (const socket of clients) {
       try { socket.close(); } catch {}
