@@ -598,9 +598,11 @@ socket.on('start-level', ({level,deaths,mode}) => {
   if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
   state.level=level;state.deaths=deaths;startLevel(level);
 });
-socket.on('reset-level', ({deaths,manual,mode}={}) => {
+socket.on('reset-level', ({deaths,manual,mode,rewardCoins=0,deathPlayerId=null}={}) => {
   if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
-  state.deaths=deaths;state.running=false;saveOnlineProgress(false);
+  state.deaths=deaths;state.running=false;
+  if(!manual&&Number(rewardCoins)>0)addCoins(Number(rewardCoins));
+  saveOnlineProgress(false);
   if(manual){showOverlay('↻ SALA REINICIADA',state.mode==='chaos'?'O caos foi recalibrado para os quatro elementos.':'Tentem uma rota diferente.',320);setTimeout(()=>startLevel(state.level),340);return;}
   showOverlay(state.mode==='chaos'?'⚡ O CAOS DEVOROU O GRUPO':'☠️ O CASTELO COBROU OUTRA ALMA',deathLine(),520);openShop({death:true,multiplayer:true});
   clearTimeout(state.shopTimer);state.shopTimer=setTimeout(()=>{closeShop();startLevel(state.level);},5000);
@@ -800,7 +802,7 @@ const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,facing:1,
   update(dt){
     if(!state.running||this.dead)return;
     const ld=state.levelData,cfg=ELEMENTS[state.role]||ELEMENTS.earth;let left=keys['arrowleft']||keys['a'],right=keys['arrowright']||keys['d'];const jump=keys['w']||keys['arrowup'];
-    const reversed=!!ld.joker&&state.role!=='darkness'&&ld.reverseZones?.some(z=>overlap(this,z));if(reversed){const t=left;left=right;right=t;}
+    const reversed=!!ld.joker&&ld.reverseZones?.some(z=>overlap(this,z));if(reversed){const t=left;left=right;right=t;}
     const ability=performance.now()<state.abilityUntil;let accel=cfg.accel,max=cfg.max,gravity=cfg.gravity,jumpPower=cfg.jump;
     if(state.role==='air'&&ability){max=520;gravity=780;}if(state.activeBoosts.speed){accel*=1.15;max*=1.2;}if(state.activeBoosts.jump)jumpPower*=1.15;
     if(left&&!right)this.facing=-1;if(right&&!left)this.facing=1;
@@ -901,7 +903,7 @@ function die(p=player){
     if(state.soloResetPending||p.dead)return;p.dead=true;state.soloResetPending=true;state.deaths+=1;addCoins(5);saveSoloProgress(false);burst(p.x+21,p.y+25,18);
     state.screenShake=18;state.running=false;showOverlay('☠️ PEGADINHA DO CASTELO',deathLine(),520);openShop({death:true});return;
   }
-  if(player.dead)return;player.dead=true;addCoins(5);burst(player.x+21,player.y+25,18);socket.emit('player-death');
+  if(player.dead)return;player.dead=true;burst(player.x+21,player.y+25,18);socket.emit('player-death');
 }
 function platePressed(plate){
   if(!plate)return false;
