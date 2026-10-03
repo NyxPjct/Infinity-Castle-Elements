@@ -688,7 +688,7 @@ function mechanicName(l){
   if(isJokerLevel(l))return'🃏 FASE CORINGA • CONTROLES INVERTIDOS • CASTELO INSTÁVEL';
   if(l<5)return'CALMARIA SUSPEITA';if(l<15)return'PEGADINHAS • INIMIGOS • FALSA SEGURANÇA';return`${castleRegion(l).mechanics} • INIMIGOS`;
 }
-function escapeHtmlfunction escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 
 const keys={};
 addEventListener('keydown',e=>{
