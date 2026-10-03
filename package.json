@@ -1,8 +1,8 @@
 {
   "name": "infinity-castle-elements",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
-  "description": "Infinity Castle Elements — INSANITY 0.0.4. Correção do atualizador interno, instalação silenciosa confiável e reinício automático na versão nova.",
+  "description": "Infinity Castle Elements — INSANITY 0.0.5. Hotfix do processo principal Electron e proteção de sintaxe no pipeline de release.",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",
