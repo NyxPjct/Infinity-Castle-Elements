@@ -1,10 +1,20 @@
-# Infinity Castle Elements — INSANITY 0.0.4
+# Infinity Castle Elements — INSANITY 0.0.5
 
 **Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer cooperativo, **Modo Caos para 4 jogadores online**, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A versão **INSANITY 0.0.4** corrige o atualizador interno: instalação silenciosa mais confiável, atualização sobre a instalação atual, validação da versão instalada e reabertura automática do jogo.
+A versão **INSANITY 0.0.5** corrige um SyntaxError no processo principal Electron introduzido na 0.0.4 e adiciona validação de sintaxe ao pipeline antes de gerar os executáveis.
 
-**Versão atual do jogo:** `0.0.4`
+**Versão atual do jogo:** `0.0.5`
+
+## Novidades da versão 0.0.5
+
+### 🛠️ Hotfix de inicialização
+
+- corrige o erro `SyntaxError: missing ) after argument list` em `desktop/main.cjs`;
+- corrige as strings do PowerShell usadas pelo atualizador;
+- adiciona `node --check desktop/main.cjs` ao workflow de Windows;
+- o GitHub não publica mais um executável se o processo principal Electron tiver erro de sintaxe;
+- quem instalou a 0.0.4 e está com o jogo sem abrir deve instalar o **Setup 0.0.5** manualmente uma vez.
 
 ## Novidades da versão 0.0.4
 
@@ -105,9 +115,9 @@ As quatro habilidades agora possuem animação própria, janela ativa e cooldown
 
 ## Downloads para Windows
 
-1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.4.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.4/Infinity-Castle-Elements-Setup-0.0.4.exe)
-2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.4.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.4/Infinity-Castle-Elements-Portable-0.0.4.exe)
-3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.4.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.4/Infinity-Castle-Elements-Windows-0.0.4.zip)
+1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.5.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Setup-0.0.5.exe)
+2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.5.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Portable-0.0.5.exe)
+3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.5.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Windows-0.0.5.zip)
 
 ---
 
@@ -330,21 +340,21 @@ Essas tecnologias fazem parte do aplicativo e não precisam ser instaladas manua
 ### Instalador
 Baixe:
 
-**Infinity-Castle-Elements-Setup-0.0.4.exe**
+**Infinity-Castle-Elements-Setup-0.0.5.exe**
 
 Abra o arquivo, escolha a pasta de instalação e conclua o assistente. O instalador pode criar atalhos na Área de Trabalho e no Menu Iniciar.
 
 ### Portable
 Baixe:
 
-**Infinity-Castle-Elements-Portable-0.0.4.exe**
+**Infinity-Castle-Elements-Portable-0.0.5.exe**
 
 Abra o executável diretamente. Não é necessário instalar o jogo.
 
 ### Pacote completo
 Baixe:
 
-**Infinity-Castle-Elements-Windows-0.0.4.zip**
+**Infinity-Castle-Elements-Windows-0.0.5.zip**
 
 Extraia o arquivo para encontrar as versões Setup e Portable.
 
