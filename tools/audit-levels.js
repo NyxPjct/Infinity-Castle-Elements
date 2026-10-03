@@ -107,7 +107,7 @@ const archetypes=new Set();
 let bosses=0, doors=0, rendered=0, runtimeFrames=0, jokerLevels=0, normalReverseLeaks=0;
 for(let level=1; level<=1000; level++) {
   let ld;
-  try { ld=sandbox.generateLevel(level); } catch (e) { bad.push([level,`generateLevel lançou: ${e.stack||e}`]); continue; }
+  try { ld=sandbox.safeGenerateLevel(level); } catch (e) { bad.push([level,`safeGenerateLevel lançou: ${e.stack||e}`]); continue; }
   const issues = sandbox.levelIntegrityIssues(ld) || [];
   for(const issue of issues) bad.push([level, issue]);
 
