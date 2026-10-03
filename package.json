@@ -69,10 +69,10 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Infinity Castle Elements",
       "runAfterFinish": true,
-      "artifactName": "Infinity-Castle-Elements-Setup-0.0.3.${ext}"
+      "artifactName": "Infinity-Castle-Elements-Setup-${version}.${ext}"
     },
     "portable": {
-      "artifactName": "Infinity-Castle-Elements-Portable-0.0.3.${ext}"
+      "artifactName": "Infinity-Castle-Elements-Portable-${version}.${ext}"
     }
   }
 }
