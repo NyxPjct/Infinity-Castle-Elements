@@ -104,7 +104,7 @@ function dynamicInvades(ld,zone){
 const bad=[];
 const regionCounts=Array(10).fill(0);
 const archetypes=new Set();
-let bosses=0, doors=0, rendered=0, runtimeFrames=0;
+let bosses=0, doors=0, rendered=0, runtimeFrames=0, jokerLevels=0, normalReverseLeaks=0;
 for(let level=1; level<=1000; level++) {
   let ld;
   try { ld=sandbox.generateLevel(level); } catch (e) { bad.push([level,`generateLevel lançou: ${e.stack||e}`]); continue; }
@@ -118,6 +118,8 @@ for(let level=1; level<=1000; level++) {
   else if(ld.boss)bad.push([level,'boss fora de múltiplo de 100']);
   if(ld.door){doors++;if(!ld.plate||!ld.plate2)bad.push([level,'portão sem as duas placas']);}
   if(!ld.boss)archetypes.add(ld.archetype);
+  if(ld.joker){jokerLevels++;if(!(ld.reverseZones||[]).length)bad.push([level,'fase Coringa sem zona de inversão']);}
+  else if((ld.reverseZones||[]).length){normalReverseLeaks++;bad.push([level,'fase normal contém controles invertidos']);}
 
   if(!canReachRect(ld,ld.goal))bad.push([level,'auditoria independente: saída sem rota física de Terra']);
   if(ld.boss){
@@ -148,8 +150,10 @@ if(archetypes.size!==12)bad.push(['global',`arquétipos usados: ${[...archetypes
 for(let i=0;i<10;i++)if(regionCounts[i]!==100)bad.push(['global',`região ${i} tem ${regionCounts[i]} fases, esperado 100`]);
 if(rendered!==1000)bad.push(['global',`renderizações concluídas: ${rendered}/1000`]);
 if(runtimeFrames!==4000)bad.push(['global',`frames reais concluídos: ${runtimeFrames}/4000`]);
+if(jokerLevels<20)bad.push(['global',`fases Coringa detectadas: ${jokerLevels}, esperado pelo menos 20`]);
+if(normalReverseLeaks!==0)bad.push(['global',`vazamentos de controles invertidos em fases normais: ${normalReverseLeaks}`]);
 
-const report={checked:1000, bosses, doors, archetypes:archetypes.size, regions:regionCounts, rendered, runtimeFrames, failures:bad.length};
+const report={checked:1000, bosses, doors, jokerLevels, normalReverseLeaks, archetypes:archetypes.size, regions:regionCounts, rendered, runtimeFrames, failures:bad.length};
 console.log(JSON.stringify(report,null,2));
 if(bad.length){console.error('\nFalhas (primeiras 100):');for(const x of bad.slice(0,100))console.error(`Fase ${x[0]}: ${x[1]}`);process.exit(1);}
 console.log('\nOK: as 1000 fases passaram pela auditoria estrutural e de runtime definida nesta build.');
