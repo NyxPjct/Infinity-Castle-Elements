@@ -15,6 +15,9 @@ A versão **INSANITY 0.0.5** corrige um SyntaxError no processo principal Electr
 - adiciona `node --check desktop/main.cjs` ao workflow de Windows;
 - o GitHub não publica mais um executável se o processo principal Electron tiver erro de sintaxe;
 - quem instalou a 0.0.4 e está com o jogo sem abrir deve instalar o **Setup 0.0.5** manualmente uma vez.
+- no Multiplayer e no Modo Caos, armadilhas reveladas por um jogador agora são registradas como **estado autoritativo da sala** e replicadas para todos os demais jogadores;
+- espinhos surpresa, paredes-armadilha e demais armadilhas sincronizadas permanecem iguais para todos os clientes durante a tentativa;
+- a recompensa de morte foi corrigida para **+5 moedas somente para o jogador que morreu**;
 
 ## Novidades da versão 0.0.4
 
@@ -109,7 +112,7 @@ As quatro habilidades agora possuem animação própria, janela ativa e cooldown
 ### 💾 Outros ajustes mantidos
 
 - botão **Voltar ao menu inicial** dentro da sala multiplayer;
-- **+5 moedas para todos os jogadores da sala** quando qualquer jogador morrer no Multiplayer ou no Modo Caos; no singleplayer, o jogador continua recebendo +5 pela própria morte;
+- **+5 moedas apenas para o jogador que morreu** em qualquer modo; no Multiplayer e no Modo Caos, a morte ainda reinicia a tentativa compartilhada, mas a recompensa pertence somente a quem morreu;
 - sistema persistente de saves no desktop;
 - menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações e Sair**.
 
@@ -199,7 +202,7 @@ A campanha Caos possui save separado e pode ser retomada criando uma nova sala a
 
 ## Sistema de moedas e Loja Arcana
 
-Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer. No **singleplayer**, a morte rende **+5 moedas** ao próprio jogador. No **Multiplayer** e no **Modo Caos**, quando qualquer jogador morre, **todos os jogadores conectados na sala recebem +5 moedas**. Elas podem ser usadas na **Loja Arcana** para comprar:
+Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer. Em **qualquer modo**, cada morte rende **+5 moedas somente ao jogador que morreu**. No Multiplayer e no Modo Caos, os demais jogadores não recebem moedas pela morte de outra pessoa. Elas podem ser usadas na **Loja Arcana** para comprar:
 
 - **Runa de Escudo** — absorve um golpe fatal;
 - **Botas do Vento** — aumenta temporariamente a velocidade;
