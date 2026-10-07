@@ -1,0 +1,89 @@
+name: Build Android Mobile
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "public/**"
+      - "capacitor.config.json"
+      - "package.json"
+      - ".github/workflows/build-android.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check game JavaScript syntax
+        run: |
+          node --check public/game.js
+          node --check server.js
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Create Capacitor Android project
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Apply app version
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          echo "ICE_VERSION=$VERSION" >> "$GITHUB_ENV"
+          sed -i -E "s/versionCode [0-9]+/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          sed -i -E "s/versionName \"[^\"]+\"/versionName \"$VERSION\"/" android/app/build.gradle
+
+      - name: Build installable APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Prepare APK
+        shell: bash
+        run: |
+          mkdir -p dist-mobile
+          cp android/app/build/outputs/apk/debug/app-debug.apk "dist-mobile/Infinity-Castle-Elements-Android-$ICE_VERSION.apk"
+          ls -lh dist-mobile
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Infinity-Castle-Elements-Android-${{ env.ICE_VERSION }}
+          path: dist-mobile/Infinity-Castle-Elements-Android-${{ env.ICE_VERSION }}.apk
+          if-no-files-found: error
+
+      - name: Publish Android APK to current release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TAG="v$ICE_VERSION"
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Infinity Castle Elements — INSANITY $ICE_VERSION" --generate-notes
+          fi
+          gh release upload "$TAG" "dist-mobile/Infinity-Castle-Elements-Android-$ICE_VERSION.apk" --repo "$GITHUB_REPOSITORY" --clobber
