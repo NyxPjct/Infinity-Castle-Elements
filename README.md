@@ -17,12 +17,12 @@ A versão **INSANITY 0.0.5** corrige um SyntaxError no processo principal Electr
 <table align="center">
   <tr>
     <td align="center">
-      <img src="./docs/images/menu-principal.png" width="400px" alt="Menu principal do Infinity Castle Elements" />
+      <img src="./docs/images/menu-principal.jpg" width="400px" alt="Menu principal do Infinity Castle Elements" />
       <br>
       <strong>🏰 Menu Principal</strong>
     </td>
     <td align="center">
-      <img src="./docs/images/selecao-elementos.png" width="400px" alt="Seleção de elementos" />
+      <img src="./docs/images/selecao-elementos.jpg" width="400px" alt="Seleção de elementos" />
       <br>
       <strong>🔥 Seleção de Elementos</strong>
     </td>
@@ -30,12 +30,12 @@ A versão **INSANITY 0.0.5** corrige um SyntaxError no processo principal Electr
 
   <tr>
     <td align="center">
-      <img src="./docs/images/gameplay-singleplayer.png" width="400px" alt="Gameplay Singleplayer" />
+      <img src="./docs/images/gameplay-singleplayer.jpg" width="400px" alt="Gameplay Singleplayer" />
       <br>
       <strong>🎮 Singleplayer</strong>
     </td>
     <td align="center">
-      <img src="./docs/images/gameplay-multiplayer.png" width="400px" alt="Gameplay Multiplayer" />
+      <img src="./docs/images/gameplay-multiplayer.jpg" width="400px" alt="Gameplay Multiplayer" />
       <br>
       <strong>🌐 Multiplayer Online</strong>
     </td>
@@ -43,12 +43,12 @@ A versão **INSANITY 0.0.5** corrige um SyntaxError no processo principal Electr
 
   <tr>
     <td align="center">
-      <img src="./docs/images/modo-caos.png" width="400px" alt="Modo Caos" />
+      <img src="./docs/images/modo-caos.jpg" width="400px" alt="Modo Caos" />
       <br>
       <strong>💀 Modo Caos</strong>
     </td>
     <td align="center">
-      <img src="./docs/images/android-gameplay.png" width="400px" alt="Gameplay Android" />
+      <img src="./docs/images/android-gameplay.jpg" width="400px" alt="Gameplay Android" />
       <br>
       <strong>📱 Versão Android</strong>
     </td>
