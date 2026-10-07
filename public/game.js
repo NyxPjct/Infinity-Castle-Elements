@@ -1,6 +1,25 @@
-const MULTIPLAYER_SERVER_URL = String(window.electronAPI?.multiplayerUrl || window.ICE_MULTIPLAYER_SERVER_URL || '').trim();
-const socket = MULTIPLAYER_SERVER_URL ? io(MULTIPLAYER_SERVER_URL,{transports:['websocket','polling'],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:800,timeout:10000}) : io();
+const APP_VERSION = String(window.electronAPI?.version || window.ICE_APP_VERSION || '0.0.5').trim() || '0.0.5';
+const DEFAULT_MULTIPLAYER_SERVER_URL = 'https://infinity-castle-elements-server-production.up.railway.app';
+const MULTIPLAYER_SERVER_URL = String(window.electronAPI?.multiplayerUrl || window.ICE_MULTIPLAYER_SERVER_URL || DEFAULT_MULTIPLAYER_SERVER_URL).trim();
+function createOfflineSocket(){
+  const handlers=new Map();
+  return {
+    connected:false,id:null,
+    on(event,fn){if(!handlers.has(event))handlers.set(event,[]);handlers.get(event).push(fn);return this;},
+    off(event,fn){if(!handlers.has(event))return this;handlers.set(event,handlers.get(event).filter(x=>x!==fn));return this;},
+    once(event,fn){const wrap=(...args)=>{this.off(event,wrap);fn(...args);};return this.on(event,wrap);},
+    emit(event,...args){
+      const ack=typeof args[args.length-1]==='function'?args[args.length-1]:null;
+      if(ack&&['create-room','join-room'].includes(event))setTimeout(()=>ack({ok:false,error:'Servidor multiplayer indisponível. Verifique sua internet.'}),0);
+      return this;
+    }
+  };
+}
+const socket = typeof window.io==='function'
+  ? window.io(MULTIPLAYER_SERVER_URL,{transports:['websocket','polling'],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:800,timeout:10000})
+  : createOfflineSocket();
 const $ = s => document.querySelector(s);
+document.querySelectorAll('[data-app-version]').forEach(el=>{el.textContent=APP_VERSION;});
 const lobby = $('#lobby'), roomEl = $('#room'), gameWrap = $('#gameWrap');
 const appShell=$('#appShell'),studioSplash=$('#studioSplash'),titleScreen=$('#titleScreen'),mainMenu=$('#mainMenu'),exitScreen=$('#exitScreen');
 const canvas = $('#game'), ctx = canvas.getContext('2d');
@@ -76,7 +95,7 @@ let desktopUpdateState=null;
 let updateDismissed=false;
 
 function updateStatusMessage(s){
-  const current=s?.currentVersion||window.electronAPI?.version||'0.0.2';
+  const current=s?.currentVersion||APP_VERSION;
   if(!s)return `Versão atual ${current}`;
   if(s.status==='checking')return 'Verificando atualizações...';
   if(s.status==='available')return `Nova versão ${s.latestVersion} disponível · instalada ${current}`;
@@ -99,7 +118,7 @@ function renderUpdateState(s){
       s.status==='downloading'?(`⬇ Baixando ${s.progress||0}%`):(`⬇ Atualização ${s.latestVersion||''}`);
   }
   const current=$('#updateCurrentVersion'),latest=$('#updateLatestVersion'),notes=$('#updateNotes'),status=$('#updateStatusText');
-  if(current)current.textContent=s.currentVersion||window.electronAPI?.version||'0.0.2';
+  if(current)current.textContent=s.currentVersion||APP_VERSION;
   if(latest)latest.textContent=s.latestVersion||'—';
   if(notes)notes.textContent=s.notes||'Correções, melhorias e ajustes da nova versão.';
   if(status)status.textContent=s.status==='error'?(s.error||'Falha ao verificar atualização.'):
@@ -696,6 +715,38 @@ function mechanicName(l){
 function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 
 const keys={};
+const activeTouchKeys=new Set();
+function releaseTouchKey(key){keys[key]=false;activeTouchKeys.delete(key);}
+document.querySelectorAll('[data-touch-key]').forEach(btn=>{
+  const key=String(btn.dataset.touchKey||'').toLowerCase();
+  const press=e=>{
+    e.preventDefault();
+    try{btn.setPointerCapture?.(e.pointerId);}catch{}
+    activeTouchKeys.add(key);keys[key]=true;btn.classList.add('pressed');
+  };
+  const release=e=>{
+    e?.preventDefault?.();
+    releaseTouchKey(key);btn.classList.remove('pressed');
+  };
+  btn.addEventListener('pointerdown',press);
+  btn.addEventListener('pointerup',release);
+  btn.addEventListener('pointercancel',release);
+  btn.addEventListener('lostpointercapture',release);
+  btn.addEventListener('contextmenu',e=>e.preventDefault());
+});
+document.querySelectorAll('[data-touch-action="ability"]').forEach(btn=>{
+  btn.addEventListener('pointerdown',e=>{
+    e.preventDefault();
+    try{btn.setPointerCapture?.(e.pointerId);}catch{}
+    btn.classList.add('pressed');activateAbility();
+  });
+  const clear=e=>{e?.preventDefault?.();btn.classList.remove('pressed');};
+  btn.addEventListener('pointerup',clear);
+  btn.addEventListener('pointercancel',clear);
+  btn.addEventListener('lostpointercapture',clear);
+  btn.addEventListener('contextmenu',e=>e.preventDefault());
+});
+addEventListener('blur',()=>{for(const key of activeTouchKeys)keys[key]=false;activeTouchKeys.clear();});
 addEventListener('keydown',e=>{
   if(state.paused||!$('#settingsModal')?.classList.contains('hidden'))return;
   const k=e.key.toLowerCase();keys[k]=true;
