@@ -19,6 +19,18 @@ A versão **INSANITY 0.0.5** corrige um SyntaxError no processo principal Electr
 - espinhos surpresa, paredes-armadilha e demais armadilhas sincronizadas permanecem iguais para todos os clientes durante a tentativa;
 - a recompensa de morte foi corrigida para **+5 moedas somente para o jogador que morreu**;
 
+### 📱 Versão mobile / Android
+
+- adicionada uma versão **Android 0.0.5** do Infinity Castle Elements;
+- o app mobile usa a mesma campanha, Multiplayer e **Modo Caos** da versão desktop;
+- Multiplayer e Caos continuam conectados ao mesmo servidor central da **Railway**;
+- adicionados **controles touch** para mover para esquerda/direita, pular e ativar o poder elemental;
+- o gameplay mobile foi adaptado para **tela cheia em orientação horizontal**;
+- a interface passou a exibir a **versão real do jogo**, evitando o texto antigo `0.0.2` aparecer em builds 0.0.5;
+- a base Android usa **Capacitor**, permitindo evoluir o jogo mobile sem manter uma campanha separada da versão de PC;
+- o APK é gerado automaticamente pelo GitHub Actions e publicado junto ao Release da versão.
+
+
 ## Novidades da versão 0.0.4
 
 ### 🔄 Atualizador corrigido
@@ -121,6 +133,12 @@ As quatro habilidades agora possuem animação própria, janela ativa e cooldown
 1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.5.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Setup-0.0.5.exe)
 2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.5.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Portable-0.0.5.exe)
 3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.5.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Windows-0.0.5.zip)
+
+## Download para Android
+
+1. **APK Android:** [Infinity-Castle-Elements-Android-0.0.5.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Android-0.0.5.apk)
+
+> Recomenda-se jogar no celular em **orientação horizontal** para aproveitar o canvas completo e os controles touch.
 
 ---
 
