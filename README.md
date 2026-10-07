@@ -6,6 +6,62 @@ A versão **INSANITY 0.0.5** corrige um SyntaxError no processo principal Electr
 
 **Versão atual do jogo:** `0.0.5`
 
+## 📸 Screenshots
+
+<p align="center">
+  Veja um pouco do universo de <strong>Infinity Castle Elements</strong>.
+</p>
+
+<br>
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="./docs/images/menu-principal.png" width="400px" alt="Menu principal do Infinity Castle Elements" />
+      <br>
+      <strong>🏰 Menu Principal</strong>
+    </td>
+    <td align="center">
+      <img src="./docs/images/selecao-elementos.png" width="400px" alt="Seleção de elementos" />
+      <br>
+      <strong>🔥 Seleção de Elementos</strong>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <img src="./docs/images/gameplay-singleplayer.png" width="400px" alt="Gameplay Singleplayer" />
+      <br>
+      <strong>🎮 Singleplayer</strong>
+    </td>
+    <td align="center">
+      <img src="./docs/images/gameplay-multiplayer.png" width="400px" alt="Gameplay Multiplayer" />
+      <br>
+      <strong>🌐 Multiplayer Online</strong>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <img src="./docs/images/modo-caos.png" width="400px" alt="Modo Caos" />
+      <br>
+      <strong>💀 Modo Caos</strong>
+    </td>
+    <td align="center">
+      <img src="./docs/images/android-gameplay.png" width="400px" alt="Gameplay Android" />
+      <br>
+      <strong>📱 Versão Android</strong>
+    </td>
+  </tr>
+</table>
+
+<br>
+
+<p align="center">
+  <sub>Explore o castelo, domine os elementos e sobreviva às armadilhas.</sub>
+</p>
+
+
 ## Novidades da versão 0.0.5
 
 ### 🛠️ Hotfix de inicialização
