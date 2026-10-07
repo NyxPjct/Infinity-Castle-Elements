@@ -1,0 +1,22 @@
+{
+  "name": "Infinity Castle Elements",
+  "short_name": "Infinity Castle",
+  "description": "Infinity Castle Elements — INSANITY 0.0.5",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#050408",
+  "theme_color": "#050408",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/nyx-owl.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
