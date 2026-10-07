@@ -11,7 +11,10 @@
     "desktop": "electron .",
     "dist:win": "electron-builder --win nsis portable",
     "start:multiplayer": "MULTIPLAYER_ONLY=1 node server.js",
-    "test:chaos": "node tools/test-chaos-multiplayer.js"
+    "test:chaos": "node tools/test-chaos-multiplayer.js",
+    "mobile:add:android": "npx cap add android",
+    "mobile:sync": "npx cap sync android",
+    "mobile:android": "npx cap open android"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -23,7 +26,10 @@
   "devDependencies": {
     "electron": "44.5.1",
     "electron-builder": "26.17.0",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "@capacitor/android": "6.2.1",
+    "@capacitor/cli": "6.2.1",
+    "@capacitor/core": "6.2.1"
   },
   "build": {
     "appId": "com.nyxprojectr.infinitycastleelements",
