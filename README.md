@@ -438,3 +438,221 @@ Extraia o arquivo para encontrar as versões Setup e Portable.
 ## Windows SmartScreen
 
 A versão 0.0 ainda não utiliza certificado comercial de assinatura de código. Por isso, dependendo das configurações do Windows, o SmartScreen pode exibir um aviso de **editor desconhecido** ao abrir o executável pela primeira vez.
+
+
+---
+
+# INSANITY 0.0.6 — The Castle Remembers
+
+A versão **0.0.6** expande o Infinity Castle Elements com novos sistemas de horror, progressão, desafio e comportamento dinâmico do castelo, mantendo os modos **Singleplayer**, **Multiplayer** e **Caos 4P**.
+
+## Fases Coringa evoluídas
+
+As **Fases Coringa** continuam aparecendo exclusivamente em fases especiais e agora podem combinar entre **1 e 3 maldições** diferentes.
+
+Entre as regras proibidas disponíveis estão:
+
+- **controles invertidos**;
+- **apagões**;
+- **gravidade pesada**;
+- **gravidade instável/leve**;
+- **mundo espelhado**;
+- **paredes se fechando**;
+- **Eco**, um clone atrasado do próprio jogador.
+
+A inversão de controles continua sendo exclusiva das Fases Coringa e **não aparece em fases normais**.
+
+## Castelo adaptativo
+
+A partir de várias tentativas na mesma sala, o castelo pode adaptar parte das armadilhas ao comportamento do jogador.
+
+O sistema pode adicionar novas ameaças em rotas utilizadas repetidamente, dando a sensação de que o castelo está observando e aprendendo como cada jogador tenta atravessar a fase.
+
+No multiplayer, essas armadilhas continuam utilizando o sistema compartilhado de eventos da sala para manter a experiência sincronizada entre os jogadores.
+
+## Falas do Castelo
+
+O castelo agora possui comentários contextuais durante a partida.
+
+As falas podem reagir a situações como:
+
+- mortes repetidas;
+- múltiplas tentativas na mesma fase;
+- entrada em salas especiais;
+- presença do Perseguidor;
+- anomalias;
+- acontecimentos únicos da fase 666.
+
+O objetivo é reforçar a sensação de que o próprio castelo observa o jogador.
+
+## Anomalias raras
+
+Algumas salas podem receber eventos visuais e comportamentais raros, entre eles:
+
+- figuras observando ao fundo;
+- olhos escondidos no cenário;
+- numeração incorreta da sala;
+- silêncio e escurecimento anormal;
+- portas que aparecem e desaparecem.
+
+Essas ocorrências são raras e não fazem parte da estrutura normal de todas as fases.
+
+## O Perseguidor
+
+Uma entidade recorrente pode começar aparecendo apenas como uma presença distante no cenário.
+
+Em fases mais avançadas, determinadas salas podem transformar essa presença em uma ameaça real, fazendo a criatura sair do fundo e perseguir o jogador.
+
+Sobreviver a uma dessas salas também pode liberar uma conquista específica.
+
+## Chefes elementais
+
+Os guardiões agora podem possuir afinidades elementais.
+
+Os padrões de ataque variam conforme o elemento do chefe:
+
+- **Terra**;
+- **Ar**;
+- **Luz**;
+- **Escuridão**.
+
+Isso adiciona comportamento próprio aos encontros de chefe sem remover o sistema de runas e rituais já existente.
+
+## Fases de perseguição
+
+Algumas fases especiais ativam uma parede de corrupção que avança pelo cenário.
+
+O jogador precisa continuar se movendo e alcançar a saída antes que a área tomada pelo castelo o alcance.
+
+## Salas secretas
+
+Determinadas fases podem esconder entradas especiais.
+
+Encontrar uma sala secreta pode conceder:
+
+- moedas;
+- fragmentos de lore;
+- relíquias;
+- conquistas.
+
+Essas salas fazem parte do novo sistema de exploração da 0.0.6.
+
+## Relíquias
+
+A versão 0.0.6 introduz relíquias colecionáveis.
+
+Atualmente existem:
+
+- **🫀 Coração Trincado** — pode impedir uma morte por fase;
+- **🪽 Passo do Vendaval** — aumenta velocidade e aceleração;
+- **🪶 Pena do Abismo** — aumenta a força do salto;
+- **⌛ Vidro Cronal** — reduz a recarga da habilidade elemental;
+- **👁️ Olho da Avareza** — aumenta as moedas recebidas;
+- **◉ Marca do Vidente** — facilita a percepção de salas secretas e anomalias.
+
+Apenas **uma relíquia pode permanecer ativa por vez**.
+
+## Ranking de sofrimento
+
+Ao concluir fases, o jogo agora pode avaliar o desempenho considerando fatores como:
+
+- tempo;
+- mortes;
+- quantidade de tentativas;
+- dificuldade especial da sala.
+
+Os ranks possíveis são:
+
+**S · A · B · C · D · CASTELO TE ODEIA**
+
+## Conquistas
+
+A 0.0.6 adiciona um sistema de conquistas locais ligado a acontecimentos da campanha.
+
+Entre os desafios estão:
+
+- morrer pela primeira vez;
+- alcançar grandes quantidades de mortes;
+- concluir uma Coringa sem morrer;
+- encontrar uma sala secreta;
+- derrotar um guardião;
+- entrar na fase 666;
+- sobreviver ao Perseguidor;
+- superar uma sala no Modo Caos;
+- chegar ao fim das 1000 fases.
+
+## Fase 666
+
+A **fase 666** agora possui tratamento próprio e não utiliza o layout procedural normal.
+
+Ela inclui:
+
+- cenário especial;
+- HUD completamente oculto;
+- atmosfera diferenciada;
+- olhos no cenário;
+- entidade observando ao fundo;
+- mensagens exclusivas;
+- conquista própria.
+
+A fase continua fazendo parte da progressão normal até a sala 1000.
+
+## Replay de morte
+
+Quando possível, o jogo guarda os últimos instantes de movimento do personagem e mostra um pequeno replay visual após a morte.
+
+O efeito destaca a rota utilizada imediatamente antes da armadilha atingir o jogador.
+
+## Crônicas do Castelo
+
+O menu principal ganhou a seção **Crônicas do Castelo**.
+
+Nela podem ser consultados:
+
+- conquistas;
+- relíquias encontradas;
+- relíquia atualmente equipada;
+- fragmentos de lore;
+- estatísticas gerais;
+- melhor rank alcançado.
+
+## Finais alternativos
+
+A conclusão das 1000 fases agora pode variar conforme o histórico da campanha.
+
+Existem diferentes resultados, incluindo:
+
+- **Final — A Porta do Infinito**;
+- **Final Verdadeiro — O Castelo Lembra**;
+- **Final Amaldiçoado — Você Virou Parte Dele**.
+
+As condições levam em consideração fatores da progressão, descobertas e desempenho acumulado.
+
+## Multiplayer e Modo Caos
+
+Os novos sistemas foram integrados sem remover o funcionamento existente do multiplayer.
+
+A versão 0.0.6 mantém:
+
+- Multiplayer de 2 jogadores;
+- Modo Caos de 4 jogadores;
+- morte compartilhada;
+- armadilhas sincronizadas;
+- portões cooperativos;
+- selos elementais;
+- runas dos chefes;
+- habilidades dos quatro elementos.
+
+## Validação da 0.0.6
+
+Antes da publicação, a versão final passou pelo pipeline oficial do projeto com:
+
+- **checagem de sintaxe JavaScript**;
+- **auditoria das 1000 fases**;
+- **teste de runtime dos quatro elementos**;
+- **validação estrutural das fases**;
+- **teste do Multiplayer / Modo Caos com 4 jogadores**;
+- **build Windows**;
+- **build Android**.
+
+A versão publicada corresponde à **Infinity Castle Elements — INSANITY 0.0.6**.
