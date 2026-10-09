@@ -564,6 +564,7 @@ function processV006Hazards(p,dt){
   if(ld.jokerRules?.includes('closing')){
     const inset=closingInset();if(p.x<inset||p.x+p.w>W-inset)return die(p);
   }
+  if(ld.jokerRules?.includes('echo')){const ef=echoFrame();if(ef&&Math.hypot((p.x+21)-(ef.x+21),(p.y+28)-(ef.y+28))<34&&elapsed()>1.4)return die(p);}
   if(ld.pursuer?.mode==='hunt'){
     if(!state.pursuer)state.pursuer={x:Math.max(0,p.x-520),y:p.y};
     const speed=ld.pursuer.speed||100,dx=p.x-state.pursuer.x,dy=p.y-state.pursuer.y,dist=Math.hypot(dx,dy)||1;
@@ -577,6 +578,12 @@ function processV006Hazards(p,dt){
     addCoins(20);awardRelic(relicForLevel(state.level));unlockAchievement('firstSecret');saveProfile();
     showOverlay('🚪 SALA SECRETA ENCONTRADA','Fragmento recuperado · relíquia despertada · +20 moedas',1150);
   }
+}
+function echoFrame(){const a=state.replayBuffer||[];return a.length>34?a[Math.max(0,a.length-34)]:null;}
+function drawEchoClone(){
+  if(!state.levelData?.jokerRules?.includes('echo'))return;const f=echoFrame();if(!f)return;
+  ctx.save();ctx.globalAlpha=.32;ctx.filter='grayscale(1)';drawCharacter(f.x,f.y,f.role,false,false,false,{});ctx.filter='none';
+  ctx.strokeStyle='rgba(255,70,145,.55)';ctx.strokeRect(f.x-4,f.y-4,50,64);ctx.restore();
 }
 function drawPursuer(){
   const p=state.levelData?.pursuer;if(!p)return;
@@ -593,10 +600,11 @@ function drawSecretRoom(){
 function drawV006BackgroundEntities(){
   const ld=state.levelData;if(!ld)return;
   if(ld.rareEvent==='observer'&&!ld.pursuer){ctx.save();ctx.globalAlpha=.22;ctx.fillStyle='#050207';ctx.fillRect(1290,240,34,115);ctx.fillStyle='#ff315f';ctx.fillRect(1298,266,5,5);ctx.fillRect(1313,266,5,5);ctx.restore();}
+  if(ld.rareEvent==='blink-door'&&Math.floor(elapsed()*2)%2===0){ctx.save();ctx.globalAlpha=.22;ctx.fillStyle='#160d1d';ctx.fillRect(720,360,64,150);ctx.strokeStyle='rgba(255,120,190,.4)';ctx.strokeRect(720,360,64,150);ctx.restore();}
   if(ld.rareEvent==='eyes'||ld.special666){
     ctx.save();ctx.globalAlpha=ld.special666?.42:.18;for(let i=0;i<9;i++){const x=100+i*175,y=220+(i%3)*95;ctx.fillStyle='#050207';ctx.beginPath();ctx.ellipse(x,y,24,10,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ff315f';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();}ctx.restore();
   }
-  drawPursuer();drawSecretRoom();
+  drawPursuer();drawEchoClone();drawSecretRoom();
 }
 function drawV006OverlayEffects(){
   const ld=state.levelData;if(!ld)return;
