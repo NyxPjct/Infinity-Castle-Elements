@@ -466,11 +466,18 @@ As quatro habilidades agora possuem animação própria, janela ativa e cooldown
 
 ## Abertura e identidade
 
-Ao iniciar o jogo, a apresentação acontece em três etapas:
+Na versão atual **INSANITY 0.0.6 — The Castle Remembers**, a apresentação acontece em três etapas:
 
 1. tela preta da **NYX PROJECT R**, com a coruja roxa de olhos vermelhos e a assinatura **Apresenta:**;
-2. tela cinematográfica de **INFINITY CASTLE ELEMENTS — INSANITY**, com os quatro elementos diante do castelo em clima de aventura fantástica;
-3. menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações e Sair**. A Loja Arcana continua disponível dentro do jogo.
+2. tela cinematográfica de **INFINITY CASTLE ELEMENTS — INSANITY**, apresentando os quatro elementos diante do castelo e preparando a atmosfera de fantasia sombria da campanha;
+3. menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações, Crônicas do Castelo e Sair**. A **Loja Arcana** continua disponível dentro do jogo.
+
+A identidade visual da 0.0.6 também foi ampliada com:
+
+- **Character Visual Overhaul**, dando silhuetas, animações, expressões, relíquias visíveis e corrupção progressiva aos quatro personagens;
+- **Castle Visual Overhaul**, reformulando visualmente as dez regiões com parallax, iluminação, clima, materiais próprios de plataformas, atmosferas e corrupção crescente;
+- **Crônicas do Castelo**, reunindo conquistas, relíquias, fragmentos de lore, estatísticas e melhor rank alcançado;
+- **Fases Coringa, anomalias, Perseguidor e fase 666** integrados à identidade visual e narrativa do castelo.
 
 Na versão desktop, **Sair** fecha o jogo diretamente.
 
