@@ -569,8 +569,8 @@ body.game-active #gameWrap .ability-hud{display:grid}
 #castleWhisper{position:fixed;left:50%;bottom:84px;z-index:150;max-width:min(720px,88vw);transform:translate(-50%,16px);opacity:0;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,70,130,.18);background:rgba(4,2,7,.9);color:rgba(255,225,235,.86);font-size:13px;font-weight:800;letter-spacing:.04em;text-align:center;pointer-events:none;transition:.28s ease;text-shadow:0 0 12px rgba(255,35,95,.28)}
 #castleWhisper.show{opacity:1;transform:translate(-50%,0)}
 
-body.phase-666 .hud{opacity:.03;filter:grayscale(1);transition:opacity 1.2s ease}
-body.phase-666 .topbar{opacity:.08}
+body.phase-666 .hud{opacity:0;filter:grayscale(1);transition:opacity 1.2s ease}
+body.phase-666 .topbar{opacity:0}
 body.phase-666 .canvas-shell{box-shadow:0 0 0 1px rgba(120,0,25,.28),0 0 80px rgba(80,0,18,.14)}
 body.phase-666 #mechanicLabel,body.phase-666 #difficultyLabel{visibility:hidden}
 
