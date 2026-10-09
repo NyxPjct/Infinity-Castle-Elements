@@ -59,9 +59,10 @@
           <button id="menuMultiBtn" class="menu-choice"><span class="menu-index">02</span><span><b>Multiplayer</b><small>Campanha cooperativa online para 2 jogadores.</small></span><em>›</em></button>
           <button id="menuChaosBtn" class="menu-choice chaos-choice"><span class="menu-index">03</span><span><b>Modo Caos</b><small>4 jogadores · 4 elementos · uma campanha sem misericórdia.</small></span><em>⚡</em></button>
           <button id="menuSettingsBtn" class="menu-choice"><span class="menu-index">04</span><span><b>Configurações</b><small>Visual, movimento e tela cheia.</small></span><em>›</em></button>
-          <button id="menuExitBtn" class="menu-choice danger-choice"><span class="menu-index">05</span><span><b>Sair</b><small>Fuja enquanto ainda consegue.</small></span><em>›</em></button>
+          <button id="menuChronicleBtn" class="menu-choice chronicle-choice"><span class="menu-index">05</span><span><b>Crônicas do Castelo</b><small>Conquistas, relíquias, fragmentos e estatísticas.</small></span><em>◈</em></button>
+          <button id="menuExitBtn" class="menu-choice danger-choice"><span class="menu-index">06</span><span><b>Sair</b><small>Fuja enquanto ainda consegue.</small></span><em>›</em></button>
         </nav>
-        <div class="menu-footer"><span id="menuConnectionPill">● Conectando</span><button id="menuUpdateBadge" class="menu-update-badge hidden" type="button">⬇ Atualização disponível</button><span>INSANITY <b data-app-version>0.0.5</b></span></div>
+        <div class="menu-footer"><span id="menuConnectionPill">● Conectando</span><button id="menuUpdateBadge" class="menu-update-badge hidden" type="button">⬇ Atualização disponível</button><span>INSANITY <b data-app-version>0.0.6</b></span></div>
       </aside>
       <div class="menu-story-card">
         <p>O CASTELO DESPERTOU</p>
@@ -84,7 +85,7 @@
         <div class="brand-mark">✦</div>
         <div>
           <h1>INFINITY CASTLE <span>ELEMENTS</span></h1>
-          <p>INSANITY <span data-app-version>0.0.5</span> · 1000 FASES · SOLO · CO-OP · MODO CAOS 4P</p>
+          <p>INSANITY <span data-app-version>0.0.6</span> · 1000 FASES · SOLO · CO-OP · MODO CAOS 4P</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -312,11 +313,27 @@
         <label class="setting-row"><span><b>Reduzir animações</b><small>Diminui fades e movimentos das telas de abertura.</small></span><input id="settingReducedMotion" type="checkbox" /></label>
         <label class="setting-row"><span><b>Tela cheia</b><small>Ativada por padrão. Quando desligada, a resolução escolhida acima define o tamanho da janela.</small></span><input id="settingFullscreen" type="checkbox" checked /></label>
         <div class="setting-row update-setting-row">
-          <span><b>Atualizações</b><small id="updateSettingsText">Versão atual <span data-app-version>0.0.5</span> · verificando disponibilidade...</small></span>
+          <span><b>Atualizações</b><small id="updateSettingsText">Versão atual <span data-app-version>0.0.6</span> · verificando disponibilidade...</small></span>
           <button id="checkUpdatesBtn" class="small" type="button">Verificar atualizações</button>
         </div>
       </div>
       <p class="fine">As preferências ficam salvas neste dispositivo. Na versão desktop, o botão Sair fecha o jogo diretamente.</p>
+    </div>
+  </div>
+
+  <div id="chronicleModal" class="shop-modal hidden chronicle-modal" role="dialog" aria-modal="true" aria-labelledby="chronicleTitle">
+    <div class="shop-card chronicle-card">
+      <div class="shop-head">
+        <div><p class="eyebrow">ARQUIVO PROIBIDO · INSANITY 0.0.6</p><h2 id="chronicleTitle">Crônicas do Castelo</h2></div>
+        <button id="closeChronicleBtn" class="small" type="button">✕</button>
+      </div>
+      <p id="chronicleStats" class="chronicle-stats">Mortes: 0 · Segredos: 0 · Guardiões: 0 · Melhor rank: —</p>
+      <div class="chronicle-columns">
+        <section><h3>🏆 Conquistas</h3><div id="chronicleAchievements" class="chronicle-list"></div></section>
+        <section><h3>◈ Relíquias</h3><div id="chronicleRelics" class="chronicle-list"></div></section>
+      </div>
+      <section class="chronicle-lore"><h3>📜 Fragmentos</h3><div id="chronicleLore" class="chronicle-list"></div></section>
+      <p class="fine">Uma relíquia pode ficar ativa por vez. Encontrar outra relíquia a equipa automaticamente.</p>
     </div>
   </div>
 
@@ -330,7 +347,7 @@
         <button id="closeUpdateBtn" class="small" type="button">✕</button>
       </div>
       <div class="update-version-line">
-        <span>Instalada <b id="updateCurrentVersion" data-app-version>0.0.5</b></span>
+        <span>Instalada <b id="updateCurrentVersion" data-app-version>0.0.6</b></span>
         <i>→</i>
         <span>Nova <b id="updateLatestVersion">—</b></span>
       </div>
