@@ -145,15 +145,43 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
 .character-choice:hover,.character-choice:focus-visible{border-color:var(--ec);transform:translateY(-2px);outline:none}
 .character-choice.selected{border-color:var(--ec);background:color-mix(in srgb,var(--ec) 9%,#090e18);box-shadow:0 0 0 2px color-mix(in srgb,var(--ec) 22%,transparent),0 10px 28px color-mix(in srgb,var(--ec) 12%,transparent)}
 .character-choice b{font-size:10px;letter-spacing:.04em}.character-choice small{font-size:12px}
-.mini-character{position:relative;width:42px;height:56px;display:block;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--ec) 26%,transparent))}
-.mini-body{position:absolute;left:5px;top:8px;width:32px;height:45px;border-radius:11px;background:var(--ec)}
-.mini-head{position:absolute;z-index:2;left:12px;top:1px;width:18px;height:18px;border-radius:50%;background:var(--ec)}
-.mini-detail{position:absolute;z-index:3;left:9px;bottom:8px;width:24px;height:6px;border-radius:5px;background:var(--ea)}
-.character-choice.air .mini-detail{height:5px;bottom:11px;transform:skewX(-18deg)}
-.character-choice.light .mini-detail{width:14px;height:14px;left:14px;bottom:8px;transform:rotate(45deg);border-radius:2px}
-.character-choice.darkness .mini-detail{width:20px;height:10px;left:11px;bottom:7px;border-radius:50% 50% 45% 45%}
-.mini-eye{position:absolute;z-index:4;top:19px;width:5px;height:5px;border-radius:2px;background:#0b0d10;box-shadow:inset 1px 1px #fff8}
-.mini-eye.left{left:12px}.mini-eye.right{right:12px}
+.mini-character{position:relative;width:46px;height:58px;display:block;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--ec) 28%,transparent));transition:transform .18s ease}
+.character-choice:hover .mini-character,.character-choice.selected .mini-character{transform:translateY(-2px) scale(1.04)}
+.mini-body,.mini-head,.mini-detail,.mini-eye{position:absolute;display:block}
+.mini-body{z-index:1;background:var(--ec);border:2px solid #070a0f}
+.mini-head{z-index:3;background:var(--ec);border:2px solid #070a0f}
+.mini-detail{z-index:4;background:var(--ea)}
+.mini-eye{z-index:6;width:4px;height:4px;border-radius:2px;background:#080a0d;box-shadow:inset 1px 1px #fff8}
+.mini-eye.left{left:15px}.mini-eye.right{right:15px}
+
+/* Terra — silhueta larga, cabeça rochosa e ombros pesados */
+.character-choice.earth .mini-body{left:5px;top:20px;width:36px;height:31px;border-radius:9px 9px 8px 8px;background:#5c4533}
+.character-choice.earth .mini-head{left:12px;top:5px;width:22px;height:22px;border-radius:50%;background:#7f684f}
+.character-choice.earth .mini-character::before,.character-choice.earth .mini-character::after{content:"";position:absolute;z-index:2;top:22px;width:12px;height:12px;border-radius:50%;background:var(--ec);border:2px solid #070a0f}
+.character-choice.earth .mini-character::before{left:1px}.character-choice.earth .mini-character::after{right:1px}
+.character-choice.earth .mini-detail{left:9px;top:37px;width:28px;height:5px;border-radius:4px;background:var(--ec)}
+.character-choice.earth .mini-eye{top:14px}
+
+/* Ar — corpo estreito, capa leve e faixa ao vento */
+.character-choice.air .mini-body{left:11px;top:19px;width:24px;height:32px;border-radius:9px;clip-path:polygon(15% 0,85% 0,100% 75%,75% 100%,25% 100%,0 75%);background:#dff7ff}
+.character-choice.air .mini-head{left:13px;top:5px;width:20px;height:20px;border-radius:50%;background:var(--ec)}
+.character-choice.air .mini-detail{left:7px;top:27px;width:32px;height:6px;border-radius:999px;background:var(--ec);transform:skewX(-22deg) rotate(-7deg)}
+.character-choice.air .mini-character::after{content:"";position:absolute;z-index:5;left:4px;top:20px;width:19px;height:4px;border-radius:999px;background:#e9f8ff;transform:rotate(-18deg);box-shadow:-7px 6px 0 -1px rgba(233,248,255,.7)}
+.character-choice.air .mini-eye{top:13px}
+
+/* Luz — manto triangular e halo */
+.character-choice.light .mini-body{left:8px;top:19px;width:30px;height:34px;background:#fff1a8;clip-path:polygon(18% 0,82% 0,100% 100%,0 100%)}
+.character-choice.light .mini-head{left:12px;top:5px;width:22px;height:22px;border-radius:50%;background:#fff9dc}
+.character-choice.light .mini-character::before{content:"";position:absolute;z-index:5;left:10px;top:0;width:26px;height:8px;border:2px solid var(--ec);border-radius:50%;opacity:.85}
+.character-choice.light .mini-detail{left:18px;top:34px;width:10px;height:10px;border-radius:50%;background:var(--ec);box-shadow:0 0 8px var(--ec)}
+.character-choice.light .mini-eye{top:14px}
+
+/* Escuridão — capuz, rosto oculto e barra rasgada */
+.character-choice.darkness .mini-body{left:7px;top:18px;width:32px;height:35px;background:#170d22;clip-path:polygon(12% 0,88% 0,100% 72%,82% 100%,64% 82%,48% 100%,30% 82%,10% 100%,0 68%)}
+.character-choice.darkness .mini-head{left:11px;top:4px;width:24px;height:24px;border-radius:50% 50% 45% 45%;background:#2a153d}
+.character-choice.darkness .mini-head::after{content:"";position:absolute;left:4px;right:4px;bottom:3px;height:10px;border-radius:50%;background:#08050c}
+.character-choice.darkness .mini-detail{left:9px;top:38px;width:28px;height:7px;border-radius:50%;background:rgba(164,108,255,.25);filter:blur(.5px)}
+.character-choice.darkness .mini-eye{top:15px;background:var(--ec);box-shadow:0 0 6px var(--ec)}
 .character-select-help{margin:9px 0 0;text-align:center;color:#6f788b;font-size:9px}
 .setting-select{min-width:220px;max-width:48%;height:40px;border:1px solid #394255;border-radius:10px;background:#111827;color:#f4f0fa;padding:0 11px;font:700 12px system-ui;outline:none}
 .setting-select:focus{border-color:#8852ce;box-shadow:0 0 0 2px rgba(136,82,206,.18)}

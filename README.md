@@ -2,7 +2,7 @@
 
 **Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer cooperativo, **Modo Caos para 4 jogadores online**, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A versão **INSANITY 0.0.6 — The Castle Remembers** expande o jogo com Fases Coringa evoluídas, anomalias, Perseguidor, fase 666 especial, relíquias, conquistas, ranking de sofrimento, salas secretas, replay de morte, finais alternativos e novos comportamentos do castelo.
+A versão **INSANITY 0.0.6 — The Castle Remembers** expande o jogo com Fases Coringa evoluídas, anomalias, Perseguidor, fase 666 especial, relíquias, conquistas, ranking de sofrimento, salas secretas, replay de morte, finais alternativos, novos comportamentos do castelo e um **Character Visual Overhaul** completo para os quatro elementos.
 
 **Versão atual do jogo:** `0.0.6`
 
@@ -65,6 +65,28 @@ A versão **INSANITY 0.0.6 — The Castle Remembers** expande o jogo com Fases C
 ### Novidades da versão 0.0.6 — The Castle Remembers
 
 A versão **0.0.6** expande o Infinity Castle Elements com novos sistemas de horror, progressão, desafio e comportamento dinâmico do castelo, mantendo os modos **Singleplayer**, **Multiplayer** e **Caos 4P**.
+
+### 🎭 Character Visual Overhaul
+
+Os quatro personagens receberam uma reformulação visual completa sem alterar a física, a colisão ou o balanceamento da campanha.
+
+- a hitbox de gameplay continua exatamente em **42×56**;
+- **Terra** agora possui silhueta mais larga e pesada, ombros rochosos, corpo robusto e leitura visual de peso;
+- **Ar** ganhou corpo mais fino, capa leve e faixa/cachecol que reage ao movimento;
+- **Luz** recebeu manto próprio, silhueta elegante, halo e detalhes radiantes;
+- **Escuridão** ganhou capuz, rosto parcialmente oculto, barra irregular e aparência semelhante a uma sombra viva;
+- adicionadas animações procedurais de **idle, corrida, salto, queda e aterrissagem**;
+- o corpo inclina de acordo com o movimento e comprime brevemente ao tocar o chão;
+- os olhos agora reagem a movimento, ameaça, habilidade elemental e acontecimentos especiais;
+- cada personagem possui **símbolo elemental próprio no peito**, facilitando identificação no multiplayer;
+- adicionada borda escura de leitura para os personagens continuarem visíveis em cenários carregados;
+- a **relíquia equipada aparece fisicamente no personagem**, com representação própria para cada uma das seis relíquias;
+- personagens começam a apresentar **marcas de corrupção visual** nas regiões finais do castelo;
+- a fase **666** aplica comportamento visual anômalo adicional aos personagens;
+- Coroa e Aura continuam compatíveis com o novo desenho;
+- o replay de morte e o clone **Eco** das Fases Coringa utilizam o novo renderer;
+- no Multiplayer e no Modo Caos, movimento, estado no chão, direção e relíquia ativa são compartilhados para que os outros jogadores vejam corretamente as novas animações;
+- a tela de seleção também recebeu **quatro mini-silhuetas próprias**, em vez de reutilizar praticamente o mesmo boneco com cores diferentes.
 
 ### Fases Coringa evoluídas
 
