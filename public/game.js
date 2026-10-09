@@ -588,7 +588,7 @@ function drawPursuer(){
 }
 function drawSecretRoom(){
   const sr=state.levelData?.secretRoom;if(!sr||state.trapState.get(sr.key))return;
-  ctx.save();const reveal=profile.relics?.active==='seerMark';ctx.globalAlpha=reveal?.95:.32;ctx.fillStyle='#100a18';ctx.fillRect(sr.x,sr.y,sr.w,sr.h);ctx.strokeStyle=reveal?'#b67cff':'rgba(180,120,255,.35)';ctx.lineWidth=3;ctx.strokeRect(sr.x,sr.y,sr.w,sr.h);ctx.fillStyle='#d9c4ff';ctx.font='700 18px sans-serif';ctx.fillText('?',sr.x+21,sr.y+42);ctx.restore();
+  ctx.save();const reveal=profile.relics?.active==='seerMark';ctx.globalAlpha=reveal ? .95 : .32;ctx.fillStyle='#100a18';ctx.fillRect(sr.x,sr.y,sr.w,sr.h);ctx.strokeStyle=reveal?'#b67cff':'rgba(180,120,255,.35)';ctx.lineWidth=3;ctx.strokeRect(sr.x,sr.y,sr.w,sr.h);ctx.fillStyle='#d9c4ff';ctx.font='700 18px sans-serif';ctx.fillText('?',sr.x+21,sr.y+42);ctx.restore();
 }
 function drawV006BackgroundEntities(){
   const ld=state.levelData;if(!ld)return;
