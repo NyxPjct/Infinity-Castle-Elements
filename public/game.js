@@ -2097,17 +2097,6 @@ function drawCharacter(x,y,role,me,ability=false,anchored=false,cosmetics={},mot
     ctx.globalAlpha=.48;ctx.strokeStyle=c;ctx.lineWidth=2;ctx.shadowBlur=10;ctx.shadowColor=c;ctx.beginPath();ctx.arc(0,0,34+Math.sin(performance.now()/95)*3,0,Math.PI*2);ctx.stroke();
   }
   ctx.restore();
-}){
-  const e=ELEMENTS[role]||ELEMENTS.earth,c=e.color,accent=e.accent;ctx.save();
-  if(cosmetics.aura){ctx.globalAlpha=.22;ctx.fillStyle=c;ctx.beginPath();ctx.arc(x+21,y+28,39+Math.sin(elapsed()*5)*4,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}
-  ctx.shadowBlur=ability?38:(me?24:12);ctx.shadowColor=c;ctx.fillStyle=c;ctx.beginPath();ctx.roundRect(x,y,42,56,12);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle=accent;
-  if(role==='earth'){ctx.fillRect(x+5,y+40,32,8);ctx.beginPath();ctx.arc(x+21,y+8,9,0,Math.PI*2);ctx.fill();}
-  else if(role==='air'){ctx.beginPath();ctx.moveTo(x+5,y+42);ctx.quadraticCurveTo(x+21,y+32,x+37,y+42);ctx.lineTo(x+37,y+49);ctx.quadraticCurveTo(x+21,y+39,x+5,y+49);ctx.fill();}
-  else if(role==='light'){ctx.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4,r=i%2?8:14,px=x+21+Math.cos(a)*r,py=y+43+Math.sin(a)*r;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}ctx.closePath();ctx.fill();}
-  else{ctx.beginPath();ctx.arc(x+21,y+43,12,Math.PI*.15,Math.PI*1.85);ctx.lineTo(x+21,y+43);ctx.fill();}
-  ctx.fillStyle='#0b0d10';ctx.fillRect(x+9,y+18,7,7);ctx.fillRect(x+26,y+18,7,7);ctx.fillStyle='#fff';ctx.globalAlpha=.8;ctx.fillRect(x+10,y+19,2,2);ctx.fillRect(x+27,y+19,2,2);
-  if(cosmetics.crown){ctx.globalAlpha=1;ctx.fillStyle='#ffd95a';ctx.beginPath();ctx.moveTo(x+8,y-4);ctx.lineTo(x+12,y-17);ctx.lineTo(x+20,y-8);ctx.lineTo(x+28,y-18);ctx.lineTo(x+35,y-4);ctx.closePath();ctx.fill();}
-  if(ability){ctx.globalAlpha=.42;ctx.strokeStyle=c;ctx.lineWidth=2;ctx.beginPath();ctx.arc(x+21,y+28,35+Math.sin(performance.now()/95)*3,0,Math.PI*2);ctx.stroke();}ctx.restore();
 }
 function drawElementAbilityFx(x,y,role,progress=0,facing=1,rootFx=null){
   const cx=x+21,cy=y+28,t=performance.now()/1000,e=ELEMENTS[role]||ELEMENTS.earth;
