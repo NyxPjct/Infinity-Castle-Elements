@@ -424,13 +424,13 @@ As quatro habilidades agora possuem animação própria, janela ativa e cooldown
 
 ## Downloads para Windows
 
-1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.5.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Setup-0.0.5.exe)
-2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.5.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Portable-0.0.5.exe)
-3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.5.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Windows-0.0.5.zip)
+1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.6.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.6/Infinity-Castle-Elements-Setup-0.0.6.exe)
+2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.6.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.6/Infinity-Castle-Elements-Portable-0.0.6.exe)
+3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.6.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.6/Infinity-Castle-Elements-Windows-0.0.6.zip)
 
 ## Download para Android
 
-1. **APK Android:** [Infinity-Castle-Elements-Android-0.0.5.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.5/Infinity-Castle-Elements-Android-0.0.5.apk)
+1. **APK Android:** [Infinity-Castle-Elements-Android-0.0.6.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.6/Infinity-Castle-Elements-Android-0.0.6.apk)
 
 > Recomenda-se jogar no celular em **orientação horizontal** para aproveitar o canvas completo e os controles touch.
 

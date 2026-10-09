@@ -316,6 +316,8 @@ addEventListener('keydown',e=>{
   if((e.key==='Enter'||e.key===' ')&&studioSplash&&!studioSplash.classList.contains('hidden')){e.preventDefault();showTitleScreen();return;}
   if(e.key==='Enter'&&titleScreen&&!titleScreen.classList.contains('hidden')){e.preventDefault();showMainMenu();return;}
   if(e.key==='Escape'){
+    const chronicleOpen=!$('#chronicleModal')?.classList.contains('hidden');
+    if(chronicleOpen){e.preventDefault();closeChronicle();return;}
     const settingsOpen=!$('#settingsModal')?.classList.contains('hidden');
     if(settingsOpen){e.preventDefault();closeSettings();return;}
     if(state.paused){e.preventDefault();closePauseMenu(true);return;}
