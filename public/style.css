@@ -538,3 +538,45 @@ body.game-active #gameWrap .ability-hud{display:grid}
   .mobile-control-button.jump{width:68px;height:68px}
   .mobile-control-button.power{width:74px;height:74px}
 }
+
+
+/* INSANITY 0.0.6 — Crônicas, anomalias e feedback do castelo */
+.chronicle-choice{border-color:rgba(163,108,255,.24)!important}
+.chronicle-choice:hover{border-color:rgba(190,130,255,.55)!important}
+.chronicle-modal{z-index:120}
+.chronicle-card{width:min(1180px,94vw);max-height:88vh;overflow:auto}
+.chronicle-stats{margin:0 0 18px;padding:12px 14px;border:1px solid rgba(180,125,255,.24);background:rgba(110,55,160,.08);font-weight:800;letter-spacing:.04em}
+.chronicle-columns{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.chronicle-columns h3,.chronicle-lore h3{margin:8px 0 10px;letter-spacing:.08em;text-transform:uppercase;font-size:13px;color:#d9c5ff}
+.chronicle-lore{margin-top:18px}
+.chronicle-list{display:grid;gap:9px}
+.chronicle-item{display:flex;flex-direction:column;gap:4px;width:100%;text-align:left;padding:12px 13px;border-radius:10px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);color:#f5f0ff}
+.chronicle-item small{color:rgba(245,240,255,.63);line-height:1.35}
+.chronicle-item.locked{opacity:.42;filter:saturate(.4)}
+.chronicle-item.unlocked{border-color:rgba(160,110,255,.26);background:rgba(118,72,176,.08)}
+.relic-choice{cursor:pointer;font:inherit}
+.relic-choice.active{box-shadow:0 0 0 1px rgba(202,151,255,.55),0 0 24px rgba(140,72,255,.15);border-color:#b77cff}
+.relic-choice:disabled{cursor:default}
+
+.v006-toast{position:fixed;right:28px;top:28px;z-index:180;min-width:280px;max-width:420px;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(10,7,15,.96);box-shadow:0 20px 55px rgba(0,0,0,.42);transform:translateY(-22px);opacity:0;pointer-events:none;transition:.22s ease}
+.v006-toast.show{transform:translateY(0);opacity:1}
+.v006-toast b,.v006-toast span{display:block}
+.v006-toast b{font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.v006-toast span{margin-top:5px;font-size:12px;color:rgba(255,255,255,.7)}
+.v006-toast.achievement{border-color:rgba(255,213,94,.42)}
+.v006-toast.relic{border-color:rgba(184,115,255,.52)}
+
+#castleWhisper{position:fixed;left:50%;bottom:84px;z-index:150;max-width:min(720px,88vw);transform:translate(-50%,16px);opacity:0;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,70,130,.18);background:rgba(4,2,7,.9);color:rgba(255,225,235,.86);font-size:13px;font-weight:800;letter-spacing:.04em;text-align:center;pointer-events:none;transition:.28s ease;text-shadow:0 0 12px rgba(255,35,95,.28)}
+#castleWhisper.show{opacity:1;transform:translate(-50%,0)}
+
+body.phase-666 .hud{opacity:0;filter:grayscale(1);transition:opacity 1.2s ease}
+body.phase-666 .topbar{opacity:0}
+body.phase-666 .canvas-shell{box-shadow:0 0 0 1px rgba(120,0,25,.28),0 0 80px rgba(80,0,18,.14)}
+body.phase-666 #mechanicLabel,body.phase-666 #difficultyLabel{visibility:hidden}
+
+@media(max-width:800px){
+  .chronicle-columns{grid-template-columns:1fr}
+  .chronicle-card{width:96vw}
+  .v006-toast{right:10px;left:10px;min-width:0;max-width:none;top:10px}
+  #castleWhisper{bottom:68px;font-size:11px}
+}

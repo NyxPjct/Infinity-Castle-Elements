@@ -104,7 +104,7 @@ function dynamicInvades(ld,zone){
 const bad=[];
 const regionCounts=Array(10).fill(0);
 const archetypes=new Set();
-let bosses=0, doors=0, rendered=0, runtimeFrames=0, jokerLevels=0, normalReverseLeaks=0;
+let bosses=0, doors=0, rendered=0, runtimeFrames=0, jokerLevels=0, normalReverseLeaks=0, special666=0;
 for(let level=1; level<=1000; level++) {
   let ld;
   try { ld=sandbox.safeGenerateLevel(level); } catch (e) { bad.push([level,`safeGenerateLevel lançou: ${e.stack||e}`]); continue; }
@@ -117,9 +117,16 @@ for(let level=1; level<=1000; level++) {
   if(level%100===0){bosses++;if(!ld.boss)bad.push([level,'fase de chefe sem boss']);}
   else if(ld.boss)bad.push([level,'boss fora de múltiplo de 100']);
   if(ld.door){doors++;if(!ld.plate||!ld.plate2)bad.push([level,'portão sem as duas placas']);}
-  if(!ld.boss)archetypes.add(ld.archetype);
-  if(ld.joker){jokerLevels++;if(!(ld.reverseZones||[]).length)bad.push([level,'fase Coringa sem zona de inversão']);}
-  else if((ld.reverseZones||[]).length){normalReverseLeaks++;bad.push([level,'fase normal contém controles invertidos']);}
+  if(!ld.boss&&!ld.special666)archetypes.add(ld.archetype);
+  if(ld.special666){special666++;if(level!==666)bad.push([level,'special666 fora da fase 666']);}
+  if(ld.joker){
+    jokerLevels++;
+    const rules=Array.isArray(ld.jokerRules)?ld.jokerRules:[];
+    if(rules.length<1||rules.length>3)bad.push([level,`fase Coringa com ${rules.length} maldições, esperado 1-3`]);
+    const hasReverse=rules.includes('reverse'),zones=(ld.reverseZones||[]).length;
+    if(hasReverse&&!zones)bad.push([level,'Coringa com reverse sem zona de inversão']);
+    if(!hasReverse&&zones)bad.push([level,'Coringa sem reverse contém zona de inversão']);
+  } else if((ld.reverseZones||[]).length){normalReverseLeaks++;bad.push([level,'fase normal contém controles invertidos']);}
 
   if(!canReachRect(ld,ld.goal))bad.push([level,'auditoria independente: saída sem rota física de Terra']);
   if(ld.boss){
@@ -146,14 +153,15 @@ for(let level=1; level<=1000; level++) {
 
 if(bosses!==10)bad.push(['global',`chefes: ${bosses}, esperado 10`]);
 if(doors!==240)bad.push(['global',`fases com portão: ${doors}, esperado 240`]);
-if(archetypes.size!==12)bad.push(['global',`arquétipos usados: ${[...archetypes].sort((a,b)=>a-b)}, esperado 12 tipos`]);
+if(archetypes.size!==12)bad.push(['global',`arquétipos procedurais usados: ${[...archetypes].sort((a,b)=>a-b)}, esperado 12 tipos`]);
+if(special666!==1)bad.push(['global',`fases especiais 666: ${special666}, esperado 1`]);
 for(let i=0;i<10;i++)if(regionCounts[i]!==100)bad.push(['global',`região ${i} tem ${regionCounts[i]} fases, esperado 100`]);
 if(rendered!==1000)bad.push(['global',`renderizações concluídas: ${rendered}/1000`]);
 if(runtimeFrames!==4000)bad.push(['global',`frames reais concluídos: ${runtimeFrames}/4000`]);
 if(jokerLevels<20)bad.push(['global',`fases Coringa detectadas: ${jokerLevels}, esperado pelo menos 20`]);
 if(normalReverseLeaks!==0)bad.push(['global',`vazamentos de controles invertidos em fases normais: ${normalReverseLeaks}`]);
 
-const report={checked:1000, bosses, doors, jokerLevels, normalReverseLeaks, archetypes:archetypes.size, regions:regionCounts, rendered, runtimeFrames, failures:bad.length};
+const report={checked:1000, bosses, doors, jokerLevels, normalReverseLeaks, special666, archetypes:archetypes.size, regions:regionCounts, rendered, runtimeFrames, failures:bad.length};
 console.log(JSON.stringify(report,null,2));
 if(bad.length){console.error('\nFalhas (primeiras 100):');for(const x of bad.slice(0,100))console.error(`Fase ${x[0]}: ${x[1]}`);process.exit(1);}
 console.log('\nOK: as 1000 fases passaram pela auditoria estrutural e de runtime definida nesta build.');
