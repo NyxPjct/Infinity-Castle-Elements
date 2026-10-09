@@ -869,6 +869,7 @@ socket.on('death-reward', ({coins=0}={}) => {
 socket.on('reset-level', ({deaths,manual,mode}={}) => {
   if(mode)state.mode=mode==='chaos'?'chaos':'multiplayer';
   state.deaths=deaths;state.running=false;
+  if(!manual){profile.stats.deaths=(profile.stats.deaths||0)+1;if(profile.stats.deaths>=100)unlockAchievement('death100');saveProfile();}
   saveOnlineProgress(false);
   if(manual){showOverlay('↻ SALA REINICIADA',state.mode==='chaos'?'O caos foi recalibrado para os quatro elementos.':'Tentem uma rota diferente.',320);setTimeout(()=>startLevel(state.level),340);return;}
   showOverlay(state.mode==='chaos'?'⚡ O CAOS DEVOROU O GRUPO':'☠️ O CASTELO COBROU OUTRA ALMA',deathLine(),520);openShop({death:true,multiplayer:true});
@@ -922,11 +923,11 @@ function startLevel(level){
   closePauseMenu(false);document.body?.classList.remove('boot-sequence','setup-active');document.body?.classList.add('game-active');document.body?.classList.toggle('chaos-active',state.mode==='chaos');roomEl.classList.add('hidden');gameWrap.classList.remove('hidden');hideOverlay();
   ensureGameplayDisplayMode();
   state.running=true;state.lastGoalSent=false;state.remotePlayers.clear();state.trapState.clear();
-  state.bossCharge=0;state.bossDefeated=false;state.lastRuneSent=null;state.lastChaosSealSent=false;state.levelStart=performance.now();state.levelDeathsAtStart=state.deaths;
+  state.bossCharge=0;state.bossDefeated=false;state.lastRuneSent=null;state.lastChaosSealSent=false;state.levelStart=performance.now();
   state.abilityUntil=0;state.abilityPhaseUntil=0;state.abilityLastPulse=0;state.abilityHits=0;state.abilityRootFx=null;
   state.soloResetPending=false;state.soloTransition=false;state.replayBuffer=[];state.deathReplay=null;state.relicGuardUsed=false;state.pursuer=null;state.runStats={jumps:0,trapTriggers:0,secrets:0};
   level=Math.max(1,Math.min(1000,Number(level)||1));state.level=level;
-  state.attempt=(state.levelAttempts.get(level)||0)+1;state.levelAttempts.set(level,state.attempt);
+  state.attempt=(state.levelAttempts.get(level)||0)+1;state.levelAttempts.set(level,state.attempt);if(state.attempt===1)state.levelDeathsAtStart=state.deaths;
   state.levelData=safeGenerateLevel(level);if(state.mode==='chaos')applyChaosMutators(state.levelData,level);applyAttemptBoosts();closeShop();
   document.body?.classList.toggle('phase-666',level===666);player.reset();if(level===666)unlockAchievement('phase666');
   updateHud();setTimeout(maybeCastleComment,300);
