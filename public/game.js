@@ -1,4 +1,4 @@
-const APP_VERSION = String(window.electronAPI?.version || window.ICE_APP_VERSION || '0.0.6').trim() || '0.0.5';
+const APP_VERSION = String(window.electronAPI?.version || window.ICE_APP_VERSION || '0.0.6').trim() || '0.0.6';
 const DEFAULT_MULTIPLAYER_SERVER_URL = 'https://infinity-castle-elements-server-production.up.railway.app';
 const MULTIPLAYER_SERVER_URL = String(window.electronAPI?.multiplayerUrl || window.ICE_MULTIPLAYER_SERVER_URL || DEFAULT_MULTIPLAYER_SERVER_URL).trim();
 function createOfflineSocket(){
