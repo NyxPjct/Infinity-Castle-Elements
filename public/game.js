@@ -518,8 +518,8 @@ function applyAdaptiveCastle(ld,level){
 }
 function applyV006Mutators(ld,level){
   if(!ld)return ld;
-  ld.rareEvent=rareEventForLevel(level);
-  ld.pursuer=pursuerForLevel(level);
+  ld.rareEvent=ld.special666?'eyes':rareEventForLevel(level);
+  ld.pursuer=ld.special666?{mode:'watch',speed:0}:pursuerForLevel(level);
   ld.chase=isChaseLevel(level);
   if(isSecretLevel(level)&&!ld.boss){
     const support=(ld.platforms||[]).filter(p=>p.x>480&&p.x<1180&&p.w>100).sort((a,b)=>a.y-b.y)[0];
