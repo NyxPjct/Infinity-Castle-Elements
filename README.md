@@ -2,7 +2,7 @@
 
 **Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer cooperativo, **Modo Caos para 4 jogadores online**, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A versão **INSANITY 0.0.6 — The Castle Remembers** expande o jogo com Fases Coringa evoluídas, anomalias, Perseguidor, fase 666 especial, relíquias, conquistas, ranking de sofrimento, salas secretas, replay de morte, finais alternativos, novos comportamentos do castelo e um **Character Visual Overhaul** completo para os quatro elementos.
+A versão **INSANITY 0.0.6 — The Castle Remembers** expande o jogo com Fases Coringa evoluídas, anomalias, Perseguidor, fase 666 especial, relíquias, conquistas, ranking de sofrimento, salas secretas, replay de morte, finais alternativos, novos comportamentos do castelo, **Character Visual Overhaul** dos quatro elementos e um **Castle Visual Overhaul** completo das dez regiões.
 
 **Versão atual do jogo:** `0.0.6`
 
@@ -87,6 +87,34 @@ Os quatro personagens receberam uma reformulação visual completa sem alterar a
 - o replay de morte e o clone **Eco** das Fases Coringa utilizam o novo renderer;
 - no Multiplayer e no Modo Caos, movimento, estado no chão, direção e relíquia ativa são compartilhados para que os outros jogadores vejam corretamente as novas animações;
 - a tela de seleção também recebeu **quatro mini-silhuetas próprias**, em vez de reutilizar praticamente o mesmo boneco com cores diferentes.
+
+### 🏰 Castle Visual Overhaul
+
+As dez regiões do Infinity Castle Elements receberam uma reformulação visual sem alterar a geometria, a hitbox das plataformas ou a dificuldade base das fases.
+
+- adicionadas **camadas de profundidade e parallax** para torres, muralhas, nuvens e arquitetura distante;
+- cada uma das **10 regiões** recebeu clima, ambientação e detalhes narrativos próprios;
+- as plataformas agora utilizam **materiais visuais diferentes por região**, mantendo exatamente as mesmas colisões;
+- o Portão e Pátio Real ganhou muralhas, bandeiras, aves e pedra com sinais de vegetação;
+- a Galeria Nobre recebeu vitrais, retratos, molduras e olhos que acompanham o jogador;
+- as Masmorras Profundas ganharam correntes, grades, umidade, água e névoa baixa;
+- a Torre do Relógio recebeu engrenagens, mecanismos e um grande pêndulo em movimento;
+- a Biblioteca Viva ganhou estantes profundas, páginas voando e presenças observando entre os livros;
+- a Capela Assombrada recebeu arcos, velas, feixes de luz e aparições distantes;
+- os Jardins Suspensos ganharam vegetação, folhas em movimento, raízes e ruínas suspensas;
+- as Muralhas da Tempestade receberam nuvens, chuva, relâmpagos e sensação de altura;
+- o Trono Rubro ganhou brasas, estandartes rasgados, arquitetura agressiva e veios rubros;
+- o Coração Impossível recebeu geometria flutuante, formas impossíveis e arquitetura cada vez menos natural;
+- adicionada **iluminação ambiente dinâmica** de acordo com a região;
+- as arenas de chefes agora recebem presença visual própria e iluminação baseada no **elemento do guardião**;
+- as entradas das regiões 1–10 agora exibem uma apresentação maior com nome, subtítulo e mecânicas daquele setor;
+- as Fases Coringa continuam visualmente instáveis e passam a contrastar ainda mais com a arquitetura normal;
+- a partir das regiões finais, o castelo recebe **corrupção visual progressiva**;
+- elementos de regiões antigas começam a aparecer em locais errados conforme a campanha se aproxima da fase 1000, dando a impressão de que o castelo está colapsando;
+- adicionada uma camada de **atmosfera em primeiro plano** com névoa, chuva, brasas e partículas específicas de cada região;
+- a fase 666 preserva sua identidade própria e recebe corrupção visual adicional;
+- saídas e portões foram redesenhados para acompanhar a identidade de cada região sem alterar sua área de colisão;
+- toda a reformulação é puramente visual: **plataformas, saltos, armadilhas e rotas continuam usando a geometria original**.
 
 ### Fases Coringa evoluídas
 
