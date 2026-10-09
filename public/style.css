@@ -571,7 +571,7 @@ body.game-active #gameWrap .ability-hud{display:grid}
 /* INSANITY 0.0.6 — Crônicas, anomalias e feedback do castelo */
 .chronicle-choice{border-color:rgba(163,108,255,.24)!important}
 .chronicle-choice:hover{border-color:rgba(190,130,255,.55)!important}
-.chronicle-modal{z-index:120}
+.chronicle-modal{z-index:370}
 .chronicle-card{width:min(1180px,94vw);max-height:88vh;overflow:auto}
 .chronicle-stats{margin:0 0 18px;padding:12px 14px;border:1px solid rgba(180,125,255,.24);background:rgba(110,55,160,.08);font-weight:800;letter-spacing:.04em}
 .chronicle-columns{display:grid;grid-template-columns:1fr 1fr;gap:18px}
