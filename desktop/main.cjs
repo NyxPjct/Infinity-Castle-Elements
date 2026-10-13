@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const { app, BrowserWindow, ipcMain, shell, screen } = require('electron');
 const { Readable, Transform } = require('stream');
 const { pipeline } = require('stream/promises');
@@ -12,6 +13,8 @@ let preferredResolution = 'native';
 let multiplayerServerUrl = process.env.ICE_MULTIPLAYER_URL || '';
 const MULTIPLAYER_DISCOVERY_URL = 'https://raw.githubusercontent.com/NyxPjct/Infinity-Castle-Elements/main/multiplayer-server.json';
 const UPDATE_API_URL = 'https://api.github.com/repos/NyxPjct/Infinity-Castle-Elements/releases/latest';
+const UPDATE_HISTORY_API_URL = 'https://api.github.com/repos/NyxPjct/Infinity-Castle-Elements/releases?per_page=8';
+let installTriggered = false;
 let updateState = {
   status: 'idle',
   currentVersion: app.getVersion(),
@@ -21,16 +24,28 @@ let updateState = {
   releaseUrl: null,
   downloadUrl: null,
   assetName: null,
+  digest: null,
+  verified: false,
+  required: false,
+  history: [],
   progress: 0,
   downloadedBytes: 0,
   totalBytes: 0,
+  partialBytes: 0,
+  canResume: false,
   installerPath: null,
+  installOnExit: false,
+  backupCreated: false,
   error: null,
   installMode: app.isPackaged ? (process.env.PORTABLE_EXECUTABLE_FILE ? 'portable' : 'installer') : 'development'
 };
 
 function publicUpdateState() {
-  return {...updateState, installerPath: updateState.installerPath ? true : false};
+  return {
+    ...updateState,
+    installerPath: Boolean(updateState.installerPath),
+    backupCreated: Boolean(updateState.backupCreated)
+  };
 }
 function sendUpdateState() {
   if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('ice:update-state', publicUpdateState());
@@ -51,27 +66,105 @@ function isVersionNewer(candidate, current) {
   }
   return false;
 }
+function releaseRequiresUpdate(release) {
+  const body = String(release?.body || '');
+  return /<!--\s*required-update\s*-->/i.test(body) || /\[ATUALIZA[CÇ][AÃ]O OBRIGAT[OÓ]RIA\]/i.test(body);
+}
+function releaseHistoryEntry(release) {
+  return {
+    version: normalizeVersion(release?.tag_name || release?.name),
+    name: String(release?.name || release?.tag_name || '').trim(),
+    notes: String(release?.body || '').trim(),
+    publishedAt: release?.published_at || null,
+    url: release?.html_url || null,
+    prerelease: Boolean(release?.prerelease)
+  };
+}
+function digestValue(value) {
+  const raw = String(value || '').trim();
+  const match = raw.match(/^sha256:([a-f0-9]{64})$/i);
+  return match ? match[1].toLowerCase() : null;
+}
+function sha256File(file) {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash('sha256');
+    const stream = fs.createReadStream(file);
+    stream.on('error', reject);
+    stream.on('data', chunk => hash.update(chunk));
+    stream.on('end', () => resolve(hash.digest('hex').toLowerCase()));
+  });
+}
+function updateBackupRoot() {
+  return path.join(app.getPath('userData'), 'backups');
+}
+function copyPathIfExists(source, destination) {
+  if (!fs.existsSync(source)) return;
+  fs.mkdirSync(path.dirname(destination), { recursive:true });
+  fs.cpSync(source, destination, { recursive:true, force:true });
+}
+function pruneUpdateBackups() {
+  try {
+    const root = updateBackupRoot();
+    if (!fs.existsSync(root)) return;
+    const dirs = fs.readdirSync(root, { withFileTypes:true })
+      .filter(x => x.isDirectory() && x.name.startsWith('update-'))
+      .map(x => ({name:x.name, path:path.join(root,x.name), mtime:fs.statSync(path.join(root,x.name)).mtimeMs}))
+      .sort((a,b)=>b.mtime-a.mtime);
+    for (const old of dirs.slice(5)) fs.rmSync(old.path, {recursive:true,force:true});
+  } catch {}
+}
+function createUpdateBackup() {
+  const current = normalizeVersion(app.getVersion());
+  const target = normalizeVersion(updateState.latestVersion || 'next');
+  const stamp = new Date().toISOString().replace(/[:.]/g,'-');
+  const dir = path.join(updateBackupRoot(), `update-${current}-to-${target}-${stamp}`);
+  fs.mkdirSync(dir, {recursive:true});
+  copyPathIfExists(saveStorePath(), path.join(dir,'save-data.json'));
+  copyPathIfExists(path.join(app.getPath('userData'),'Local Storage'), path.join(dir,'Local Storage'));
+  copyPathIfExists(path.join(app.getPath('userData'),'IndexedDB'), path.join(dir,'IndexedDB'));
+  fs.writeFileSync(path.join(dir,'backup-info.json'), JSON.stringify({
+    createdAt:new Date().toISOString(), currentVersion:current, targetVersion:target,
+    installMode:updateState.installMode
+  }, null, 2), 'utf8');
+  pruneUpdateBackups();
+  return dir;
+}
+function parseContentRangeTotal(value) {
+  const m = String(value || '').match(/\/(\d+)$/);
+  return m ? Number(m[1]) || 0 : 0;
+}
+
 async function checkForUpdates() {
-  updateState = {...updateState, status:'checking', error:null, progress:0};
+  updateState = {...updateState, status:'checking', error:null};
   sendUpdateState();
   try {
-    const response = await fetch(UPDATE_API_URL, {
-      headers: {
-        'Accept': 'application/vnd.github+json',
-        'User-Agent': 'Infinity-Castle-Elements-Updater'
-      },
-      cache: 'no-store'
-    });
-    if (!response.ok) throw new Error(`GitHub respondeu HTTP ${response.status}`);
-    const release = await response.json();
+    const headers = {
+      'Accept': 'application/vnd.github+json',
+      'User-Agent': 'Infinity-Castle-Elements-Updater'
+    };
+    const [latestResponse, historyResponse] = await Promise.all([
+      fetch(UPDATE_API_URL, {headers, cache:'no-store'}),
+      fetch(UPDATE_HISTORY_API_URL, {headers, cache:'no-store'}).catch(()=>null)
+    ]);
+    if (!latestResponse.ok) throw new Error(`GitHub respondeu HTTP ${latestResponse.status}`);
+    const release = await latestResponse.json();
+    let history = updateState.history || [];
+    if (historyResponse?.ok) {
+      const releases = await historyResponse.json();
+      if (Array.isArray(releases)) history = releases.filter(r=>!r.draft).map(releaseHistoryEntry);
+    }
     const latestVersion = normalizeVersion(release.tag_name || release.name);
-    const setupAsset = Array.isArray(release.assets) ? release.assets.find(a => /Infinity-Castle-Elements-Setup-.*\.exe$/i.test(a.name || '')) : null;
-    const portableAsset = Array.isArray(release.assets) ? release.assets.find(a => /Infinity-Castle-Elements-Portable-.*\.exe$/i.test(a.name || '')) : null;
-    const preferredAsset = updateState.installMode === 'portable' ? portableAsset : setupAsset;
+    const assets = Array.isArray(release.assets) ? release.assets : [];
+    const setupAsset = assets.find(a => /Infinity-Castle-Elements-Setup-.*\.exe$/i.test(a.name || ''));
+    const portableAsset = assets.find(a => /Infinity-Castle-Elements-Portable-.*\.exe$/i.test(a.name || ''));
+    const apkAsset = assets.find(a => /Infinity-Castle-Elements-Android-.*\.apk$/i.test(a.name || ''));
+    const preferredAsset = updateState.installMode === 'portable' ? portableAsset :
+      updateState.installMode === 'installer' ? setupAsset : setupAsset || portableAsset || apkAsset;
     const available = Boolean(latestVersion && isVersionNewer(latestVersion, app.getVersion()));
+    const keepDownloaded = updateState.status === 'downloaded' && updateState.latestVersion === latestVersion && updateState.installerPath;
     updateState = {
       ...updateState,
-      status: available ? 'available' : 'up-to-date',
+      status: keepDownloaded ? 'downloaded' : (available ? 'available' : 'up-to-date'),
       currentVersion: app.getVersion(),
       latestVersion: latestVersion || app.getVersion(),
       releaseName: release.name || `Infinity Castle Elements ${latestVersion}`,
@@ -79,11 +172,17 @@ async function checkForUpdates() {
       releaseUrl: release.html_url || null,
       downloadUrl: preferredAsset?.browser_download_url || null,
       assetName: preferredAsset?.name || null,
-      progress: 0,
-      downloadedBytes: 0,
-      totalBytes: Number(preferredAsset?.size) || 0,
-      installerPath: null,
-      error: available && !preferredAsset ? 'A atualização existe, mas o arquivo de Windows ainda não foi publicado.' : null
+      digest: preferredAsset?.digest || null,
+      required: releaseRequiresUpdate(release),
+      history,
+      progress: keepDownloaded ? 100 : 0,
+      downloadedBytes: keepDownloaded ? updateState.downloadedBytes : 0,
+      totalBytes: Number(preferredAsset?.size) || updateState.totalBytes || 0,
+      partialBytes: 0,
+      canResume: false,
+      verified: keepDownloaded ? updateState.verified : false,
+      installerPath: keepDownloaded ? updateState.installerPath : null,
+      error: available && !preferredAsset ? 'A atualização existe, mas o arquivo compatível ainda não foi publicado.' : null
     };
     if (updateState.error) updateState.status = 'error';
   } catch (error) {
@@ -93,33 +192,52 @@ async function checkForUpdates() {
   return publicUpdateState();
 }
 async function downloadUpdate() {
-  if (updateState.status !== 'available' || !updateState.downloadUrl) return publicUpdateState();
-  if (updateState.installMode === 'portable') {
-    await shell.openExternal(updateState.downloadUrl);
-    updateState = {...updateState, status:'portable-opened'};
-    sendUpdateState();
+  if (!updateState.downloadUrl) return publicUpdateState();
+  if (updateState.installMode === 'development') {
+    if (updateState.releaseUrl) await shell.openExternal(updateState.releaseUrl);
     return publicUpdateState();
   }
-  if (updateState.installMode !== 'installer') {
-    if (updateState.releaseUrl) await shell.openExternal(updateState.releaseUrl);
+  if (!['available','error','paused'].includes(updateState.status)) {
+    if (updateState.status === 'downloaded') return publicUpdateState();
     return publicUpdateState();
   }
   const updatesDir = path.join(app.getPath('userData'), 'updates');
   fs.mkdirSync(updatesDir, {recursive:true});
-  const filename = updateState.assetName || `Infinity-Castle-Elements-Setup-${updateState.latestVersion}.exe`;
+  const fallbackName = updateState.installMode === 'portable'
+    ? `Infinity-Castle-Elements-Portable-${updateState.latestVersion}.exe`
+    : `Infinity-Castle-Elements-Setup-${updateState.latestVersion}.exe`;
+  const filename = updateState.assetName || fallbackName;
   const finalPath = path.join(updatesDir, filename);
   const tempPath = finalPath + '.part';
   try {
-    fs.rmSync(tempPath, {force:true});
-    updateState = {...updateState, status:'downloading', progress:0, downloadedBytes:0, installerPath:null, error:null};
+    if (fs.existsSync(finalPath)) {
+      const expected = digestValue(updateState.digest);
+      const actual = expected ? await sha256File(finalPath) : null;
+      if (!expected || actual === expected) {
+        const size = fs.statSync(finalPath).size;
+        updateState = {...updateState,status:'downloaded',progress:100,downloadedBytes:size,totalBytes:updateState.totalBytes||size,installerPath:finalPath,verified:Boolean(expected),partialBytes:0,canResume:false,error:null};
+        sendUpdateState(); return publicUpdateState();
+      }
+      fs.rmSync(finalPath,{force:true});
+    }
+
+    let existing = fs.existsSync(tempPath) ? fs.statSync(tempPath).size : 0;
+    const headers = {'User-Agent':'Infinity-Castle-Elements-Updater'};
+    if (existing > 0) headers.Range = `bytes=${existing}-`;
+    updateState = {...updateState,status:'downloading',progress:updateState.totalBytes?Math.min(99,Math.round(existing/updateState.totalBytes*100)):0,downloadedBytes:existing,partialBytes:existing,canResume:existing>0,installerPath:null,error:null};
     sendUpdateState();
-    const response = await fetch(updateState.downloadUrl, {
-      headers: {'User-Agent':'Infinity-Castle-Elements-Updater'},
-      redirect: 'follow'
-    });
+
+    let response = await fetch(updateState.downloadUrl, {headers,redirect:'follow'});
+    let append = existing > 0 && response.status === 206;
+    if (existing > 0 && !append) {
+      existing = 0;fs.rmSync(tempPath,{force:true});
+      response = await fetch(updateState.downloadUrl, {headers:{'User-Agent':'Infinity-Castle-Elements-Updater'},redirect:'follow'});
+    }
     if (!response.ok || !response.body) throw new Error(`Falha no download: HTTP ${response.status}`);
-    const total = Number(response.headers.get('content-length')) || updateState.totalBytes || 0;
-    let downloaded = 0;
+    const rangeTotal = parseContentRangeTotal(response.headers.get('content-range'));
+    const bodyLength = Number(response.headers.get('content-length')) || 0;
+    const total = rangeTotal || (bodyLength ? bodyLength + (append ? existing : 0) : updateState.totalBytes || 0);
+    let downloaded = append ? existing : 0;
     let lastEmit = 0;
     const meter = new Transform({
       transform(chunk, _encoding, callback) {
@@ -128,19 +246,34 @@ async function downloadUpdate() {
         if (now - lastEmit > 120 || (total && downloaded >= total)) {
           lastEmit = now;
           updateState.downloadedBytes = downloaded;
+          updateState.partialBytes = downloaded;
           updateState.totalBytes = total;
           updateState.progress = total ? Math.min(100, Math.round(downloaded / total * 100)) : 0;
+          updateState.canResume = downloaded > 0;
           sendUpdateState();
         }
         callback(null, chunk);
       }
     });
-    await pipeline(Readable.fromWeb(response.body), meter, fs.createWriteStream(tempPath));
+    await pipeline(Readable.fromWeb(response.body), meter, fs.createWriteStream(tempPath,{flags:append?'a':'w'}));
     fs.renameSync(tempPath, finalPath);
-    updateState = {...updateState, status:'downloaded', progress:100, downloadedBytes:downloaded, totalBytes:total, installerPath:finalPath};
+
+    const expected = digestValue(updateState.digest);
+    let verified = false;
+    if (expected) {
+      updateState = {...updateState,status:'verifying',progress:100,downloadedBytes:downloaded,totalBytes:total,error:null};
+      sendUpdateState();
+      const actual = await sha256File(finalPath);
+      if (actual !== expected) {
+        fs.rmSync(finalPath,{force:true});
+        throw new Error('Falha de integridade SHA-256. O arquivo baixado não corresponde à release oficial.');
+      }
+      verified = true;
+    }
+    updateState = {...updateState,status:'downloaded',progress:100,downloadedBytes:downloaded,totalBytes:total,partialBytes:0,canResume:false,installerPath:finalPath,verified,error:null};
   } catch (error) {
-    try { fs.rmSync(tempPath, {force:true}); } catch {}
-    updateState = {...updateState, status:'error', error:String(error?.message || error || 'Falha ao baixar atualização.')};
+    const partialBytes = fs.existsSync(tempPath) ? fs.statSync(tempPath).size : 0;
+    updateState = {...updateState,status:'error',partialBytes,downloadedBytes:partialBytes,canResume:partialBytes>0,error:String(error?.message || error || 'Falha ao baixar atualização.')};
   }
   sendUpdateState();
   return publicUpdateState();
@@ -149,42 +282,64 @@ function psQuote(value) {
   return "'" + String(value ?? '').replace(/'/g, "''") + "'";
 }
 function installDownloadedUpdate() {
-  if (updateState.installMode !== 'installer' || !updateState.installerPath || !fs.existsSync(updateState.installerPath)) return false;
+  if (installTriggered || !updateState.installerPath || !fs.existsSync(updateState.installerPath)) return false;
+  if (!['installer','portable'].includes(updateState.installMode)) return false;
   try {
-    const installerPath = updateState.installerPath;
-    const currentExe = process.execPath;
-    const installDir = path.dirname(currentExe);
+    const downloadedPath = updateState.installerPath;
     const targetVersion = normalizeVersion(updateState.latestVersion || '');
     const logPath = path.join(app.getPath('userData'), 'update-install.log');
     const parentPid = process.pid;
-    const command = [
-      "$ErrorActionPreference = 'Stop'",
-      `$installer = ${psQuote(installerPath)}`,
-      `$targetExe = ${psQuote(currentExe)}`,
-      `$installDir = ${psQuote(installDir)}`,
-      `$targetVersion = ${psQuote(targetVersion)}`,
-      `$log = ${psQuote(logPath)}`,
-      `$parentPid = ${parentPid}`,
-      `"[$(Get-Date -Format o)] updater start: $targetVersion" | Out-File -FilePath $log -Encoding utf8 -Append`,
-      "while (Get-Process -Id $parentPid -ErrorAction SilentlyContinue) { Start-Sleep -Milliseconds 250 }",
-      "Start-Sleep -Milliseconds 500",
-      `$argLine = '/S --updated "/D=' + $installDir + '"'`,
-      `"[$(Get-Date -Format o)] installer: $installer $argLine" | Out-File -FilePath $log -Encoding utf8 -Append`,
-      "$proc = Start-Process -FilePath $installer -ArgumentList $argLine -PassThru -Wait",
-      `"[$(Get-Date -Format o)] installer exit: $($proc.ExitCode)" | Out-File -FilePath $log -Encoding utf8 -Append`,
-      "if ($proc.ExitCode -ne 0) { exit $proc.ExitCode }",
-      "$ready = $false",
-      `for ($i = 0; $i -lt 40; $i++) { if (Test-Path $targetExe) { try { $v = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($targetExe).ProductVersion; if ($v) { "[$(Get-Date -Format o)] installed version: $v" | Out-File -FilePath $log -Encoding utf8 -Append; if (-not $targetVersion -or $v.StartsWith($targetVersion)) { $ready = $true; break } } } catch {} }; Start-Sleep -Milliseconds 250 }`,
-      `if (-not $ready) { "[$(Get-Date -Format o)] target executable/version not ready" | Out-File -FilePath $log -Encoding utf8 -Append; exit 3 }`,
-      "Start-Process -FilePath $targetExe -ArgumentList '--updated'"
-    ].join('; ');
-    updateState = {...updateState, status:'installing', error:null};
+    const backupDir = createUpdateBackup();
+    updateState = {...updateState,status:'installing',backupCreated:true,error:null};
     sendUpdateState();
-    const child = spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-Command', command], {
-      detached: true,
-      stdio: 'ignore',
-      windowsHide: true
-    });
+    installTriggered = true;
+
+    let command;
+    if (updateState.installMode === 'portable') {
+      const targetExe = process.env.PORTABLE_EXECUTABLE_FILE || process.execPath;
+      const previousExe = targetExe + '.previous.exe';
+      command = [
+        "$ErrorActionPreference = 'Stop'",
+        `$downloaded = ${psQuote(downloadedPath)}`,
+        `$targetExe = ${psQuote(targetExe)}`,
+        `$previousExe = ${psQuote(previousExe)}`,
+        `$targetVersion = ${psQuote(targetVersion)}`,
+        `$log = ${psQuote(logPath)}`,
+        `$parentPid = ${parentPid}`,
+        `"[$(Get-Date -Format o)] portable updater start: $targetVersion" | Out-File -FilePath $log -Encoding utf8 -Append`,
+        "while (Get-Process -Id $parentPid -ErrorAction SilentlyContinue) { Start-Sleep -Milliseconds 250 }",
+        "Start-Sleep -Milliseconds 500",
+        "try { if (Test-Path $previousExe) { Remove-Item $previousExe -Force }; if (Test-Path $targetExe) { Copy-Item $targetExe $previousExe -Force }; Copy-Item $downloaded $targetExe -Force } catch { if (Test-Path $previousExe) { Copy-Item $previousExe $targetExe -Force }; throw }",
+        `"[$(Get-Date -Format o)] portable replaced" | Out-File -FilePath $log -Encoding utf8 -Append`,
+        "Start-Process -FilePath $targetExe -ArgumentList '--updated'"
+      ].join('; ');
+    } else {
+      const currentExe = process.execPath;
+      const installDir = path.dirname(currentExe);
+      command = [
+        "$ErrorActionPreference = 'Stop'",
+        `$installer = ${psQuote(downloadedPath)}`,
+        `$targetExe = ${psQuote(currentExe)}`,
+        `$installDir = ${psQuote(installDir)}`,
+        `$targetVersion = ${psQuote(targetVersion)}`,
+        `$log = ${psQuote(logPath)}`,
+        `$parentPid = ${parentPid}`,
+        `"[$(Get-Date -Format o)] updater start: $targetVersion" | Out-File -FilePath $log -Encoding utf8 -Append`,
+        "while (Get-Process -Id $parentPid -ErrorAction SilentlyContinue) { Start-Sleep -Milliseconds 250 }",
+        "Start-Sleep -Milliseconds 500",
+        `$argLine = '/S --updated "/D=' + $installDir + '"'`,
+        `"[$(Get-Date -Format o)] installer: $installer $argLine" | Out-File -FilePath $log -Encoding utf8 -Append`,
+        "$proc = Start-Process -FilePath $installer -ArgumentList $argLine -PassThru -Wait",
+        `"[$(Get-Date -Format o)] installer exit: $($proc.ExitCode)" | Out-File -FilePath $log -Encoding utf8 -Append`,
+        "if ($proc.ExitCode -ne 0) { exit $proc.ExitCode }",
+        "$ready = $false",
+        `for ($i = 0; $i -lt 40; $i++) { if (Test-Path $targetExe) { try { $v = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($targetExe).ProductVersion; if ($v) { "[$(Get-Date -Format o)] installed version: $v" | Out-File -FilePath $log -Encoding utf8 -Append; if (-not $targetVersion -or $v.StartsWith($targetVersion)) { $ready = $true; break } } } catch {} }; Start-Sleep -Milliseconds 250 }`,
+        `if (-not $ready) { "[$(Get-Date -Format o)] target executable/version not ready; backup at ${backupDir.replace(/'/g,"''")}" | Out-File -FilePath $log -Encoding utf8 -Append; exit 3 }`,
+        "Start-Process -FilePath $targetExe -ArgumentList '--updated'"
+      ].join('; ');
+    }
+
+    const child = spawn('powershell.exe', ['-NoProfile','-ExecutionPolicy','Bypass','-WindowStyle','Hidden','-Command',command], {detached:true,stdio:'ignore',windowsHide:true});
     child.unref();
     try { mainWindow?.hide(); } catch {}
     try { if (gameServer?.listening) gameServer.close(); } catch {}
@@ -192,7 +347,8 @@ function installDownloadedUpdate() {
     setTimeout(() => app.exit(0), 300);
     return true;
   } catch (error) {
-    updateState = {...updateState, status:'error', error:String(error?.message || error || 'Falha ao iniciar o instalador.')};
+    installTriggered = false;
+    updateState = {...updateState,status:'error',error:String(error?.message || error || 'Falha ao iniciar o instalador.')};
     sendUpdateState();
     return false;
   }
@@ -359,7 +515,15 @@ ipcMain.handle('ice:get-update-state', () => publicUpdateState());
 ipcMain.handle('ice:check-for-updates', () => checkForUpdates());
 ipcMain.handle('ice:download-update', () => downloadUpdate());
 ipcMain.handle('ice:install-update', () => installDownloadedUpdate());
-ipcMain.on('ice:quit', () => app.quit());
+ipcMain.handle('ice:set-install-on-exit', (_event, enabled) => {
+  updateState = {...updateState, installOnExit:Boolean(enabled)&&updateState.status==='downloaded'};
+  sendUpdateState();
+  return publicUpdateState();
+});
+ipcMain.on('ice:quit', () => {
+  if (updateState.installOnExit && updateState.status === 'downloaded' && !installTriggered) installDownloadedUpdate();
+  else app.quit();
+});
 ipcMain.handle('ice:toggle-fullscreen', () => {
   if (!mainWindow) return false;
   const next = !mainWindow.isFullScreen();
@@ -404,7 +568,12 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-app.on('before-quit', () => {
+app.on('before-quit', event => {
+  if (!installTriggered && updateState.installOnExit && updateState.status === 'downloaded' && updateState.installerPath) {
+    event.preventDefault();
+    installDownloadedUpdate();
+    return;
+  }
   if (quitting) return;
   quitting = true;
   try {
