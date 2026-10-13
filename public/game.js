@@ -758,7 +758,7 @@ function beginRegionTransition(){
   state.regionTransitionUntil=performance.now()+760;document.body?.classList.add('region-transition');setTimeout(()=>document.body?.classList.remove('region-transition'),780);
 }
 function updateMenuSelectionFx(role){
-  const picker=$('#elementPicker');if(picker)picker.dataset.selected=role;
+  const picker=$('#elementPicker');if(picker?.dataset)picker.dataset.selected=role;
 }
 
 function selectElement(role){
