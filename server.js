@@ -9,6 +9,7 @@ const io = new Server(server, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 3000;
 const MAX_LEVEL = 1000;
 const DEATH_REWARD_COINS = 5;
+const MULTIPLAYER_PROTOCOL = 2;
 const ELEMENTS = new Set(['earth', 'air', 'light', 'darkness']);
 const ELEMENT_ORDER = ['earth', 'air', 'light', 'darkness'];
 const MULTIPLAYER_ONLY = process.env.MULTIPLAYER_ONLY === '1';
@@ -26,6 +27,7 @@ app.get('/health', (_req, res) => res.status(200).json({
   ok: true,
   service: 'infinity-castle-elements-multiplayer',
   version: '0.0.7',
+  protocolVersion: MULTIPLAYER_PROTOCOL,
   rooms: rooms.size,
   modes: { multiplayer: 2, chaos: 4 }
 }));
@@ -33,6 +35,7 @@ app.get('/health', (_req, res) => res.status(200).json({
 app.get('/multiplayer/status', (_req, res) => res.json({
   online: true,
   version: '0.0.7',
+  protocolVersion: MULTIPLAYER_PROTOCOL,
   activeRooms: rooms.size,
   maxPlayersPerRoom: 4,
   modes: { multiplayer: 2, chaos: 4 }
@@ -106,7 +109,9 @@ function maybeStartBossCharge(room){
 }
 
 io.on('connection', socket => {
-  socket.on('create-room', ({name,element,resumeLevel,resumeDeaths,mode}={}, ack=()=>{}) => {
+  socket.emit('protocol-info',{protocolVersion:MULTIPLAYER_PROTOCOL,serverVersion:'0.0.7'});
+  socket.on('create-room', ({name,element,resumeLevel,resumeDeaths,mode,protocol}={}, ack=()=>{}) => {
+    if(Number(protocol)!==MULTIPLAYER_PROTOCOL)return ack({ok:false,code:'UPDATE_REQUIRED',requiredProtocol:MULTIPLAYER_PROTOCOL,error:'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'});
     const roomMode=normalizeMode(mode);
     const code=uniqueCode();
     const level=Math.max(1,Math.min(MAX_LEVEL,Number(resumeLevel)||1));
@@ -128,7 +133,8 @@ io.on('connection', socket => {
     joinRoom(socket,room,name,element,ack);
   });
 
-  socket.on('join-room', ({code,name,element,mode}={}, ack=()=>{}) => {
+  socket.on('join-room', ({code,name,element,mode,protocol}={}, ack=()=>{}) => {
+    if(Number(protocol)!==MULTIPLAYER_PROTOCOL)return ack({ok:false,code:'UPDATE_REQUIRED',requiredProtocol:MULTIPLAYER_PROTOCOL,error:'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'});
     const normalized=String(code||'').trim().toUpperCase(),room=rooms.get(normalized);
     if(!room)return ack({ok:false,error:'Sala não encontrada.'});
     if(mode&&normalizeMode(mode)!==room.mode)return ack({ok:false,error:room.mode==='chaos'?'Esse código pertence a uma sala do Modo Caos.':'Esse código pertence ao multiplayer de 2 jogadores.'});
@@ -253,7 +259,7 @@ function joinRoom(socket,room,rawName,requestedElement,ack){
     code:room.code,
     mode:room.mode,
     maxPlayers:room.maxPlayers,
-    role,slot,id:socket.id,level:room.level,deaths:room.deaths
+    role,slot,id:socket.id,level:room.level,deaths:room.deaths,protocolVersion:MULTIPLAYER_PROTOCOL
   });
   emitRoom(room);
 }
@@ -270,4 +276,4 @@ function startServer(port = PORT, host = '0.0.0.0') {
 
 if (require.main === module) startServer(PORT, '0.0.0.0');
 
-module.exports = { app, server, io, startServer };
+module.exports = { app, server, io, startServer, MULTIPLAYER_PROTOCOL };
