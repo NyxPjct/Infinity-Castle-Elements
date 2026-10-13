@@ -1,10 +1,10 @@
-# Infinity Castle Elements — INSANITY 0.0.6
+# Infinity Castle Elements — INSANITY 0.0.7
 
 **Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer cooperativo, **Modo Caos para 4 jogadores online**, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A versão **INSANITY 0.0.6 — The Castle Remembers** expande o jogo com Fases Coringa evoluídas, anomalias, Perseguidor, fase 666 especial, relíquias, conquistas, ranking de sofrimento, salas secretas, replay de morte, finais alternativos, novos comportamentos do castelo, **Character Visual Overhaul** dos quatro elementos e um **Castle Visual Overhaul** completo das dez regiões.
+A versão **INSANITY 0.0.7 — Visual Experience Update** leva o polimento visual do jogo para a interface e para o momento a momento do gameplay, com HUD dark-fantasy, câmera dinâmica, VFX elementais reforçados, mortes e bosses mais cinematográficos, progressão visual da torre, pós-processamento, inimigos regionais e tratamento especial para a fase 1000. Todos os sistemas introduzidos na 0.0.6 continuam presentes.
 
-**Versão atual do jogo:** `0.0.6`
+**Versão atual do jogo:** `0.0.7`
 
 ## 📸 Screenshots
 
@@ -62,7 +62,187 @@ A versão **INSANITY 0.0.6 — The Castle Remembers** expande o jogo com Fases C
 </p>
 
 
-### Novidades da versão 0.0.6 — The Castle Remembers
+### Novidades da versão 0.0.7 — Visual Experience Update
+
+A versão **0.0.7** é focada em apresentação, feedback visual e leitura de gameplay. O objetivo foi fazer o Infinity Castle Elements parecer mais vivo e cinematográfico sem alterar a geometria, as hitboxes ou a dificuldade estrutural das 1000 fases.
+
+### 🎮 HUD dark-fantasy redesenhado
+
+- nova HUD com identidade visual ligada ao elemento escolhido;
+- ícone elemental destacado e cor dinâmica por personagem;
+- fase, mortes, moedas e relíquia ativa foram reorganizadas para leitura rápida;
+- adicionado **progresso visual da torre** durante o gameplay;
+- indicador mostra também em qual das 10 regiões o jogador está;
+- botões da Loja e Reiniciar ficaram mais compactos para liberar espaço de tela.
+
+### ✦ Indicador circular do poder elemental
+
+- o poder agora possui um **orb circular de recarga**;
+- a borda do orb usa a cor do elemento atual;
+- o círculo mostra visualmente duração, cooldown e momento em que a habilidade está pronta;
+- o HUD continua informando o tempo restante em segundos.
+
+### 🎥 Câmera dinâmica
+
+A câmera passou a reagir ao estado da partida.
+
+- abre levemente o campo de visão durante movimentos rápidos;
+- reage a fases de perseguição;
+- muda o enquadramento durante introduções de chefes;
+- aproxima a cena em momentos de morte;
+- mantém o screen shake configurável já existente.
+
+As mudanças são sutis para não prejudicar saltos ou a leitura das armadilhas.
+
+### 🌱🌪️☀️🌑 VFX elementais reforçados
+
+Os quatro poderes receberam efeitos visuais adicionais:
+
+- **Terra:** raízes mais volumosas, rachaduras no piso e impactos com fragmentos;
+- **Ar:** mais linhas de vento, espirais, deslocamento visual e partículas direcionais;
+- **Luz:** bloom solar, anéis, raios e partículas orbitais;
+- **Escuridão:** fogo negro mais denso, fumaça, anéis instáveis e pequenos glitches.
+
+Quando um inimigo é derrotado por uma habilidade, o impacto utiliza efeitos próprios do elemento responsável.
+
+### 👤 Sombras e profundidade
+
+- personagens agora projetam sombra simples sobre o chão;
+- jogadores remotos também possuem sombra;
+- inimigos e bosses ganharam sombra própria;
+- o efeito ajuda a leitura da altura e dá mais profundidade às salas sem transformar o jogo em iluminação 3D pesada.
+
+### 👹 Inimigos com identidade regional
+
+Os inimigos continuam utilizando os mesmos comportamentos e hitboxes, mas o renderer agora adapta aparência, cor e pequenos detalhes à região atual do castelo.
+
+Sentinelas, morcegos e aparições deixam de parecer exatamente iguais durante toda a campanha, combinando melhor com Masmorras, Biblioteca, Jardins, Trono Rubro, Coração Impossível e demais setores.
+
+### ⚠️ Feedback visual das armadilhas
+
+Armadilhas que **já foram ativadas** podem mostrar pequenos sinais visuais antes do impacto final.
+
+Entre os efeitos estão:
+
+- poeira;
+- vibração visual do ponto de surgimento;
+- pequenas partículas;
+- sinais em objetos suspensos.
+
+O sistema não revela antecipadamente armadilhas que o jogador ainda não acionou.
+
+### ☠️ Morte cinematográfica
+
+A morte ganhou uma apresentação mais forte:
+
+- cenário parcialmente dessaturado;
+- contraste e vinheta reforçados;
+- frase do castelo em destaque;
+- pequeno zoom de câmera;
+- glitches adicionais em mortes ligadas a anomalias ou Fases Coringa;
+- replay da morte da 0.0.6 continua funcionando junto ao novo efeito.
+
+### 👑 Introdução cinematográfica de bosses
+
+Ao entrar em uma sala de guardião:
+
+- barras cinematográficas entram na tela;
+- a câmera muda temporariamente;
+- nome do chefe e elemento são destacados;
+- a arena recebe identidade ligada ao elemento do guardião;
+- após a introdução, a câmera volta ao comportamento normal de gameplay.
+
+### 🏆 Rank de fase animado
+
+O resultado de uma sala agora possui tratamento visual de acordo com o rank:
+
+- **S**;
+- **A**;
+- **B**;
+- **C**;
+- **D**;
+- **CASTELO TE ODEIA**.
+
+Ranks melhores possuem entrada e brilho próprios, enquanto **CASTELO TE ODEIA** recebe um efeito propositalmente instável.
+
+### 🏰 Menu principal reage ao progresso
+
+O menu agora lê o maior progresso salvo entre as campanhas e muda de aparência conforme o jogador sobe pela torre.
+
+O menu exibe:
+
+- maior fase alcançada;
+- região correspondente;
+- barra dividida em 10 setores;
+- estado do castelo.
+
+Em progressões avançadas, a tela fica progressivamente mais sombria e corrompida.
+
+### 🎭 Seleção de elemento com mais feedback
+
+As quatro mini-silhuetas introduzidas na 0.0.6 agora respondem visualmente à seleção.
+
+Cada elemento utiliza brilho e ambientação próprios enquanto estiver selecionado, reforçando a diferença entre Terra, Ar, Luz e Escuridão antes mesmo da fase começar.
+
+### ✨ Cosméticos mais presentes durante o gameplay
+
+O cosmético **Aura Elemental** agora deixa uma pequena trilha ligada ao elemento enquanto o personagem se move em velocidade.
+
+Coroa, Aura e as representações visuais das relíquias continuam compatíveis com o Character Visual Overhaul.
+
+### 🚪 Salas secretas e colecionáveis
+
+A entrada de uma sala secreta passou a possuir um **fragmento flutuante com brilho próprio**, tornando a descoberta visualmente mais recompensadora sem revelar segredos antes de o sistema permitir que sejam encontrados.
+
+### 🌈 Pós-processamento e anomalias
+
+As regiões receberam pós-processamento discreto para complementar o Castle Visual Overhaul da 0.0.6.
+
+- vinhetas diferentes por região;
+- variações de contraste;
+- flashes atmosféricos;
+- scanlines muito suaves;
+- glitches durante determinadas anomalias e Fases Coringa;
+- corrupção visual mais intensa nas regiões finais.
+
+A opção de movimento reduzido continua respeitada para animações de interface.
+
+### ❤️‍🔥 Fase 1000 — O Coração do Castelo
+
+A sala final ganhou uma camada visual própria:
+
+- fragmentos das regiões anteriores flutuam ao redor da arena;
+- cores dos quatro elementos aparecem misturadas;
+- o Coração possui pulsação luminosa;
+- HUD fica mais discreto;
+- a apresentação final reforça a sensação de que as dez regiões estão colapsando no mesmo espaço.
+
+### 🔧 Compatibilidade preservada
+
+A atualização visual não altera:
+
+- hitboxes dos personagens;
+- hitboxes das plataformas;
+- posição das armadilhas;
+- física dos quatro elementos;
+- rotas das fases;
+- lógica do Singleplayer;
+- Multiplayer de 2 jogadores;
+- Modo Caos de 4 jogadores;
+- sincronização das armadilhas.
+
+### ✅ Validação da 0.0.7
+
+Antes da integração, a versão passou pelo pipeline oficial com:
+
+- **checagem de sintaxe JavaScript**;
+- **auditoria das 1000 fases**;
+- **runtime/render das 1000 salas**;
+- **teste do Multiplayer / Modo Caos 4P**.
+
+---
+
+## Novidades da versão 0.0.6 — The Castle Remembers
 
 A versão **0.0.6** expande o Infinity Castle Elements com novos sistemas de horror, progressão, desafio e comportamento dinâmico do castelo, mantendo os modos **Singleplayer**, **Multiplayer** e **Caos 4P**.
 
@@ -452,13 +632,13 @@ As quatro habilidades agora possuem animação própria, janela ativa e cooldown
 
 ## Downloads para Windows
 
-1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.6.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.6/Infinity-Castle-Elements-Setup-0.0.6.exe)
-2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.6.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.6/Infinity-Castle-Elements-Portable-0.0.6.exe)
-3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.6.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.6/Infinity-Castle-Elements-Windows-0.0.6.zip)
+1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.7.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Setup-0.0.7.exe)
+2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.7.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Portable-0.0.7.exe)
+3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.7.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Windows-0.0.7.zip)
 
 ## Download para Android
 
-1. **APK Android:** [Infinity-Castle-Elements-Android-0.0.6.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.6/Infinity-Castle-Elements-Android-0.0.6.apk)
+1. **APK Android:** [Infinity-Castle-Elements-Android-0.0.7.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Android-0.0.7.apk)
 
 > Recomenda-se jogar no celular em **orientação horizontal** para aproveitar o canvas completo e os controles touch.
 
@@ -466,18 +646,19 @@ As quatro habilidades agora possuem animação própria, janela ativa e cooldown
 
 ## Abertura e identidade
 
-Na versão atual **INSANITY 0.0.6 — The Castle Remembers**, a apresentação acontece em três etapas:
+Na versão atual **INSANITY 0.0.7 — Visual Experience Update**, a apresentação acontece em três etapas:
 
 1. tela preta da **NYX PROJECT R**, com a coruja roxa de olhos vermelhos e a assinatura **Apresenta:**;
 2. tela cinematográfica de **INFINITY CASTLE ELEMENTS — INSANITY**, apresentando os quatro elementos diante do castelo e preparando a atmosfera de fantasia sombria da campanha;
 3. menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações, Crônicas do Castelo e Sair**. A **Loja Arcana** continua disponível dentro do jogo.
 
-A identidade visual da 0.0.6 também foi ampliada com:
+A identidade visual atual combina os sistemas da 0.0.6 com o polimento de apresentação da **0.0.7**:
 
 - **Character Visual Overhaul**, dando silhuetas, animações, expressões, relíquias visíveis e corrupção progressiva aos quatro personagens;
 - **Castle Visual Overhaul**, reformulando visualmente as dez regiões com parallax, iluminação, clima, materiais próprios de plataformas, atmosferas e corrupção crescente;
 - **Crônicas do Castelo**, reunindo conquistas, relíquias, fragmentos de lore, estatísticas e melhor rank alcançado;
 - **Fases Coringa, anomalias, Perseguidor e fase 666** integrados à identidade visual e narrativa do castelo.
+- **Visual Experience Update 0.0.7**, com HUD cinematográfica, câmera dinâmica, VFX reforçados, bosses e mortes cinematográficos, progresso visual da torre e tratamento especial da fase 1000.
 
 Na versão desktop, **Sair** fecha o jogo diretamente.
 
