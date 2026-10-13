@@ -1,6 +1,7 @@
 const APP_VERSION = String(window.electronAPI?.version || window.ICE_APP_VERSION || '0.0.7').trim() || '0.0.7';
 const MULTIPLAYER_PROTOCOL = 2;
 const UPDATE_NOTICE_KEY = 'infinity-castle-elements-update-notified-v1';
+const UPDATE_WELCOME_KEY = 'infinity-castle-elements-update-welcome-v1';
 const PUBLIC_UPDATE_API = 'https://api.github.com/repos/NyxPjct/Infinity-Castle-Elements/releases/latest';
 const PUBLIC_UPDATE_HISTORY_API = 'https://api.github.com/repos/NyxPjct/Infinity-Castle-Elements/releases?per_page=8';
 const DEFAULT_MULTIPLAYER_SERVER_URL = 'https://infinity-castle-elements-server-production.up.railway.app';
@@ -281,6 +282,12 @@ function renderUpdateState(st){
     persistentSet(UPDATE_NOTICE_KEY,latestVersion);updateDismissed=false;modal?.classList.remove('hidden');
   }
 }
+  const welcome=window.electronAPI?.wasUpdated&&st.status==='up-to-date'&&persistentGet(UPDATE_WELCOME_KEY)!==normalizeClientVersion(APP_VERSION);
+  if(welcome&&mainMenu&&!mainMenu.classList.contains('hidden')){
+    persistentSet(UPDATE_WELCOME_KEY,normalizeClientVersion(APP_VERSION));
+    const title=$('#updateTitle'),head=$('#updateHeadline');if(title)title.textContent='Bem-vindo à versão '+APP_VERSION;if(head)head.textContent='O Castelo foi atualizado. Estas são as principais mudanças.';
+    modal?.classList.remove('hidden');
+  }
 
 function openUpdateModal(manual=true){
   updateDismissed=false;$('#updateModal')?.classList.remove('hidden');
@@ -972,6 +979,7 @@ if(typeof window!=='undefined'&&window.electronAPI?.getUpdateState){
   try{
     window.electronAPI.onUpdateState?.(renderUpdateState);
     window.electronAPI.getUpdateState().then(renderUpdateState).catch(()=>{});
+    if(window.electronAPI.wasUpdated)setTimeout(()=>checkUpdatesFromUI(true).catch(()=>{}),900);
   }catch{}
 }else{
   setTimeout(()=>checkUpdatesFromUI(true).catch(()=>{}),3500);
