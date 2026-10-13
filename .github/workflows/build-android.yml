@@ -87,6 +87,8 @@ jobs:
         run: |
           TAG="v$ICE_VERSION"
           if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Infinity Castle Elements — INSANITY $ICE_VERSION" --generate-notes
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Infinity Castle Elements — INSANITY $ICE_VERSION" --notes-file "RELEASE_NOTES.md"
+          else
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --title "Infinity Castle Elements — INSANITY $ICE_VERSION" --notes-file "RELEASE_NOTES.md"
           fi
           gh release upload "$TAG" "dist-mobile/Infinity-Castle-Elements-Android-$ICE_VERSION.apk" --repo "$GITHUB_REPOSITORY" --clobber
