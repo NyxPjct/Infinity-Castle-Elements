@@ -122,116 +122,221 @@ socket.on('disconnect', () => setConnectionStatus(false));
 document.querySelectorAll('.character-choice').forEach(btn=>btn.addEventListener('click',()=>selectElement(btn.dataset.element)));
 
 let desktopUpdateState=null;
+
 let updateDismissed=false;
 
-function updateStatusMessage(s){
-  const current=s?.currentVersion||APP_VERSION;
-  if(!s)return `Versão atual ${current}`;
-  if(s.status==='checking')return 'Verificando atualizações...';
-  if(s.status==='available')return `Nova versão ${s.latestVersion} disponível · instalada ${current}`;
-  if(s.status==='downloading')return `Baixando versão ${s.latestVersion} · ${s.progress||0}%`;
-  if(s.status==='downloaded')return `Versão ${s.latestVersion} pronta para instalar`;
-  if(s.status==='portable-opened')return `Download da versão ${s.latestVersion} aberto no navegador`;
-  if(s.status==='up-to-date')return `Você está na versão mais recente (${current})`;
-  if(s.status==='error')return `Não foi possível verificar: ${s.error||'erro desconhecido'}`;
-  return `Versão atual ${current}`;
+function normalizeClientVersion(value){return String(value||'').trim().replace(/^v/i,'').split('-')[0];}
+
+function clientVersionParts(value){const p=normalizeClientVersion(value).split('.').slice(0,4).map(v=>parseInt(v,10)||0);while(p.length<4)p.push(0);return p;}
+
+function clientVersionNewer(candidate,current){const a=clientVersionParts(candidate),b=clientVersionParts(current);for(let i=0;i<4;i++){if(a[i]>b[i])return true;if(a[i]<b[i])return false;}return false;}
+
+function formatUpdateBytes(value){
+  const n=Number(value)||0;if(!n)return'—';if(n<1024)return n+' B';
+  const units=['KB','MB','GB'];let v=n/1024,i=0;while(v>=1024&&i<units.length-1){v/=1024;i++;}
+  return (v>=100?v.toFixed(0):v>=10?v.toFixed(1):v.toFixed(2))+' '+units[i];
 }
-function renderUpdateState(s){
-  if(!s)return;desktopUpdateState=s;
-  const badge=$('#menuUpdateBadge'),settingsText=$('#updateSettingsText');
-  if(settingsText)settingsText.textContent=updateStatusMessage(s);
-  if(badge){
-    const show=s.status==='available'||s.status==='downloading'||s.status==='downloaded'||s.status==='error';
-    badge.classList.toggle('hidden',!show);
-    badge.textContent=s.status==='error'?'⚠ Falha na atualização':
-      s.status==='downloaded'?'⬇ Atualização pronta':
-      s.status==='downloading'?(`⬇ Baixando ${s.progress||0}%`):(`⬇ Atualização ${s.latestVersion||''}`);
+
+function currentUpdateInstallMode(){
+  if(window.electronAPI?.desktop)return window.electronAPI.installMode||'installer';
+  try{if(window.Capacitor?.isNativePlatform?.())return'android';}catch{}
+  return'web';
+}
+
+function updateStatusMessage(st){
+  const current=st?.currentVersion||APP_VERSION;
+  if(!st)return `Versão atual ${current}`;
+  if(st.status==='checking')return'Verificando atualizações...';
+  if(st.status==='available')return`Nova versão ${st.latestVersion} disponível`;
+  if(st.status==='downloading')return`Baixando ${st.latestVersion} · ${st.progress||0}%`;
+  if(st.status==='verifying')return'Verificando integridade do download...';
+  if(st.status==='downloaded')return`Versão ${st.latestVersion} pronta para instalar`;
+  if(st.status==='installing')return'Preparando instalação...';
+  if(st.status==='up-to-date')return`Atualizado · versão ${current}`;
+  if(st.status==='error')return st.canResume?'Download interrompido · pode ser retomado':'Falha ao verificar atualização';
+  return`Versão atual ${current}`;
+}
+
+function categorizeUpdateNotes(notes){
+  const groups={novo:[],visual:[],multiplayer:[],correcoes:[],outros:[]};let hinted='';
+  const lines=String(notes||'').replace(/<!--[^]*?-->/g,'').split(/\r?\n/);
+  for(let raw of lines){
+    let line=raw.trim();if(!line)continue;
+    const heading=line.match(/^#{1,6}\s+(.+)/);
+    if(heading){
+      const h=heading[1].toLowerCase();
+      hinted=/multi|online|caos|servidor|coop/.test(h)?'multiplayer':/corr|fix|bug|hotfix|erro/.test(h)?'correcoes':/visual|interface|hud|vfx|gráf|graf|anima/.test(h)?'visual':/novo|novidade|recurso|adicion/.test(h)?'novo':'';
+      continue;
+    }
+    line=line.replace(/^[-*+]\s+/,'').replace(/^\d+[.)]\s+/,'').replace(/\*\*/g,'').replace(/`/g,'').trim();
+    if(!line||/^https?:\/\//i.test(line))continue;
+    const l=line.toLowerCase();
+    const key=hinted||(/multi|online|caos|servidor|socket|protocolo|coop/.test(l)?'multiplayer':/corr|fix|bug|hotfix|erro|falha|crash/.test(l)?'correcoes':/visual|hud|vfx|câmera|camera|render|interface|anima|efeito|sombra|parallax/.test(l)?'visual':/novo|adicion|introduz|recurso|sistema|fase|relíquia|reliquia|conquista/.test(l)?'novo':'outros');
+    if(groups[key].length<6)groups[key].push(line.slice(0,220));
   }
-  const current=$('#updateCurrentVersion'),latest=$('#updateLatestVersion'),notes=$('#updateNotes'),status=$('#updateStatusText');
-  if(current)current.textContent=s.currentVersion||APP_VERSION;
-  if(latest)latest.textContent=s.latestVersion||'—';
-  if(notes)notes.textContent=s.notes||'Correções, melhorias e ajustes da nova versão.';
-  if(status)status.textContent=s.status==='error'?(s.error||'Falha ao verificar atualização.'):
-    s.installMode==='portable'?'Você está usando a versão Portable. O download da nova versão será aberto para substituição manual.':
-    s.status==='downloaded'?'Download concluído. Seus saves ficam preservados. Clique em Reiniciar e instalar.':
-    s.status==='downloading'?'Baixando a atualização em segundo plano... Não feche o jogo.':
-    'A atualização será baixada e instalada sem apagar seus saves.';
-  const progressWrap=$('#updateProgressWrap'),percent=$('#updateProgressPercent'),bar=$('#updateProgressBar'),progressText=$('#updateProgressText');
-  const showProgress=s.status==='downloading'||s.status==='downloaded';
-  progressWrap?.classList.toggle('hidden',!showProgress);
-  if(percent)percent.textContent=(s.progress||0)+'%';
-  if(bar?.style)bar.style.width=(s.progress||0)+'%';
-  if(progressText)progressText.textContent=s.status==='downloaded'?'Download concluído':'Baixando atualização...';
-  const updateBtn=$('#updateNowBtn'),installBtn=$('#installUpdateBtn');
-  if(updateBtn){
-    updateBtn.classList.toggle('hidden',s.status==='downloaded');
-    updateBtn.disabled=s.status==='downloading'||s.status==='checking'||s.status==='up-to-date';
-    updateBtn.textContent=s.status==='error'?'Tentar novamente':
-      s.installMode==='portable'?'Baixar nova versão':
-      s.status==='downloading'?'Baixando...':'Atualizar agora';
+  if(!Object.values(groups).some(a=>a.length))groups.outros.push('Correções, melhorias e ajustes da nova versão.');
+  return groups;
+}
+
+function renderUpdateHighlights(notes){
+  const root=$('#updateHighlights');if(!root)return;root.innerHTML='';
+  const groups=categorizeUpdateNotes(notes);
+  const labels={novo:'✦ Novo',visual:'◈ Visual',multiplayer:'⚡ Multiplayer',correcoes:'🔧 Correções',outros:'◇ Outros'};
+  for(const key of ['novo','visual','multiplayer','correcoes','outros']){
+    const items=groups[key];if(!items.length)continue;
+    const box=document.createElement('div');box.className='update-highlight-group';
+    const h=document.createElement('h4');h.textContent=labels[key];box.appendChild(h);
+    const ul=document.createElement('ul');
+    for(const item of items){const li=document.createElement('li');li.textContent=item;ul.appendChild(li);}
+    box.appendChild(ul);root.appendChild(box);
   }
-  if(installBtn){
-    installBtn.classList.toggle('hidden',s.status!=='downloaded'||s.installMode!=='installer');
-    if(s.status!=='downloaded'){installBtn.disabled=false;installBtn.textContent='Reiniciar e instalar';}
+}
+
+function renderUpdateHistory(history){
+  const root=$('#updateHistory');if(!root)return;root.innerHTML='';
+  const list=Array.isArray(history)?history.filter(x=>x?.version).slice(0,8):[];
+  if(!list.length){const empty=document.createElement('div');empty.className='update-empty';empty.textContent='Histórico indisponível no momento.';root.appendChild(empty);return;}
+  for(const item of list){
+    const row=document.createElement('div');row.className='update-history-item'+(normalizeClientVersion(item.version)===normalizeClientVersion(APP_VERSION)?' current':'');
+    const version=document.createElement('div');version.className='update-history-version';version.textContent='v'+item.version;
+    const copy=document.createElement('div');copy.className='update-history-copy';
+    const b=document.createElement('b');b.textContent=item.name||('Infinity Castle Elements '+item.version);
+    const small=document.createElement('small');small.textContent=item.publishedAt?new Date(item.publishedAt).toLocaleDateString('pt-BR'):'Release publicada';
+    copy.appendChild(b);copy.appendChild(small);
+    const tag=document.createElement('div');tag.className='update-history-tag';tag.textContent=normalizeClientVersion(item.version)===normalizeClientVersion(APP_VERSION)?'INSTALADA':'RELEASE';
+    row.appendChild(version);row.appendChild(copy);row.appendChild(tag);root.appendChild(row);
+  }
+}
+
+function renderUpdateState(st){
+  if(!st)return;desktopUpdateState=st;
+  const menuBtn=$('#menuUpdatesBtn'),menuStatus=$('#menuUpdatesStatus'),menuIcon=$('#menuUpdatesIcon');
+  menuBtn?.classList.remove('update-available','update-ready','update-error');
+  if(st.status==='available'||st.status==='downloading'||st.status==='verifying')menuBtn?.classList.add('update-available');
+  if(st.status==='downloaded')menuBtn?.classList.add('update-ready');
+  if(st.status==='error')menuBtn?.classList.add('update-error');
+  if(menuStatus)menuStatus.textContent=updateStatusMessage(st);
+  if(menuIcon)menuIcon.textContent=st.status==='downloaded'?'✓':st.status==='available'||st.status==='downloading'||st.status==='verifying'?'⬇':st.status==='error'?'!':'↻';
+
+  const modal=$('#updateModal'),current=$('#updateCurrentVersion'),latest=$('#updateLatestVersion'),headline=$('#updateHeadline'),notes=$('#updateNotes');
+  if(current)current.textContent=st.currentVersion||APP_VERSION;if(latest)latest.textContent=st.latestVersion||APP_VERSION;
+  if(headline)headline.textContent=st.status==='available'?`A versão ${st.latestVersion} está esperando por você.`:st.status==='downloaded'?`A versão ${st.latestVersion} já está pronta.`:st.status==='up-to-date'?'Você já está na versão mais recente do Castelo.':updateStatusMessage(st);
+  if(notes)notes.textContent=st.notes||'Nenhuma nota adicional foi publicada para esta versão.';
+  renderUpdateHighlights(st.notes);renderUpdateHistory(st.history);
+
+  const required=$('#updateRequiredBanner');required?.classList.toggle('hidden',!st.required);modal?.classList.toggle('update-required',!!st.required);
+  const size=$('#updateSizeText');if(size)size.textContent='Tamanho: '+formatUpdateBytes(st.totalBytes);
+
+  const progressWrap=$('#updateProgressWrap'),percent=$('#updateProgressPercent'),bar=$('#updateProgressBar'),progressText=$('#updateProgressText'),bytes=$('#updateBytesText'),integrity=$('#updateIntegrityText');
+  const progressVisible=['downloading','verifying','downloaded'].includes(st.status)||(st.status==='error'&&st.partialBytes>0);
+  progressWrap?.classList.toggle('hidden',!progressVisible);
+  const pct=st.status==='downloaded'||st.status==='verifying'?100:(st.progress||0);
+  if(percent)percent.textContent=pct+'%';if(bar?.style)bar.style.width=pct+'%';
+  if(progressText)progressText.textContent=st.status==='verifying'?'Verificando arquivo oficial...':st.status==='downloaded'?'Download concluído':st.status==='error'&&st.canResume?'Download pausado · pronto para retomar':'Baixando em segundo plano...';
+  if(bytes)bytes.textContent=`${formatUpdateBytes(st.downloadedBytes||st.partialBytes)} / ${formatUpdateBytes(st.totalBytes)}`;
+  if(integrity){
+    integrity.classList.remove('verified','failed');
+    if(st.verified){integrity.textContent='Integridade SHA-256: verificada ✓';integrity.classList.add('verified');}
+    else if(st.status==='error'&&/SHA-256|integridade/i.test(st.error||'')){integrity.textContent='Integridade: falhou';integrity.classList.add('failed');}
+    else integrity.textContent=st.digest?'Integridade SHA-256: aguardando':'Integridade: digest não informado';
   }
 
-  // IMPORTANTE: não chama openUpdateModal() daqui para evitar recursão infinita.
-  // Apenas torna o modal visível quando a notificação deve aparecer.
-  const shouldAutoOpen=(s.status==='available'&&!updateDismissed)||s.status==='downloaded'||s.status==='error';
-  if(shouldAutoOpen&&mainMenu&&!mainMenu.classList.contains('hidden')){
-    $('#updateModal')?.classList.remove('hidden');
+  const status=$('#updateStatusText');
+  if(status)status.textContent=st.status==='error'?(st.error||'Falha ao atualizar.'):
+    st.status==='downloaded'?(st.installOnExit?'Atualização pronta. Ela será instalada quando você sair do jogo.':'Atualização pronta. Um backup dos saves será criado antes da instalação.'):
+    st.status==='downloading'?'O download continua mesmo se você fechar esta janela e voltar a jogar.':
+    st.installMode==='android'?'Quando houver uma versão nova, o APK oficial será aberto para instalação pelo Android.':
+    st.installMode==='web'?'A versão web atualiza pelo service worker. Quando houver versão nova, basta recarregar.':
+    'Antes de instalar, o jogo cria um backup local de saves e configurações.';
+
+  const check=$('#checkUpdatesBtn'),download=$('#updateNowBtn'),install=$('#installUpdateBtn'),exitInstall=$('#installOnExitBtn');
+  if(check)check.disabled=['checking','downloading','verifying','installing'].includes(st.status);
+  if(download){
+    const show=['available','error'].includes(st.status)&&!(st.status==='error'&&!st.downloadUrl);
+    download.classList.toggle('hidden',!show);
+    download.disabled=['checking','downloading','verifying','installing'].includes(st.status);
+    download.textContent=st.status==='error'&&st.canResume?'↻ Retomar download':st.installMode==='android'?'⬇ Baixar APK oficial':st.installMode==='web'?'↻ Recarregar versão':'⬇ Baixar em segundo plano';
+  }
+  const canInstall=st.status==='downloaded'&&['installer','portable'].includes(st.installMode);
+  install?.classList.toggle('hidden',!canInstall);exitInstall?.classList.toggle('hidden',!canInstall);
+  if(install){install.disabled=st.status==='installing';install.textContent=st.installMode==='portable'?'Reiniciar e substituir Portable':'Reiniciar e instalar';}
+  if(exitInstall){exitInstall.classList.toggle('active',!!st.installOnExit);exitInstall.textContent=st.installOnExit?'✓ Instalar ao sair':'Instalar ao sair';}
+
+  const latestVersion=normalizeClientVersion(st.latestVersion);
+  const lastNotified=persistentGet(UPDATE_NOTICE_KEY);
+  const newNotice=st.status==='available'&&latestVersion&&latestVersion!==normalizeClientVersion(APP_VERSION)&&lastNotified!==latestVersion;
+  if(newNotice&&mainMenu&&!mainMenu.classList.contains('hidden')){
+    persistentSet(UPDATE_NOTICE_KEY,latestVersion);updateDismissed=false;modal?.classList.remove('hidden');
   }
 }
-function openUpdateModal(resetDismissed=true){
-  if(resetDismissed)updateDismissed=false;
-  if(!desktopUpdateState||!['available','downloading','downloaded','portable-opened','error'].includes(desktopUpdateState.status))return;
-  // O estado já foi renderizado por renderUpdateState(). Aqui só abrimos a janela.
-  // Na 0.0.1 este método chamava renderUpdateState(), que chamava este método de novo
-  // e causava um loop antes do modal aparecer.
-  $('#updateModal')?.classList.remove('hidden');
+
+function openUpdateModal(manual=true){
+  updateDismissed=false;$('#updateModal')?.classList.remove('hidden');
+  if(desktopUpdateState)renderUpdateState(desktopUpdateState);
+  if(manual&&(!desktopUpdateState||desktopUpdateState.status==='idle'))checkUpdatesFromUI(true);
 }
-function closeUpdateModal(){
-  updateDismissed=true;
-  $('#updateModal')?.classList.add('hidden');
+
+function closeUpdateModal(){updateDismissed=true;$('#updateModal')?.classList.add('hidden');}
+
+async function checkPublicUpdates(){
+  const mode=currentUpdateInstallMode();
+  const headers={'Accept':'application/vnd.github+json'};
+  const [latestRes,historyRes]=await Promise.all([fetch(PUBLIC_UPDATE_API,{headers,cache:'no-store'}),fetch(PUBLIC_UPDATE_HISTORY_API,{headers,cache:'no-store'}).catch(()=>null)]);
+  if(!latestRes.ok)throw new Error('GitHub respondeu HTTP '+latestRes.status);
+  const release=await latestRes.json(),historyRaw=historyRes?.ok?await historyRes.json():[];
+  const latestVersion=normalizeClientVersion(release.tag_name||release.name);
+  const assets=Array.isArray(release.assets)?release.assets:[];
+  const apk=assets.find(a=>/Infinity-Castle-Elements-Android-.*\.apk$/i.test(a.name||''));
+  const available=clientVersionNewer(latestVersion,APP_VERSION);
+  return{
+    status:available?'available':'up-to-date',currentVersion:APP_VERSION,latestVersion:latestVersion||APP_VERSION,
+    releaseName:release.name||('Infinity Castle Elements '+latestVersion),notes:String(release.body||'').trim(),releaseUrl:release.html_url||null,
+    downloadUrl:mode==='android'?(apk?.browser_download_url||release.html_url):release.html_url,assetName:mode==='android'?apk?.name:null,
+    digest:mode==='android'?apk?.digest:null,totalBytes:mode==='android'?(Number(apk?.size)||0):0,downloadedBytes:0,partialBytes:0,progress:0,
+    verified:false,required:/<!--\s*required-update\s*-->|\[ATUALIZA[CÇ][AÃ]O OBRIGAT[OÓ]RIA\]/i.test(String(release.body||'')),
+    history:Array.isArray(historyRaw)?historyRaw.filter(x=>!x.draft).slice(0,8).map(x=>({version:normalizeClientVersion(x.tag_name||x.name),name:x.name||x.tag_name,notes:String(x.body||''),publishedAt:x.published_at,url:x.html_url,prerelease:!!x.prerelease})):[],
+    installMode:mode,installOnExit:false,error:null
+  };
 }
-async function checkUpdatesFromUI(){
-  if(!window.electronAPI?.checkForUpdates)return;
-  updateDismissed=false;
-  try{renderUpdateState(await window.electronAPI.checkForUpdates());}catch{}
-}
-async function downloadDesktopUpdate(){
-  if(!window.electronAPI?.downloadUpdate)return;
-  const btn=$('#updateNowBtn');
-  if(desktopUpdateState?.status==='error'){
-    try{
-      const checked=await window.electronAPI.checkForUpdates?.();
-      if(checked)renderUpdateState(checked);
-      if(checked?.status!=='available')return;
-    }catch(error){
-      renderUpdateState({...desktopUpdateState,status:'error',error:String(error?.message||error||'Falha ao verificar atualização.')});
-      return;
-    }
-  }
-  if(btn){btn.disabled=true;btn.textContent='Preparando download...';}
+
+async function checkUpdatesFromUI(silent=false){
   try{
-    const next=await window.electronAPI.downloadUpdate();
-    renderUpdateState(next);
-    openUpdateModal(false);
+    if(!silent)renderUpdateState({...desktopUpdateState,currentVersion:desktopUpdateState?.currentVersion||APP_VERSION,status:'checking',installMode:desktopUpdateState?.installMode||currentUpdateInstallMode(),history:desktopUpdateState?.history||[]});
+    const next=window.electronAPI?.checkForUpdates?await window.electronAPI.checkForUpdates():await checkPublicUpdates();renderUpdateState(next);return next;
   }catch(error){
-    renderUpdateState({...desktopUpdateState,status:'error',error:String(error?.message||error||'Falha ao baixar atualização.')});
-    openUpdateModal(false);
-  }finally{
-    if(btn&&desktopUpdateState?.status==='available'){btn.disabled=false;btn.textContent='Atualizar agora';}
+    const failed={...(desktopUpdateState||{}),currentVersion:APP_VERSION,status:'error',installMode:currentUpdateInstallMode(),history:desktopUpdateState?.history||[],error:String(error?.message||error||'Falha ao verificar atualização.')};
+    renderUpdateState(failed);return failed;
   }
 }
+
+async function downloadDesktopUpdate(){
+  const st=desktopUpdateState;if(!st)return checkUpdatesFromUI();
+  if(st.installMode==='web'){
+    try{const regs=await navigator.serviceWorker?.getRegistrations?.();if(regs)await Promise.all(regs.map(r=>r.update().catch(()=>{})));location.reload();}catch{location.reload();}return;
+  }
+  if(st.installMode==='android'){
+    if(st.downloadUrl){try{window.open(st.downloadUrl,'_blank');}catch{location.href=st.downloadUrl;}}return;
+  }
+  if(!window.electronAPI?.downloadUpdate)return;
+  try{const next=await window.electronAPI.downloadUpdate();renderUpdateState(next);}
+  catch(error){renderUpdateState({...st,status:'error',error:String(error?.message||error||'Falha ao baixar atualização.')});}
+}
+
 async function installDesktopUpdate(){
   if(!window.electronAPI?.installUpdate)return;
-  const btn=$('#installUpdateBtn');if(btn){btn.disabled=true;btn.textContent='Reiniciando...';}
+  const btn=$('#installUpdateBtn');if(btn){btn.disabled=true;btn.textContent='Criando backup...';}
   try{await window.electronAPI.installUpdate();}catch{if(btn){btn.disabled=false;btn.textContent='Reiniciar e instalar';}}
 }
+
+async function toggleInstallOnExit(){
+  if(!window.electronAPI?.setInstallOnExit||desktopUpdateState?.status!=='downloaded')return;
+  try{const next=await window.electronAPI.setInstallOnExit(!desktopUpdateState.installOnExit);renderUpdateState(next);}catch{}
+}
+
 function maybeShowUpdateNotice(){
-  if(desktopUpdateState?.status==='available'&&!updateDismissed)openUpdateModal(false);
-  else if(desktopUpdateState?.status==='downloaded')openUpdateModal(false);
+  const st=desktopUpdateState;if(!st||st.status!=='available')return;
+  const latest=normalizeClientVersion(st.latestVersion);if(!latest||persistentGet(UPDATE_NOTICE_KEY)===latest)return;
+  persistentSet(UPDATE_NOTICE_KEY,latest);$('#updateModal')?.classList.remove('hidden');
 }
 
 let splashTimer=null;
