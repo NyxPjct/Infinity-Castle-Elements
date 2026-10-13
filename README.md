@@ -2,7 +2,7 @@
 
 **Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer cooperativo, **Modo Caos para 4 jogadores online**, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
 
-A versão **INSANITY 0.0.7 — Visual Experience Update** leva o polimento visual do jogo para a interface e para o momento a momento do gameplay, com HUD dark-fantasy, câmera dinâmica, VFX elementais reforçados, mortes e bosses mais cinematográficos, progressão visual da torre, pós-processamento, inimigos regionais e tratamento especial para a fase 1000. Todos os sistemas introduzidos na 0.0.6 continuam presentes.
+A versão **INSANITY 0.0.7 — Visual Experience Update** leva o polimento visual do jogo para a interface e para o momento a momento do gameplay, com HUD dark-fantasy, câmera dinâmica, VFX elementais reforçados, mortes e bosses mais cinematográficos, progressão visual da torre, pós-processamento, inimigos regionais e tratamento especial para a fase 1000. A própria 0.0.7 também inclui uma nova **Central de Atualizações** integrada ao menu, com histórico, download retomável, verificação SHA-256, backup automático, instalação ao sair e protocolo multiplayer versionado. Todos os sistemas introduzidos na 0.0.6 continuam presentes.
 
 **Versão atual do jogo:** `0.0.7`
 
@@ -230,6 +230,36 @@ A atualização visual não altera:
 - Multiplayer de 2 jogadores;
 - Modo Caos de 4 jogadores;
 - sincronização das armadilhas.
+
+### ⬇ Central de Atualizações
+
+A própria versão **0.0.7** recebeu uma reformulação completa do sistema de atualização.
+
+- **Atualizações foi removido de Configurações** e agora aparece como uma opção própria no menu principal;
+- quando existe uma nova versão, a Central aparece automaticamente **uma única vez por versão**, sem interromper toda vez que o jogador retorna ao menu;
+- a tela mostra **versão instalada → versão disponível**, tamanho do arquivo, estado do download e as novidades da release;
+- as notas publicadas no GitHub são organizadas dentro do jogo em categorias como **Novo, Visual, Multiplayer e Correções**;
+- adicionada uma área de **Histórico de atualizações** com as releases recentes;
+- o download do desktop pode continuar **em segundo plano** enquanto o jogador fecha a Central e volta a jogar;
+- downloads interrompidos podem ser **retomados** sem começar novamente do zero;
+- quando o GitHub fornece o digest oficial, o jogo valida o arquivo com **SHA-256** antes da instalação;
+- antes de instalar, o desktop cria um **backup automático dos saves, perfil e configurações locais**;
+- o instalador oferece **Reiniciar e instalar** ou **Instalar ao sair**;
+- a versão **Portable** agora é baixada dentro do jogo e substituída com uma cópia de segurança do executável anterior;
+- após uma atualização concluída, o jogo pode mostrar uma tela única de **Bem-vindo à nova versão** com as principais mudanças;
+- a versão **Web** atualiza o service worker e recarrega os arquivos novos;
+- no **Android**, a Central direciona para o APK oficial publicado na release;
+- o formato dos saves passou a possuir um **schema versionado**, permitindo migrações automáticas em versões futuras.
+
+### ⚡ Compatibilidade de versão no multiplayer
+
+A versão do jogo e a compatibilidade online agora são tratadas separadamente.
+
+- o multiplayer utiliza um **protocolo próprio**, independente do número visual da versão;
+- clientes com protocolo antigo recebem **UPDATE_REQUIRED** em vez de entrar em uma sala incompatível;
+- quando o servidor exige uma atualização, a Central de Atualizações é aberta para o jogador;
+- o bloqueio afeta apenas os modos online incompatíveis: o **Singleplayer continua disponível**;
+- o teste oficial do Modo Caos também valida que clientes com protocolo antigo sejam rejeitados corretamente.
 
 ### ✅ Validação da 0.0.7
 
@@ -650,7 +680,7 @@ Na versão atual **INSANITY 0.0.7 — Visual Experience Update**, a apresentaç�
 
 1. tela preta da **NYX PROJECT R**, com a coruja roxa de olhos vermelhos e a assinatura **Apresenta:**;
 2. tela cinematográfica de **INFINITY CASTLE ELEMENTS — INSANITY**, apresentando os quatro elementos diante do castelo e preparando a atmosfera de fantasia sombria da campanha;
-3. menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações, Crônicas do Castelo e Sair**. A **Loja Arcana** continua disponível dentro do jogo.
+3. menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações, Crônicas do Castelo, Atualizações e Sair**. A **Loja Arcana** continua disponível dentro do jogo.
 
 A identidade visual atual combina os sistemas da 0.0.6 com o polimento de apresentação da **0.0.7**:
 
@@ -659,6 +689,7 @@ A identidade visual atual combina os sistemas da 0.0.6 com o polimento de aprese
 - **Crônicas do Castelo**, reunindo conquistas, relíquias, fragmentos de lore, estatísticas e melhor rank alcançado;
 - **Fases Coringa, anomalias, Perseguidor e fase 666** integrados à identidade visual e narrativa do castelo.
 - **Visual Experience Update 0.0.7**, com HUD cinematográfica, câmera dinâmica, VFX reforçados, bosses e mortes cinematográficos, progresso visual da torre e tratamento especial da fase 1000.
+- **Update Hub Overhaul 0.0.7**, com Central de Atualizações própria, histórico de versões, downloads retomáveis, verificação SHA-256, backup automático, instalação ao sair e protocolo multiplayer versionado.
 
 Na versão desktop, **Sair** fecha o jogo diretamente.
 

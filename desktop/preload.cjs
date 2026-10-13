@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
   desktop: true,
   version: ipcRenderer.sendSync('ice:get-app-version'),
+  wasUpdated: process.argv.includes('--updated'),
   installMode: ipcRenderer.sendSync('ice:get-install-mode'),
   multiplayerUrl: ipcRenderer.sendSync('ice:get-multiplayer-url'),
   quit: () => ipcRenderer.send('ice:quit'),
@@ -18,6 +19,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   checkForUpdates: () => ipcRenderer.invoke('ice:check-for-updates'),
   downloadUpdate: () => ipcRenderer.invoke('ice:download-update'),
   installUpdate: () => ipcRenderer.invoke('ice:install-update'),
+  setInstallOnExit: (enabled) => ipcRenderer.invoke('ice:set-install-on-exit', enabled),
   onUpdateState: (callback) => {
     const handler = (_event, state) => callback(state);
     ipcRenderer.on('ice:update-state', handler);

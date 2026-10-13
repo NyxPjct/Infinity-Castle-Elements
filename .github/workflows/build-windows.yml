@@ -101,8 +101,8 @@ jobs:
           $title = "Infinity Castle Elements — INSANITY $env:ICE_VERSION"
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -ne 0) {
-            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "$title" --generate-notes
+            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "$title" --notes-file "RELEASE_NOTES.md"
           } else {
-            gh release edit $tag --repo $env:GITHUB_REPOSITORY --title "$title"
+            gh release edit $tag --repo $env:GITHUB_REPOSITORY --title "$title" --notes-file "RELEASE_NOTES.md"
           }
           gh release upload $tag "dist/Infinity-Castle-Elements-Setup-$env:ICE_VERSION.exe" "dist/Infinity-Castle-Elements-Portable-$env:ICE_VERSION.exe" "dist/Infinity-Castle-Elements-Windows-$env:ICE_VERSION.zip" --repo $env:GITHUB_REPOSITORY --clobber

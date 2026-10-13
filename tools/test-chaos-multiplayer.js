@@ -1,7 +1,7 @@
 const assert = require('assert/strict');
 const { once } = require('events');
 const { io: createClient } = require('socket.io-client');
-const { server, startServer } = require('../server');
+const { server, startServer, MULTIPLAYER_PROTOCOL } = require('../server');
 
 function eventOnce(socket, event, timeout = 5000) {
   return new Promise((resolve, reject) => {
@@ -79,10 +79,17 @@ async function main() {
     const url = `http://127.0.0.1:${address.port}`;
 
     const earth = await connect(url); clients.push(earth);
+    const legacy = await connect(url); clients.push(legacy);
+    const blocked = await emitAck(legacy, 'create-room', {name:'Legacy',element:'earth',mode:'multiplayer',protocol:MULTIPLAYER_PROTOCOL-1});
+    assert.equal(blocked.ok,false);
+    assert.equal(blocked.code,'UPDATE_REQUIRED');
+    legacy.close();clients.splice(clients.indexOf(legacy),1);
+
     const created = await emitAck(earth, 'create-room', {
       name: 'Earth',
       element: 'earth',
-      mode: 'chaos'
+      mode: 'chaos',
+      protocol: MULTIPLAYER_PROTOCOL
     });
     assert.equal(created.ok, true);
     assert.equal(created.mode, 'chaos');
@@ -96,7 +103,8 @@ async function main() {
       code,
       name: 'Duplicate Earth',
       element: 'earth',
-      mode: 'chaos'
+      mode: 'chaos',
+      protocol: MULTIPLAYER_PROTOCOL
     });
     assert.equal(duplicateJoin.ok, false);
     assert.match(duplicateJoin.error, /elemento.*ocupado/i);
@@ -108,9 +116,9 @@ async function main() {
     const darkness = await connect(url); clients.push(darkness);
 
     const joins = await Promise.all([
-      emitAck(air, 'join-room', { code, name: 'Air', element: 'air', mode: 'chaos' }),
-      emitAck(light, 'join-room', { code, name: 'Light', element: 'light', mode: 'chaos' }),
-      emitAck(darkness, 'join-room', { code, name: 'Darkness', element: 'darkness', mode: 'chaos' })
+      emitAck(air, 'join-room', { code, name: 'Air', element: 'air', mode: 'chaos', protocol: MULTIPLAYER_PROTOCOL }),
+      emitAck(light, 'join-room', { code, name: 'Light', element: 'light', mode: 'chaos', protocol: MULTIPLAYER_PROTOCOL }),
+      emitAck(darkness, 'join-room', { code, name: 'Darkness', element: 'darkness', mode: 'chaos', protocol: MULTIPLAYER_PROTOCOL })
     ]);
     for (const joined of joins) {
       assert.equal(joined.ok, true);
@@ -174,7 +182,8 @@ async function main() {
     const multiCreated = await emitAck(multiA, 'create-room', {
       name: 'Multi A',
       element: 'earth',
-      mode: 'multiplayer'
+      mode: 'multiplayer',
+      protocol: MULTIPLAYER_PROTOCOL
     });
     assert.equal(multiCreated.ok, true);
     assert.equal(multiCreated.mode, 'multiplayer');
@@ -185,7 +194,8 @@ async function main() {
       code: multiCreated.code,
       name: 'Multi B',
       element: 'air',
-      mode: 'multiplayer'
+      mode: 'multiplayer',
+      protocol: MULTIPLAYER_PROTOCOL
     });
     assert.equal(multiJoin.ok, true);
 
