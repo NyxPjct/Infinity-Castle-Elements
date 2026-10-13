@@ -1,4 +1,8 @@
 const APP_VERSION = String(window.electronAPI?.version || window.ICE_APP_VERSION || '0.0.7').trim() || '0.0.7';
+const MULTIPLAYER_PROTOCOL = 2;
+const UPDATE_NOTICE_KEY = 'infinity-castle-elements-update-notified-v1';
+const PUBLIC_UPDATE_API = 'https://api.github.com/repos/NyxPjct/Infinity-Castle-Elements/releases/latest';
+const PUBLIC_UPDATE_HISTORY_API = 'https://api.github.com/repos/NyxPjct/Infinity-Castle-Elements/releases?per_page=8';
 const DEFAULT_MULTIPLAYER_SERVER_URL = 'https://infinity-castle-elements-server-production.up.railway.app';
 const MULTIPLAYER_SERVER_URL = String(window.electronAPI?.multiplayerUrl || window.ICE_MULTIPLAYER_SERVER_URL || DEFAULT_MULTIPLAYER_SERVER_URL).trim();
 function createOfflineSocket(){
