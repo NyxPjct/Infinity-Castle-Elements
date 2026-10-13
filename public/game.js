@@ -118,6 +118,17 @@ function setConnectionStatus(online){
 }
 socket.on('connect', () => setConnectionStatus(true));
 socket.on('disconnect', () => setConnectionStatus(false));
+socket.on('protocol-info', info => {
+  const serverProtocol=Number(info?.protocolVersion)||0;
+  if(serverProtocol&&serverProtocol!==MULTIPLAYER_PROTOCOL){
+    for(const id of ['#connectionPill','#menuConnectionPill']){
+      const el=$(id);if(!el)continue;el.textContent='● Atualização exigida';el.style.color='#ff7893';
+    }
+    const status=$('#menuUpdatesStatus');if(status)status.textContent='Atualização exigida para o multiplayer';
+    $('#menuUpdatesBtn')?.classList.add('update-error');
+    setTimeout(()=>checkUpdatesFromUI(true).then(()=>openUpdateModal(false)).catch(()=>{}),250);
+  }
+});
 
 document.querySelectorAll('.character-choice').forEach(btn=>btn.addEventListener('click',()=>selectElement(btn.dataset.element)));
 
