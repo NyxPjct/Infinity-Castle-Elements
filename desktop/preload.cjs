@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   checkForUpdates: () => ipcRenderer.invoke('ice:check-for-updates'),
   downloadUpdate: () => ipcRenderer.invoke('ice:download-update'),
   installUpdate: () => ipcRenderer.invoke('ice:install-update'),
+  setInstallOnExit: (enabled) => ipcRenderer.invoke('ice:set-install-on-exit', enabled),
   onUpdateState: (callback) => {
     const handler = (_event, state) => callback(state);
     ipcRenderer.on('ice:update-state', handler);
