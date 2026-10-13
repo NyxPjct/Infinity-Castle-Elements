@@ -89,6 +89,7 @@ const MULTI_SAVE_KEY = 'infinity-castle-elements-multiplayer-v1';
 const CHAOS_SAVE_KEY = 'infinity-castle-elements-chaos-v1';
 const LEGACY_SOLO_SAVE_KEY = 'terra-ar-castelo-infinito-solo-v1';
 const PROFILE_KEY = 'infinity-castle-elements-profile-v1';
+const SAVE_SCHEMA_VERSION = 2;
 
 function persistentGet(key){
   try{
@@ -509,6 +510,7 @@ function playerName(){
 }
 
 function defaultProfile(){return {
+  schemaVersion:SAVE_SCHEMA_VERSION,
   coins:25,selectedRole:'earth',
   boosts:{shield:0,speed:0,jump:0},
   owned:{crown:false,aura:false},
@@ -533,7 +535,8 @@ function applyInterfaceLanguage(){
 function loadProfile(){
   try{
     const raw=JSON.parse(persistentGet(PROFILE_KEY)||'null'),base=defaultProfile();if(!raw)return base;
-    return {...base,...raw,
+    const migrated={...base,...raw,
+      schemaVersion:SAVE_SCHEMA_VERSION,
       boosts:{...base.boosts,...(raw.boosts||{})},
       owned:{...base.owned,...(raw.owned||{})},
       settings:{...base.settings,...(raw.settings||{})},
@@ -542,10 +545,12 @@ function loadProfile(){
       lore:Array.isArray(raw.lore)?raw.lore:[],
       stats:{...base.stats,...(raw.stats||{})}
     };
+    if(Number(raw.schemaVersion||1)!==SAVE_SCHEMA_VERSION)persistentSet(PROFILE_KEY,JSON.stringify(migrated));
+    return migrated;
   }catch{return defaultProfile();}
 }
 let profile=loadProfile();
-function saveProfile(){profile.selectedRole=state.selectedRole;persistentSet(PROFILE_KEY,JSON.stringify(profile));refreshEconomyUI();applySettings();}
+function saveProfile(){profile.schemaVersion=SAVE_SCHEMA_VERSION;profile.selectedRole=state.selectedRole;persistentSet(PROFILE_KEY,JSON.stringify(profile));refreshEconomyUI();applySettings();}
 function addCoins(n){
   const mult=profile.relics?.active==='greedEye'?1.25:1;
   profile.coins=Math.max(0,(profile.coins||0)+Math.max(0,Math.floor(n*mult)));saveProfile();
@@ -973,17 +978,23 @@ if(typeof window!=='undefined'&&window.electronAPI?.getUpdateState){
 }
 if(typeof location!=='undefined'&&new URLSearchParams(location.search).has('menu'))showMainMenu();else splashTimer=setTimeout(showTitleScreen,2850);
 
+function migrateCampaignSave(save,key){
+  if(!save||typeof save!=='object')return null;
+  const migrated={...save,schemaVersion:SAVE_SCHEMA_VERSION,level:Math.max(1,Math.min(1000,Number(save.level)||1)),deaths:Math.max(0,Number(save.deaths)||0),role:ELEMENTS[save.role]?save.role:'earth'};
+  if(Number(save.schemaVersion||1)!==SAVE_SCHEMA_VERSION)persistentSet(key,JSON.stringify(migrated));
+  return migrated;
+}
 function loadSoloSave(){
   try{
-    const current=JSON.parse(persistentGet(SOLO_SAVE_KEY)||'null');if(current)return current;
+    const current=JSON.parse(persistentGet(SOLO_SAVE_KEY)||'null');if(current)return migrateCampaignSave(current,SOLO_SAVE_KEY);
     const legacy=JSON.parse(persistentGet(LEGACY_SOLO_SAVE_KEY)||'null');
-    if(legacy){const migrated={...legacy,role:legacy.role||'earth'};persistentSet(SOLO_SAVE_KEY,JSON.stringify(migrated));return migrated;}
+    if(legacy){const migrated=migrateCampaignSave({...legacy,role:legacy.role||'earth'},SOLO_SAVE_KEY);persistentSet(SOLO_SAVE_KEY,JSON.stringify(migrated));return migrated;}
     return null;
   }catch{return null;}
 }
 function saveSoloProgress(completed=false){
   if(state.mode!=='singleplayer')return;
-  persistentSet(SOLO_SAVE_KEY,JSON.stringify({level:state.level,deaths:state.deaths,role:state.role,completed,updatedAt:Date.now()}));
+  persistentSet(SOLO_SAVE_KEY,JSON.stringify({schemaVersion:SAVE_SCHEMA_VERSION,level:state.level,deaths:state.deaths,role:state.role,completed,updatedAt:Date.now()}));
   refreshSoloSaveButton();refreshMenuVisualProgress();
 }
 function refreshSoloSaveButton(){
@@ -996,11 +1007,12 @@ function refreshSoloSaveButton(){
   }else btn.classList.add('hidden');
 }
 function loadMultiplayerSave(){
-  try{return JSON.parse(persistentGet(MULTI_SAVE_KEY)||'null');}catch{return null;}
+  try{return migrateCampaignSave(JSON.parse(persistentGet(MULTI_SAVE_KEY)||'null'),MULTI_SAVE_KEY);}catch{return null;}
 }
 function saveMultiplayerProgress(completed=false){
   if(state.mode!=='multiplayer')return;
   const payload={
+    schemaVersion:SAVE_SCHEMA_VERSION,
     level:Math.max(1,Math.min(1000,Number(state.level)||1)),
     deaths:Math.max(0,Number(state.deaths)||0),
     role:ELEMENTS[state.role]?state.role:state.selectedRole,
@@ -1021,11 +1033,12 @@ function refreshMultiplayerSaveButton(){
   }else btn.classList.add('hidden');
 }
 function loadChaosSave(){
-  try{return JSON.parse(persistentGet(CHAOS_SAVE_KEY)||'null');}catch{return null;}
+  try{return migrateCampaignSave(JSON.parse(persistentGet(CHAOS_SAVE_KEY)||'null'),CHAOS_SAVE_KEY);}catch{return null;}
 }
 function saveChaosProgress(completed=false){
   if(state.mode!=='chaos')return;
   const payload={
+    schemaVersion:SAVE_SCHEMA_VERSION,
     level:Math.max(1,Math.min(1000,Number(state.level)||1)),
     deaths:Math.max(0,Number(state.deaths)||0),
     role:ELEMENTS[state.role]?state.role:state.selectedRole,
