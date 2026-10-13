@@ -415,6 +415,7 @@ $('#menuMultiBtn').onclick=()=>{closeShop();showSetup('multiplayer');};
 $('#menuChaosBtn').onclick=()=>{closeShop();showSetup('chaos');};
 $('#menuSettingsBtn').onclick=()=>openSettings();
 if($('#menuChronicleBtn'))$('#menuChronicleBtn').onclick=openChronicle;
+if($('#menuUpdatesBtn'))$('#menuUpdatesBtn').onclick=()=>{openUpdateModal(true);checkUpdatesFromUI(true);};
 if($('#closeChronicleBtn'))$('#closeChronicleBtn').onclick=closeChronicle;
 $('#chronicleModal')?.addEventListener('click',e=>{if(e.target?.id==='chronicleModal')closeChronicle();});
 $('#menuExitBtn').onclick=showExitScreen;
@@ -427,6 +428,8 @@ addEventListener('keydown',e=>{
   if((e.key==='Enter'||e.key===' ')&&studioSplash&&!studioSplash.classList.contains('hidden')){e.preventDefault();showTitleScreen();return;}
   if(e.key==='Enter'&&titleScreen&&!titleScreen.classList.contains('hidden')){e.preventDefault();showMainMenu();return;}
   if(e.key==='Escape'){
+    const updateOpen=!$('#updateModal')?.classList.contains('hidden');
+    if(updateOpen){e.preventDefault();closeUpdateModal();return;}
     const chronicleOpen=!$('#chronicleModal')?.classList.contains('hidden');
     if(chronicleOpen){e.preventDefault();closeChronicle();return;}
     const settingsOpen=!$('#settingsModal')?.classList.contains('hidden');
@@ -437,12 +440,12 @@ addEventListener('keydown',e=>{
 });
 $('#soloBtn').onclick = () => startSolo(false);
 $('#continueSoloBtn').onclick = () => startSolo(true);
-$('#createBtn').onclick = () => { state.mode='multiplayer'; socket.emit('create-room', { name: playerName(), element: state.selectedRole, mode:'multiplayer' }, handleJoin); };
+$('#createBtn').onclick = () => { state.mode='multiplayer'; socket.emit('create-room', { name: playerName(), element: state.selectedRole, mode:'multiplayer', protocol:MULTIPLAYER_PROTOCOL }, handleJoin); };
 $('#continueMultiBtn').onclick = continueMultiplayer;
-$('#joinBtn').onclick = () => { state.mode='multiplayer'; socket.emit('join-room', { code: $('#roomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'multiplayer' }, handleJoin); };
-$('#createChaosBtn').onclick = () => { state.mode='chaos'; socket.emit('create-room', { name: playerName(), element: state.selectedRole, mode:'chaos' }, handleJoin); };
+$('#joinBtn').onclick = () => { state.mode='multiplayer'; socket.emit('join-room', { code: $('#roomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'multiplayer', protocol:MULTIPLAYER_PROTOCOL }, handleJoin); };
+$('#createChaosBtn').onclick = () => { state.mode='chaos'; socket.emit('create-room', { name: playerName(), element: state.selectedRole, mode:'chaos', protocol:MULTIPLAYER_PROTOCOL }, handleJoin); };
 $('#continueChaosBtn').onclick = continueChaos;
-$('#joinChaosBtn').onclick = () => { state.mode='chaos'; socket.emit('join-room', { code: $('#chaosRoomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'chaos' }, handleJoin); };
+$('#joinChaosBtn').onclick = () => { state.mode='chaos'; socket.emit('join-room', { code: $('#chaosRoomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'chaos', protocol:MULTIPLAYER_PROTOCOL }, handleJoin); };
 $('#roomCodeInput').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
 $('#chaosRoomCodeInput').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
 $('#copyCode').onclick = async () => { try { await navigator.clipboard.writeText(state.roomCode); $('#copyCode').textContent='Copiado!'; setTimeout(()=>$('#copyCode').textContent='Copiar código',900); } catch{} };
@@ -929,12 +932,12 @@ function closeSettings(restorePause=true){
   state.settingsFromPause=false;
 }
 $('#closeSettingsBtn').onclick=()=>closeSettings();
-$('#checkUpdatesBtn').onclick=checkUpdatesFromUI;
-$('#menuUpdateBadge').onclick=()=>openUpdateModal(true);
-$('#closeUpdateBtn').onclick=closeUpdateModal;
-$('#updateLaterBtn').onclick=closeUpdateModal;
-$('#updateNowBtn').onclick=downloadDesktopUpdate;
-$('#installUpdateBtn').onclick=installDesktopUpdate;
+if($('#checkUpdatesBtn'))$('#checkUpdatesBtn').onclick=()=>checkUpdatesFromUI(false);
+if($('#closeUpdateBtn'))$('#closeUpdateBtn').onclick=closeUpdateModal;
+if($('#updateNowBtn'))$('#updateNowBtn').onclick=downloadDesktopUpdate;
+if($('#installUpdateBtn'))$('#installUpdateBtn').onclick=installDesktopUpdate;
+if($('#installOnExitBtn'))$('#installOnExitBtn').onclick=toggleInstallOnExit;
+$('#updateModal')?.addEventListener('click',e=>{if(e.target?.id==='updateModal')closeUpdateModal();});
 $('#settingScreenShake').addEventListener('change',e=>{profile.settings.screenShake=!!e.target.checked;saveProfile();});
 $('#settingReducedMotion').addEventListener('change',e=>{profile.settings.reducedMotion=!!e.target.checked;saveProfile();});
 $('#settingResolution').addEventListener('change',async e=>{profile.settings.resolution=e.target.value;saveProfile();await applyResolutionSetting(e.target.value);});
@@ -955,7 +958,7 @@ if(typeof window!=='undefined'&&window.electronAPI?.getUpdateState){
     window.electronAPI.getUpdateState().then(renderUpdateState).catch(()=>{});
   }catch{}
 }else{
-  const updateRow=$('#checkUpdatesBtn')?.closest?.('.setting-row');if(updateRow)updateRow.classList.add('hidden');
+  setTimeout(()=>checkUpdatesFromUI(true).catch(()=>{}),3500);
 }
 if(typeof location!=='undefined'&&new URLSearchParams(location.search).has('menu'))showMainMenu();else splashTimer=setTimeout(showTitleScreen,2850);
 
@@ -1051,6 +1054,7 @@ function continueMultiplayer(){
     name:playerName()||save.name||'Jogador',
     element:state.selectedRole,
     mode:'multiplayer',
+    protocol:MULTIPLAYER_PROTOCOL,
     resumeLevel:Math.max(1,Math.min(1000,Number(save.level)||1)),
     resumeDeaths:Math.max(0,Number(save.deaths)||0)
   },handleJoin);
@@ -1063,6 +1067,7 @@ function continueChaos(){
     name:playerName()||save.name||'Jogador',
     element:ELEMENTS[save.role]?save.role:state.selectedRole,
     mode:'chaos',
+    protocol:MULTIPLAYER_PROTOCOL,
     resumeLevel:Math.max(1,Math.min(1000,Number(save.level)||1)),
     resumeDeaths:Math.max(0,Number(save.deaths)||0)
   },handleJoin);
@@ -1076,7 +1081,11 @@ function restartGame(){
 }
 refreshSoloSaveButton();refreshMultiplayerSaveButton();
 function handleJoin(res){
-  if(!res?.ok){ $('#errorText').textContent = res?.error || 'Não foi possível entrar.'; return; }
+  if(!res?.ok){
+    $('#errorText').textContent = res?.error || 'Não foi possível entrar.';
+    if(res?.code==='UPDATE_REQUIRED')checkUpdatesFromUI(true).then(()=>openUpdateModal(false));
+    return;
+  }
   state.mode=res.mode==='chaos'?'chaos':'multiplayer';state.id=res.id;state.roomCode=res.code;state.role=res.role;state.slot=res.slot||0;state.level=res.level;state.deaths=Number(res.deaths)||0;state.remotePlayers.clear();
   $('#errorText').textContent='';document.body?.classList.remove('setup-active');document.body?.classList.toggle('chaos-active',state.mode==='chaos');lobby.classList.add('hidden');roomEl.classList.remove('hidden');roomEl.classList.toggle('chaos-room',state.mode==='chaos');$('#backToMenuBtn').style.display='none';
   $('#roomCode').textContent=res.code;
