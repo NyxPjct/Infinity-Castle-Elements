@@ -1233,7 +1233,7 @@ function updateAbilityHud(now=performance.now()){
   if(now<state.abilityCooldownUntil){
     const remaining=Math.max(0,(state.abilityCooldownUntil-now)/1000),effective=rule.cooldown*(activeRelicId()==='chronoglass'?.90:1);
     const pct=Math.max(0,Math.min(100,100*(1-(state.abilityCooldownUntil-now)/effective)));
-    hud.classList.add('cooldown');text.textContent=`RECARGA ${remaining.toFixed(1)}s`;bar.style.width=pct+'%';hud.style.setProperty('--ability-progress',pct+'%');return;
+    hud.classList.add('cooldown');text.textContent=`RECARGA ${remaining.toFixed(1)}s`;bar.style.width=pct+'%';setCssVariable(hud,'--ability-progress',pct+'%');return;
   }
   hud.classList.add('ready');text.textContent='PODER PRONTO';bar.style.width='100%';setCssVariable(hud,'--ability-progress','100%');
 }
