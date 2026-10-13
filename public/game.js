@@ -599,7 +599,11 @@ function drawPursuer(){
 }
 function drawSecretRoom(){
   const sr=state.levelData?.secretRoom;if(!sr||state.trapState.get(sr.key))return;
-  ctx.save();const reveal=profile.relics?.active==='seerMark';ctx.globalAlpha=reveal ? .95 : .32;ctx.fillStyle='#100a18';ctx.fillRect(sr.x,sr.y,sr.w,sr.h);ctx.strokeStyle=reveal?'#b67cff':'rgba(180,120,255,.35)';ctx.lineWidth=3;ctx.strokeRect(sr.x,sr.y,sr.w,sr.h);ctx.fillStyle='#d9c4ff';ctx.font='700 18px sans-serif';ctx.fillText('?',sr.x+21,sr.y+42);ctx.restore();
+  const reveal=profile.relics?.active==='seerMark',t=elapsed(),cx=sr.x+sr.w/2,cy=sr.y+sr.h/2;
+  ctx.save();ctx.globalAlpha=reveal?.95:.36;ctx.fillStyle='#100a18';ctx.fillRect(sr.x,sr.y,sr.w,sr.h);ctx.strokeStyle=reveal?'#b67cff':'rgba(180,120,255,.42)';ctx.lineWidth=3;ctx.strokeRect(sr.x,sr.y,sr.w,sr.h);
+  const glow=ctx.createRadialGradient(cx,cy,3,cx,cy,38);glow.addColorStop(0,'rgba(220,175,255,.52)');glow.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(cx,cy,38,0,Math.PI*2);ctx.fill();
+  ctx.translate(cx,cy+Math.sin(t*3)*5);ctx.rotate(t*.45);ctx.fillStyle='#d9c4ff';ctx.shadowBlur=16;ctx.shadowColor='#b67cff';ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(8,0);ctx.lineTo(0,11);ctx.lineTo(-8,0);ctx.closePath();ctx.fill();ctx.shadowBlur=0;
+  ctx.restore();
 }
 function drawV006BackgroundEntities(){
   const ld=state.levelData;if(!ld)return;
@@ -748,7 +752,7 @@ function showDeathCinematic(text){
 }
 function showRankCinematic(result,nextLevel){
   const cls=overlayRankClass(result.rank);state.rankFx={rank:result.rank,until:performance.now()+820};
-  showOverlay('RANK '+result.rank,`${result.time.toFixed(1)}s · ${result.deaths} morte(s) · próxima: fase ${nextLevel}`,780,'rank '+cls,'SALA SUPERADA');
+  showOverlay('RANK '+result.rank,`${result.time.toFixed(1)}s · ${result.deaths} morte(s) · próxima: fase ${nextLevel}`,780,'rank-overlay '+cls,'SALA SUPERADA');
 }
 function beginRegionTransition(){
   state.regionTransitionUntil=performance.now()+760;document.body?.classList.add('region-transition');setTimeout(()=>document.body?.classList.remove('region-transition'),780);
@@ -1275,7 +1279,7 @@ function completeSoloLevel(){
   if(completed%100===0){profile.stats.bosses=(profile.stats.bosses||0)+1;unlockAchievement('firstBoss');}
   if(completed>=1000){
     state.running=false;profile.stats.finished=(profile.stats.finished||0)+1;unlockAchievement('thousand');saveProfile();saveSoloProgress(true);
-    const ending=endingForRun();showOverlay('🏆 1000/1000 · '+ending.name,`${ending.text} · ${ELEMENTS[state.role].name} · ${state.deaths} mortes · rank final ${result.rank}`,0,'rank '+overlayRankClass(result.rank),'O CORAÇÃO DO CASTELO SILENCIOU');triggerVisualGlitch(700);return;
+    const ending=endingForRun();showOverlay('🏆 1000/1000 · '+ending.name,`${ending.text} · ${ELEMENTS[state.role].name} · ${state.deaths} mortes · rank final ${result.rank}`,0,'rank-overlay '+overlayRankClass(result.rank),'O CORAÇÃO DO CASTELO SILENCIOU');triggerVisualGlitch(700);return;
   }
   state.level+=1;saveSoloProgress(false);showRankCinematic(result,state.level);setTimeout(()=>startLevel(state.level),810);
 }
