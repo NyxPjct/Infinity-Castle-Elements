@@ -633,6 +633,7 @@ function maybeCastleComment(){
 }
 
 
+function setCssVariable(el,key,value){if(el?.style?.setProperty)el.style.setProperty(key,value);}
 function savedCampaignLevel(){
   const vals=[];
   try{const a=loadSoloSave?.();if(a?.level)vals.push(Number(a.level));}catch{}
@@ -644,16 +645,16 @@ function refreshMenuVisualProgress(){
   if(!mainMenu)return;
   const level=savedCampaignLevel(),z=castleRegion(level),pct=Math.max(.1,Math.min(100,level/10));
   state.menuProgress=level;
-  mainMenu.style.setProperty('--menu-progress',pct+'%');
-  mainMenu.dataset.progressStage=level>=900?'abyss':level>=666?'corrupt':level>=350?'mid':'early';
+  setCssVariable(mainMenu,'--menu-progress',pct+'%');
+  if(mainMenu.dataset)mainMenu.dataset.progressStage=level>=900?'abyss':level>=666?'corrupt':level>=350?'mid':'early';
   const lv=$('#menuProgressLevel'),rg=$('#menuProgressRegion'),cs=$('#menuCastleState');
   if(lv)lv.textContent=level;if(rg)rg.textContent=z.name;
   if(cs)cs.textContent=level>=900?'O CASTELO ESTÁ DESMORONANDO':level>=666?'ELE JÁ SABE SEU NOME':level>=350?'O CASTELO ESTÁ APRENDENDO':'O CASTELO DESPERTOU';
 }
 function syncVisualTheme(){
   const e=ELEMENTS[state.role]||ELEMENTS.earth,z=castleRegion(state.level),root=document.documentElement;
-  root?.style.setProperty('--v007-element',e.color);root?.style.setProperty('--v007-region',z.accent||'#b89363');
-  root?.style.setProperty('--v007-progress',Math.max(.1,Math.min(100,state.level/10))+'%');
+  setCssVariable(root,'--v007-element',e.color);setCssVariable(root,'--v007-region',z.accent||'#b89363');
+  setCssVariable(root,'--v007-progress',Math.max(.1,Math.min(100,state.level/10))+'%');
   document.body?.classList.toggle('phase-1000',state.level===1000);
   for(let i=0;i<10;i++)document.body?.classList.toggle('region-'+i,z.index===i);
   const ri=$('#hudTowerRegion');if(ri)ri.textContent=(z.index+1)+'/10';
@@ -765,7 +766,7 @@ function selectElement(role){
   if(!ELEMENTS[role])return;state.selectedRole=role;profile.selectedRole=role;saveProfile();
   document.querySelectorAll('.character-choice').forEach(b=>b.classList.toggle('selected',b.dataset.element===role));
   const e=ELEMENTS[role];$('#selectedElementIcon').textContent=e.icon;$('#selectedElementName').textContent=e.name;
-  document.documentElement?.style.setProperty('--v007-element',e.color);updateMenuSelectionFx(role);
+  setCssVariable(document.documentElement,'--v007-element',e.color);updateMenuSelectionFx(role);
 }
 function applyAttemptBoosts(){
   state.activeBoosts={shield:false,speed:false,jump:false};
@@ -1223,18 +1224,18 @@ function processAbilityCombat(now=performance.now(),force=false){
 function updateAbilityHud(now=performance.now()){
   const hud=$('#abilityHud'),text=$('#abilityHudText'),bar=$('#abilityCooldownBar'),icon=$('#abilityHudIcon');if(!hud||!text||!bar)return;
   const rule=ABILITY_RULES[state.role]||ABILITY_RULES.earth,e=ELEMENTS[state.role]||ELEMENTS.earth;
-  if(icon)icon.textContent=e.icon;hud.style.setProperty('--v007-element',e.color);
+  if(icon)icon.textContent=e.icon;setCssVariable(hud,'--v007-element',e.color);
   hud.classList.remove('ready','active','cooldown');
   if(now<state.abilityUntil){
     const remaining=Math.max(0,(state.abilityUntil-now)/1000),pct=Math.max(0,100*(state.abilityUntil-now)/rule.duration);
-    hud.classList.add('active');text.textContent=`${rule.label} ${remaining.toFixed(1)}s`;bar.style.width=pct+'%';hud.style.setProperty('--ability-progress',pct+'%');return;
+    hud.classList.add('active');text.textContent=`${rule.label} ${remaining.toFixed(1)}s`;bar.style.width=pct+'%';setCssVariable(hud,'--ability-progress',pct+'%');return;
   }
   if(now<state.abilityCooldownUntil){
     const remaining=Math.max(0,(state.abilityCooldownUntil-now)/1000),effective=rule.cooldown*(activeRelicId()==='chronoglass'?.90:1);
     const pct=Math.max(0,Math.min(100,100*(1-(state.abilityCooldownUntil-now)/effective)));
     hud.classList.add('cooldown');text.textContent=`RECARGA ${remaining.toFixed(1)}s`;bar.style.width=pct+'%';hud.style.setProperty('--ability-progress',pct+'%');return;
   }
-  hud.classList.add('ready');text.textContent='PODER PRONTO';bar.style.width='100%';hud.style.setProperty('--ability-progress','100%');
+  hud.classList.add('ready');text.textContent='PODER PRONTO';bar.style.width='100%';setCssVariable(hud,'--ability-progress','100%');
 }
 
 const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,facing:1,landedAt:0,
