@@ -1,8 +1,8 @@
 {
   "name": "infinity-castle-elements",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
-  "description": "Infinity Castle Elements — INSANITY 0.0.6. Coringas avançadas, anomalias, Perseguidor, fase 666, relíquias, conquistas, ranking, replay de morte e finais alternativos.",
+  "description": "Infinity Castle Elements — INSANITY 0.0.7. Visual Experience Update: HUD cinematográfico, VFX elementais, câmera dinâmica, bosses, morte, progressão visual e polimento do castelo.",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",

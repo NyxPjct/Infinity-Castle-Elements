@@ -62,11 +62,15 @@
           <button id="menuChronicleBtn" class="menu-choice chronicle-choice"><span class="menu-index">05</span><span><b>Crônicas do Castelo</b><small>Conquistas, relíquias, fragmentos e estatísticas.</small></span><em>◈</em></button>
           <button id="menuExitBtn" class="menu-choice danger-choice"><span class="menu-index">06</span><span><b>Sair</b><small>Fuja enquanto ainda consegue.</small></span><em>›</em></button>
         </nav>
-        <div class="menu-footer"><span id="menuConnectionPill">● Conectando</span><button id="menuUpdateBadge" class="menu-update-badge hidden" type="button">⬇ Atualização disponível</button><span>INSANITY <b data-app-version>0.0.6</b></span></div>
+        <div class="menu-footer"><span id="menuConnectionPill">● Conectando</span><button id="menuUpdateBadge" class="menu-update-badge hidden" type="button">⬇ Atualização disponível</button><span>INSANITY <b data-app-version>0.0.7</b></span></div>
       </aside>
       <div class="menu-story-card">
-        <p>O CASTELO DESPERTOU</p>
+        <p id="menuCastleState">O CASTELO DESPERTOU</p>
         <h2>Escolha seu elemento.<br>Aprenda cada morte.<br><em>Não confie em nada.</em></h2>
+        <div class="menu-progress-card">
+          <div><small>PROGRESSO DA TORRE</small><b>FASE <span id="menuProgressLevel">1</span> / 1000</b><em id="menuProgressRegion">PORTÃO E PÁTIO REAL</em></div>
+          <div class="menu-tower-track"><i id="menuProgressFill"></i><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
         <div class="menu-elements"><span>🪨 TERRA</span><span>💨 AR</span><span>☀️ LUZ</span><span>🌑 ESCURIDÃO</span></div>
       </div>
     </div>
@@ -85,7 +89,7 @@
         <div class="brand-mark">✦</div>
         <div>
           <h1>INFINITY CASTLE <span>ELEMENTS</span></h1>
-          <p>INSANITY <span data-app-version>0.0.6</span> · 1000 FASES · SOLO · CO-OP · MODO CAOS 4P</p>
+          <p>INSANITY <span data-app-version>0.0.7</span> · 1000 FASES · SOLO · CO-OP · MODO CAOS 4P</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -206,28 +210,36 @@
     </section>
 
     <section id="gameWrap" class="game-wrap hidden">
-      <div class="hud">
+      <div class="hud hud-v007">
         <div class="hud-left">
-          <span id="hudRole">🪨 TERRA</span>
-          <span>FASE <b id="hudLevel">1</b>/1000</span>
-          <span>MORTES <b id="hudDeaths">0</b></span>
-          <span class="coin-hud">🪙 <b id="hudCoins">0</b></span>
+          <div id="hudElementSigil" class="hud-element-sigil"><span id="hudElementIcon">🪨</span></div>
+          <div class="hud-identity"><span id="hudRole">🪨 TERRA</span><small id="hudRelic">SEM RELÍQUIA</small></div>
+          <div class="hud-stat"><small>FASE</small><b><span id="hudLevel">1</span><em>/1000</em></b></div>
+          <div class="hud-stat"><small>MORTES</small><b id="hudDeaths">0</b></div>
+          <div class="hud-stat coin-hud"><small>MOEDAS</small><b>🪙 <span id="hudCoins">0</span></b></div>
+        </div>
+        <div class="hud-center">
+          <div class="tower-mini" title="Progresso no Castelo">
+            <span>TORRE</span><i><em id="hudTowerProgress"></em></i><b id="hudTowerRegion">1/10</b>
+          </div>
         </div>
         <div class="hud-right">
-          <span id="abilityHud" class="ability-hud ready" title="Espaço = habilidade elemental">
-            <b>ESPAÇO</b>
-            <span id="abilityHudText">PODER PRONTO</span>
+          <span id="abilityHud" class="ability-hud ability-orb-hud ready" title="Espaço = habilidade elemental">
+            <span class="ability-orb"><span id="abilityHudIcon">✦</span></span>
+            <span class="ability-copy"><b>ESPAÇO</b><span id="abilityHudText">PODER PRONTO</span></span>
             <i><em id="abilityCooldownBar"></em></i>
           </span>
-          <span id="chaosHudBadge" class="chaos-hud-badge hidden">⚡ CAOS 4P</span><span id="difficultyLabel">PORTÃO REAL</span>
-          <span id="mechanicLabel">O CASTELO OBSERVA</span>
-          <button id="shopBtnHud" class="small" type="button">🛒 Loja</button>
-          <button id="restartBtn" class="small">↻ Reiniciar</button>
+          <span id="chaosHudBadge" class="chaos-hud-badge hidden">⚡ CAOS 4P</span>
+          <div class="hud-region"><span id="difficultyLabel">PORTÃO REAL</span><small id="mechanicLabel">O CASTELO OBSERVA</small></div>
+          <button id="shopBtnHud" class="small hud-icon-btn" type="button" title="Loja Arcana">🛒</button>
+          <button id="restartBtn" class="small hud-icon-btn" title="Reiniciar fase">↻</button>
         </div>
       </div>
       <div class="canvas-shell">
         <canvas id="game" width="1600" height="900"></canvas>
-        <div id="overlay" class="overlay hidden"><div><h2 id="overlayTitle"></h2><p id="overlayText"></p></div></div>
+        <div id="screenPostFx" class="screen-post-fx" aria-hidden="true"></div>
+        <div id="bossCinematicBars" class="boss-cinematic-bars hidden" aria-hidden="true"><i></i><i></i></div>
+        <div id="overlay" class="overlay hidden"><div><span id="overlayEyebrow"></span><h2 id="overlayTitle"></h2><p id="overlayText"></p></div></div>
         <div id="mobileControls" class="mobile-controls" aria-label="Controles de toque">
           <div class="mobile-move">
             <button class="mobile-control-button move-left" type="button" data-touch-key="a" aria-label="Mover para esquerda">◀</button>
@@ -313,7 +325,7 @@
         <label class="setting-row"><span><b>Reduzir animações</b><small>Diminui fades e movimentos das telas de abertura.</small></span><input id="settingReducedMotion" type="checkbox" /></label>
         <label class="setting-row"><span><b>Tela cheia</b><small>Ativada por padrão. Quando desligada, a resolução escolhida acima define o tamanho da janela.</small></span><input id="settingFullscreen" type="checkbox" checked /></label>
         <div class="setting-row update-setting-row">
-          <span><b>Atualizações</b><small id="updateSettingsText">Versão atual <span data-app-version>0.0.6</span> · verificando disponibilidade...</small></span>
+          <span><b>Atualizações</b><small id="updateSettingsText">Versão atual <span data-app-version>0.0.7</span> · verificando disponibilidade...</small></span>
           <button id="checkUpdatesBtn" class="small" type="button">Verificar atualizações</button>
         </div>
       </div>
@@ -324,7 +336,7 @@
   <div id="chronicleModal" class="shop-modal hidden chronicle-modal" role="dialog" aria-modal="true" aria-labelledby="chronicleTitle">
     <div class="shop-card chronicle-card">
       <div class="shop-head">
-        <div><p class="eyebrow">ARQUIVO PROIBIDO · INSANITY 0.0.6</p><h2 id="chronicleTitle">Crônicas do Castelo</h2></div>
+        <div><p class="eyebrow">ARQUIVO PROIBIDO · INSANITY 0.0.7</p><h2 id="chronicleTitle">Crônicas do Castelo</h2></div>
         <button id="closeChronicleBtn" class="small" type="button">✕</button>
       </div>
       <p id="chronicleStats" class="chronicle-stats">Mortes: 0 · Segredos: 0 · Guardiões: 0 · Melhor rank: —</p>
@@ -347,7 +359,7 @@
         <button id="closeUpdateBtn" class="small" type="button">✕</button>
       </div>
       <div class="update-version-line">
-        <span>Instalada <b id="updateCurrentVersion" data-app-version>0.0.6</b></span>
+        <span>Instalada <b id="updateCurrentVersion" data-app-version>0.0.7</b></span>
         <i>→</i>
         <span>Nova <b id="updateLatestVersion">—</b></span>
       </div>
