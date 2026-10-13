@@ -601,7 +601,7 @@ function drawSecretRoom(){
   const sr=state.levelData?.secretRoom;if(!sr||state.trapState.get(sr.key))return;
   const reveal=profile.relics?.active==='seerMark',t=elapsed(),cx=sr.x+sr.w/2,cy=sr.y+sr.h/2;
   ctx.save();ctx.globalAlpha=reveal ? .95 : .36;ctx.fillStyle='#100a18';ctx.fillRect(sr.x,sr.y,sr.w,sr.h);ctx.strokeStyle=reveal?'#b67cff':'rgba(180,120,255,.42)';ctx.lineWidth=3;ctx.strokeRect(sr.x,sr.y,sr.w,sr.h);
-  const glow=ctx.createRadialGradient(cx,cy,3,cx,cy,38);glow.addColorStop(0,'rgba(220,175,255,.52)');glow.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(cx,cy,38,0,Math.PI*2);ctx.fill();
+  const glow=ctx.createRadialGradient?.(cx,cy,3,cx,cy,38);if(glow?.addColorStop){glow.addColorStop(0,'rgba(220,175,255,.52)');glow.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=glow;}else ctx.fillStyle='rgba(190,120,255,.20)';ctx.beginPath();ctx.arc(cx,cy,38,0,Math.PI*2);ctx.fill();
   ctx.translate(cx,cy+Math.sin(t*3)*5);ctx.rotate(t*.45);ctx.fillStyle='#d9c4ff';ctx.shadowBlur=16;ctx.shadowColor='#b67cff';ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(8,0);ctx.lineTo(0,11);ctx.lineTo(-8,0);ctx.closePath();ctx.fill();ctx.shadowBlur=0;
   ctx.restore();
 }
@@ -724,7 +724,7 @@ function drawFinaleFracture(){
   if(state.level!==1000)return;const t=elapsed(),cols=['#a8c66c','#9bdcff','#ffe477','#a46cff','#b94c60','#d062c3'];
   ctx.save();ctx.globalAlpha=.16;
   for(let i=0;i<18;i++){const a=i*.73+t*.035*(i%2?1:-1),r=170+(i%6)*75,x=800+Math.cos(a)*r,y=430+Math.sin(a*1.17)*r*.48;ctx.translate(x,y);ctx.rotate(a);ctx.fillStyle=cols[i%cols.length];ctx.fillRect(-34,-8,68,16);ctx.rotate(-a);ctx.translate(-x,-y);}
-  const pulse=82+Math.sin(t*2.4)*10,g=ctx.createRadialGradient(800,410,5,800,410,pulse);g.addColorStop(0,'rgba(255,220,250,.45)');g.addColorStop(.35,'rgba(220,70,190,.24)');g.addColorStop(1,'rgba(100,0,80,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(800,410,pulse,0,Math.PI*2);ctx.fill();ctx.restore();
+  const pulse=82+Math.sin(t*2.4)*10,g=ctx.createRadialGradient?.(800,410,5,800,410,pulse);if(g?.addColorStop){g.addColorStop(0,'rgba(255,220,250,.45)');g.addColorStop(.35,'rgba(220,70,190,.24)');g.addColorStop(1,'rgba(100,0,80,0)');ctx.fillStyle=g;}else ctx.fillStyle='rgba(210,70,190,.18)';ctx.beginPath();ctx.arc(800,410,pulse,0,Math.PI*2);ctx.fill();ctx.restore();
 }
 function drawRegionPostProcess(){
   const z=castleRegion(state.level),n=z.index,t=elapsed();ctx.save();
