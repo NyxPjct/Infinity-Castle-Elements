@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
   desktop: true,
   version: ipcRenderer.sendSync('ice:get-app-version'),
+  wasUpdated: process.argv.includes('--updated'),
   installMode: ipcRenderer.sendSync('ice:get-install-mode'),
   multiplayerUrl: ipcRenderer.sendSync('ice:get-multiplayer-url'),
   quit: () => ipcRenderer.send('ice:quit'),
