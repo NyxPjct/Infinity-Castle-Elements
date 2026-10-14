@@ -1,925 +1,505 @@
 # Infinity Castle Elements — INSANITY 0.0.7
 
-**Infinity Castle Elements** é um jogo original de plataforma troll, ação e sobrevivência da **NYX PROJECT R**, com campanha de **1000 fases**, quatro elementos jogáveis, singleplayer, multiplayer cooperativo, **Modo Caos para 4 jogadores online**, inimigos, chefes, moedas, loja, boosts, cosméticos e uma dificuldade feita para o castelo aprender a odiar você de volta.
+**Infinity Castle Elements** is an original troll platformer, action, and survival game by **NYX PROJECT R**. Climb a campaign of **1,000 levels**, master four playable elements, and face enemies, bosses, coins, a shop, boosts, cosmetics, and a castle that learns to hate you back. Play solo, cooperate with a friend, or enter online **Chaos Mode with four players**.
 
-A versão **INSANITY 0.0.7 — Visual Experience Update** leva o polimento visual do jogo para a interface e para o momento a momento do gameplay, com HUD dark-fantasy, câmera dinâmica, VFX elementais reforçados, mortes e bosses mais cinematográficos, progressão visual da torre, pós-processamento, inimigos regionais e tratamento especial para a fase 1000. A própria 0.0.7 também inclui uma nova **Central de Atualizações** integrada ao menu, com histórico, download retomável, verificação SHA-256, backup automático, instalação ao sair e protocolo multiplayer versionado. Todos os sistemas introduzidos na 0.0.6 continuam presentes.
+**INSANITY 0.0.7 — Visual Experience Update** brings a dark fantasy HUD, a dynamic camera, stronger elemental effects, cinematic deaths and bosses, visual tower progression, regional enemies, post-processing, and a special presentation for level 1000. It also includes an integrated **Update Hub** with release history, resumable downloads, SHA-256 verification, automatic backups, install-on-exit support, and a versioned multiplayer protocol. All systems introduced in 0.0.6 remain available.
 
-**Versão atual do jogo:** `0.0.7`
+**Current game version:** `0.0.7`
 
-## 📸 Screenshots
+## Downloads
 
-<p align="center">
-  Veja um pouco do universo de <strong>Infinity Castle Elements</strong>.
-</p>
+### Windows — 64 bit
 
-<br>
+| Edition | Download | How to use it |
+| --- | --- | --- |
+| Setup | [Infinity-Castle-Elements-Setup-0.0.7.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Setup-0.0.7.exe) | Run the installer, choose a folder, and finish the wizard. Desktop and Start Menu shortcuts are available. |
+| Portable | [Infinity-Castle-Elements-Portable-0.0.7.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Portable-0.0.7.exe) | Run the executable directly; no installation is required. |
+| Complete ZIP | [Infinity-Castle-Elements-Windows-0.0.7.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Windows-0.0.7.zip) | Extract the archive to access both Setup and Portable. |
 
-<table align="center">
+### Android
+
+[Download Infinity-Castle-Elements-Android-0.0.7.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Android-0.0.7.apk)
+
+Play in **landscape orientation** to use the full canvas and touch controls.
+
+[Browse all releases](https://github.com/NyxPjct/Infinity-Castle-Elements/releases)
+
+The distributed game includes its runtime. **Players do not need to install Node.js, npm, Express, or Socket.IO separately.**
+
+## How to change the game language
+
+The game starts in **Brazilian Portuguese** by default. You can change the language without starting a new campaign:
+
+1. Open the main menu and select **Configurações** (Settings), the fourth menu option.
+2. Find **Idioma** (Language).
+3. Select **English** or your preferred language from the list.
+4. The interface updates immediately. Close Settings with **✕** to return to the menu.
+
+During a level, press **ESC**, choose **Configurações**, and change **Idioma** in the same way. Close Settings and press **ESC** to resume playing. Your language preference is saved on the current device and restored the next time you open the game.
+
+Available languages: Portuguese, English, Spanish, French, German, Italian, Dutch, Polish, Russian, Turkish, Japanese, Korean, Simplified Chinese, Traditional Chinese, Arabic, Hindi, Swedish, Danish, Finnish, and Czech.
+
+Player names, room codes, version numbers, and externally published release notes retain their original content.
+
+## 📸 Screenshots — INSANITY 0.0.7
+
+The following captures show the current web build. The mobile image shows the responsive touch interface in a mobile browser viewport.
+
+<table>
   <tr>
-    <td align="center">
-      <img src="./docs/images/menu-principal.jpg" width="400px" alt="Menu principal do Infinity Castle Elements" />
-      <br>
-      <strong>🏰 Menu Principal</strong>
-    </td>
-    <td align="center">
-      <img src="./docs/images/selecao-elementos.jpg" width="400px" alt="Seleção de elementos" />
-      <br>
-      <strong>🔥 Seleção de Elementos</strong>
-    </td>
+    <td><img src="./docs/images/menu-principal.jpg" width="480" alt="Infinity Castle Elements 0.0.7 main menu" /><br /><strong>Main menu</strong></td>
+    <td><img src="./docs/images/selecao-elementos.jpg" width="480" alt="Element selection in Infinity Castle Elements 0.0.7" /><br /><strong>Element selection</strong></td>
   </tr>
-
   <tr>
-    <td align="center">
-      <img src="./docs/images/gameplay-singleplayer.jpg" width="400px" alt="Gameplay Singleplayer" />
-      <br>
-      <strong>🎮 Singleplayer</strong>
-    </td>
-    <td align="center">
-      <img src="./docs/images/gameplay-multiplayer.jpg" width="400px" alt="Gameplay Multiplayer" />
-      <br>
-      <strong>🌐 Multiplayer Online</strong>
-    </td>
+    <td><img src="./docs/images/gameplay-singleplayer.jpg" width="480" alt="Singleplayer gameplay with the 0.0.7 HUD" /><br /><strong>Singleplayer</strong></td>
+    <td><img src="./docs/images/gameplay-multiplayer.jpg" width="480" alt="Two-player cooperative gameplay in version 0.0.7" /><br /><strong>Online co-op</strong></td>
   </tr>
-
   <tr>
-    <td align="center">
-      <img src="./docs/images/modo-caos.jpg" width="400px" alt="Modo Caos" />
-      <br>
-      <strong>💀 Modo Caos</strong>
-    </td>
-    <td align="center">
-      <img src="./docs/images/android-gameplay.jpg" width="400px" alt="Gameplay Android" />
-      <br>
-      <strong>📱 Versão Android</strong>
-    </td>
+    <td><img src="./docs/images/modo-caos.jpg" width="480" alt="Four-player Chaos Mode in version 0.0.7" /><br /><strong>Chaos Mode</strong></td>
+    <td><img src="./docs/images/android-gameplay.jpg" width="480" alt="Version 0.0.7 touch controls in a landscape mobile browser" /><br /><strong>Mobile touch interface</strong></td>
   </tr>
 </table>
 
-<br>
+## What's new in 0.0.7 — Visual Experience Update
 
-<p align="center">
-  <sub>Explore o castelo, domine os elementos e sobreviva às armadilhas.</sub>
-</p>
+This update focuses on presentation, visual feedback, and readability without changing the geometry, hitboxes, or underlying difficulty of the 1,000 levels.
 
+### 🎮 Dark fantasy HUD
 
-### Novidades da versão 0.0.7 — Visual Experience Update
+The redesigned HUD follows the selected element's identity and color. It gives more prominence to the elemental icon and reorganizes level, deaths, coins, and active relic information. **Visual tower progression** shows which of the ten regions you are in. Compact Shop and Restart buttons leave more space for gameplay.
 
-A versão **0.0.7** é focada em apresentação, feedback visual e leitura de gameplay. O objetivo foi fazer o Infinity Castle Elements parecer mais vivo e cinematográfico sem alterar a geometria, as hitboxes ou a dificuldade estrutural das 1000 fases.
+### ✦ Circular elemental power indicator
 
-### 🎮 HUD dark-fantasy redesenhado
+A circular cooldown orb uses the current element's color. Its border shows active duration, cooldown, and readiness, while the HUD also displays the time remaining in seconds.
 
-- nova HUD com identidade visual ligada ao elemento escolhido;
-- ícone elemental destacado e cor dinâmica por personagem;
-- fase, mortes, moedas e relíquia ativa foram reorganizadas para leitura rápida;
-- adicionado **progresso visual da torre** durante o gameplay;
-- indicador mostra também em qual das 10 regiões o jogador está;
-- botões da Loja e Reiniciar ficaram mais compactos para liberar espaço de tela.
+### 🎥 Dynamic camera
 
-### ✦ Indicador circular do poder elemental
+The camera subtly widens during fast movement, responds to chase levels, changes framing for boss introductions, and zooms in during deaths. Configurable screen shake remains available. These effects preserve the readability of jumps and traps.
 
-- o poder agora possui um **orb circular de recarga**;
-- a borda do orb usa a cor do elemento atual;
-- o círculo mostra visualmente duração, cooldown e momento em que a habilidade está pronta;
-- o HUD continua informando o tempo restante em segundos.
+### 🌱🌪️☀️🌑 Stronger elemental effects
 
-### 🎥 Câmera dinâmica
+- **Earth:** fuller roots, floor cracks, and fragment impacts.
+- **Air:** wind streaks, spirals, directional particles, and displacement effects.
+- **Light:** solar bloom, rings, rays, and orbiting particles.
+- **Darkness:** denser black fire, smoke, unstable rings, and small glitches.
 
-A câmera passou a reagir ao estado da partida.
+Enemies defeated by abilities use effects matching the attacking element.
 
-- abre levemente o campo de visão durante movimentos rápidos;
-- reage a fases de perseguição;
-- muda o enquadramento durante introduções de chefes;
-- aproxima a cena em momentos de morte;
-- mantém o screen shake configurável já existente.
+### 👤 Shadows and depth
 
-As mudanças são sutis para não prejudicar saltos ou a leitura das armadilhas.
+Characters, remote players, enemies, and bosses cast simple ground shadows, making height easier to read without a heavy 3D lighting system.
 
-### 🌱🌪️☀️🌑 VFX elementais reforçados
+### 👹 Regional enemy identities
 
-Os quatro poderes receberam efeitos visuais adicionais:
+Enemy appearances, colors, and small details follow the current castle region. Sentinels, bats, and apparitions reflect the Dungeons, Library, Gardens, Crimson Throne, Impossible Heart, and other sectors while retaining their behaviors and hitboxes.
 
-- **Terra:** raízes mais volumosas, rachaduras no piso e impactos com fragmentos;
-- **Ar:** mais linhas de vento, espirais, deslocamento visual e partículas direcionais;
-- **Luz:** bloom solar, anéis, raios e partículas orbitais;
-- **Escuridão:** fogo negro mais denso, fumaça, anéis instáveis e pequenos glitches.
+### ⚠️ Trap feedback
 
-Quando um inimigo é derrotado por uma habilidade, o impacto utiliza efeitos próprios do elemento responsável.
+Traps that have **already been triggered** can show dust, vibration, particles, or signs on suspended objects before the final impact. Untriggered traps are not revealed in advance.
 
-### 👤 Sombras e profundidade
+### ☠️ Cinematic deaths
 
-- personagens agora projetam sombra simples sobre o chão;
-- jogadores remotos também possuem sombra;
-- inimigos e bosses ganharam sombra própria;
-- o efeito ajuda a leitura da altura e dá mais profundidade às salas sem transformar o jogo em iluminação 3D pesada.
+Deaths partially desaturate the scene, increase contrast and vignette effects, emphasize a castle taunt, and add a small camera zoom. Anomaly and Joker Level deaths receive extra glitches. The 0.0.6 death replay continues to work alongside these effects.
 
-### 👹 Inimigos com identidade regional
+### 👑 Cinematic boss introductions
 
-Os inimigos continuam utilizando os mesmos comportamentos e hitboxes, mas o renderer agora adapta aparência, cor e pequenos detalhes à região atual do castelo.
+Guardian rooms briefly display cinematic bars, a special camera framing, the boss's name and element, and an arena styled after the guardian. Normal gameplay framing returns after the introduction.
 
-Sentinelas, morcegos e aparições deixam de parecer exatamente iguais durante toda a campanha, combinando melhor com Masmorras, Biblioteca, Jardins, Trono Rubro, Coração Impossível e demais setores.
+### 🏆 Animated level ranks
 
-### ⚠️ Feedback visual das armadilhas
+Level results receive effects matching **S, A, B, C, D**, or **THE CASTLE HATES YOU**. Higher ranks get their own glow and entrance; the final rank has a deliberately unstable appearance.
 
-Armadilhas que **já foram ativadas** podem mostrar pequenos sinais visuais antes do impacto final.
+### 🏰 A main menu that reacts to progress
 
-Entre os efeitos estão:
+The menu reads the highest saved campaign progress and displays the highest level, current region, a ten-section tower bar, and the castle's state. Its appearance becomes darker and more corrupted as you climb.
 
-- poeira;
-- vibração visual do ponto de surgimento;
-- pequenas partículas;
-- sinais em objetos suspensos.
+### 🎭 Element selection feedback
 
-O sistema não revela antecipadamente armadilhas que o jogador ainda não acionou.
+The four character silhouettes respond to selection with their own glow and atmosphere, reinforcing each element's identity before a level begins.
 
-### ☠️ Morte cinematográfica
+### ✨ More visible cosmetics
 
-A morte ganhou uma apresentação mais forte:
+The **Elemental Aura** leaves an elemental trail during fast movement. Crown, Aura, and visible relics remain compatible with the character redesign.
 
-- cenário parcialmente dessaturado;
-- contraste e vinheta reforçados;
-- frase do castelo em destaque;
-- pequeno zoom de câmera;
-- glitches adicionais em mortes ligadas a anomalias ou Fases Coringa;
-- replay da morte da 0.0.6 continua funcionando junto ao novo efeito.
+### 🚪 Secret rooms and collectibles
 
-### 👑 Introdução cinematográfica de bosses
+Secret room entrances gain a glowing floating fragment, making discoveries more rewarding without revealing secrets before the game allows them to appear.
 
-Ao entrar em uma sala de guardião:
+### 🌈 Post-processing and anomalies
 
-- barras cinematográficas entram na tela;
-- a câmera muda temporariamente;
-- nome do chefe e elemento são destacados;
-- a arena recebe identidade ligada ao elemento do guardião;
-- após a introdução, a câmera volta ao comportamento normal de gameplay.
+Regions feature subtle vignettes, contrast changes, atmospheric flashes, soft scanlines, Joker and anomaly glitches, and stronger corruption near the end. Reduced-motion settings remain respected for interface animations.
 
-### 🏆 Rank de fase animado
+### ❤️‍🔥 Level 1000 — The Heart of the Castle
 
-O resultado de uma sala agora possui tratamento visual de acordo com o rank:
+The final room has floating fragments of previous regions, mixed elemental colors, a glowing pulse around the Heart, and a quieter HUD. The presentation suggests all ten regions collapsing into the same space.
 
-- **S**;
-- **A**;
-- **B**;
-- **C**;
-- **D**;
-- **CASTELO TE ODEIA**.
+### 🔧 Gameplay compatibility
 
-Ranks melhores possuem entrada e brilho próprios, enquanto **CASTELO TE ODEIA** recebe um efeito propositalmente instável.
+Character and platform hitboxes, trap positions, elemental physics, level routes, singleplayer logic, two-player co-op, four-player Chaos Mode, and trap synchronization keep their existing behavior.
 
-### 🏰 Menu principal reage ao progresso
+### ⬇ Update Hub
 
-O menu agora lê o maior progresso salvo entre as campanhas e muda de aparência conforme o jogador sobe pela torre.
+**Updates** now has its own main menu entry instead of being inside Settings. Features include:
 
-O menu exibe:
+- A new-version notice shown **once per version** rather than on every return to the menu.
+- Installed and available versions, file size, download status, and release highlights.
+- GitHub notes grouped into New, Visual, Multiplayer, Fixes, and other categories.
+- A history of recent releases.
+- Desktop downloads that continue in the background while you play.
+- Resumable interrupted downloads.
+- **SHA-256** checks when GitHub supplies the official digest.
+- Automatic local backups of saves, profiles, and settings before desktop installation.
+- **Restart and install** and **Install on exit** options.
+- In-game Portable downloads and replacement with a backup of the previous executable.
+- A one-time welcome screen after an update.
+- Service worker updates and reloads for the web version.
+- Links to the official release APK on Android.
+- Versioned save schemas to support future migrations.
 
-- maior fase alcançada;
-- região correspondente;
-- barra dividida em 10 setores;
-- estado do castelo.
+### ⚡ Multiplayer version compatibility
 
-Em progressões avançadas, a tela fica progressivamente mais sombria e corrompida.
+The game version and online compatibility are tracked separately. Multiplayer uses its own protocol; outdated clients receive **UPDATE_REQUIRED** and are directed to the Update Hub. Singleplayer stays available. The Chaos integration test also verifies that clients using an old protocol are rejected.
 
-### 🎭 Seleção de elemento com mais feedback
+### ✅ 0.0.7 validation
 
-As quatro mini-silhuetas introduzidas na 0.0.6 agora respondem visualmente à seleção.
+The official pipeline checks JavaScript syntax, audits all **1,000 levels**, exercises rendering and runtime behavior, and tests multiplayer and four-player Chaos Mode.
 
-Cada elemento utiliza brilho e ambientação próprios enquanto estiver selecionado, reforçando a diferença entre Terra, Ar, Luz e Escuridão antes mesmo da fase começar.
+## What's new in 0.0.6 — The Castle Remembers
 
-### ✨ Cosméticos mais presentes durante o gameplay
-
-O cosmético **Aura Elemental** agora deixa uma pequena trilha ligada ao elemento enquanto o personagem se move em velocidade.
-
-Coroa, Aura e as representações visuais das relíquias continuam compatíveis com o Character Visual Overhaul.
-
-### 🚪 Salas secretas e colecionáveis
-
-A entrada de uma sala secreta passou a possuir um **fragmento flutuante com brilho próprio**, tornando a descoberta visualmente mais recompensadora sem revelar segredos antes de o sistema permitir que sejam encontrados.
-
-### 🌈 Pós-processamento e anomalias
-
-As regiões receberam pós-processamento discreto para complementar o Castle Visual Overhaul da 0.0.6.
-
-- vinhetas diferentes por região;
-- variações de contraste;
-- flashes atmosféricos;
-- scanlines muito suaves;
-- glitches durante determinadas anomalias e Fases Coringa;
-- corrupção visual mais intensa nas regiões finais.
-
-A opção de movimento reduzido continua respeitada para animações de interface.
-
-### ❤️‍🔥 Fase 1000 — O Coração do Castelo
-
-A sala final ganhou uma camada visual própria:
-
-- fragmentos das regiões anteriores flutuam ao redor da arena;
-- cores dos quatro elementos aparecem misturadas;
-- o Coração possui pulsação luminosa;
-- HUD fica mais discreto;
-- a apresentação final reforça a sensação de que as dez regiões estão colapsando no mesmo espaço.
-
-### 🔧 Compatibilidade preservada
-
-A atualização visual não altera:
-
-- hitboxes dos personagens;
-- hitboxes das plataformas;
-- posição das armadilhas;
-- física dos quatro elementos;
-- rotas das fases;
-- lógica do Singleplayer;
-- Multiplayer de 2 jogadores;
-- Modo Caos de 4 jogadores;
-- sincronização das armadilhas.
-
-### ⬇ Central de Atualizações
-
-A própria versão **0.0.7** recebeu uma reformulação completa do sistema de atualização.
-
-- **Atualizações foi removido de Configurações** e agora aparece como uma opção própria no menu principal;
-- quando existe uma nova versão, a Central aparece automaticamente **uma única vez por versão**, sem interromper toda vez que o jogador retorna ao menu;
-- a tela mostra **versão instalada → versão disponível**, tamanho do arquivo, estado do download e as novidades da release;
-- as notas publicadas no GitHub são organizadas dentro do jogo em categorias como **Novo, Visual, Multiplayer e Correções**;
-- adicionada uma área de **Histórico de atualizações** com as releases recentes;
-- o download do desktop pode continuar **em segundo plano** enquanto o jogador fecha a Central e volta a jogar;
-- downloads interrompidos podem ser **retomados** sem começar novamente do zero;
-- quando o GitHub fornece o digest oficial, o jogo valida o arquivo com **SHA-256** antes da instalação;
-- antes de instalar, o desktop cria um **backup automático dos saves, perfil e configurações locais**;
-- o instalador oferece **Reiniciar e instalar** ou **Instalar ao sair**;
-- a versão **Portable** agora é baixada dentro do jogo e substituída com uma cópia de segurança do executável anterior;
-- após uma atualização concluída, o jogo pode mostrar uma tela única de **Bem-vindo à nova versão** com as principais mudanças;
-- a versão **Web** atualiza o service worker e recarrega os arquivos novos;
-- no **Android**, a Central direciona para o APK oficial publicado na release;
-- o formato dos saves passou a possuir um **schema versionado**, permitindo migrações automáticas em versões futuras.
-
-### ⚡ Compatibilidade de versão no multiplayer
-
-A versão do jogo e a compatibilidade online agora são tratadas separadamente.
-
-- o multiplayer utiliza um **protocolo próprio**, independente do número visual da versão;
-- clientes com protocolo antigo recebem **UPDATE_REQUIRED** em vez de entrar em uma sala incompatível;
-- quando o servidor exige uma atualização, a Central de Atualizações é aberta para o jogador;
-- o bloqueio afeta apenas os modos online incompatíveis: o **Singleplayer continua disponível**;
-- o teste oficial do Modo Caos também valida que clientes com protocolo antigo sejam rejeitados corretamente.
-
-### ✅ Validação da 0.0.7
-
-Antes da integração, a versão passou pelo pipeline oficial com:
-
-- **checagem de sintaxe JavaScript**;
-- **auditoria das 1000 fases**;
-- **runtime/render das 1000 salas**;
-- **teste do Multiplayer / Modo Caos 4P**.
-
----
-
-## Novidades da versão 0.0.6 — The Castle Remembers
-
-A versão **0.0.6** expande o Infinity Castle Elements com novos sistemas de horror, progressão, desafio e comportamento dinâmico do castelo, mantendo os modos **Singleplayer**, **Multiplayer** e **Caos 4P**.
+Version **0.0.6** expanded horror, progression, challenges, and dynamic castle behavior while retaining Singleplayer, Multiplayer, and Chaos 4P.
 
 ### 🎭 Character Visual Overhaul
 
-Os quatro personagens receberam uma reformulação visual completa sem alterar a física, a colisão ou o balanceamento da campanha.
+The four characters were redesigned without changing physics, collision, or campaign balance. The gameplay hitbox remains **42×56**.
 
-- a hitbox de gameplay continua exatamente em **42×56**;
-- **Terra** agora possui silhueta mais larga e pesada, ombros rochosos, corpo robusto e leitura visual de peso;
-- **Ar** ganhou corpo mais fino, capa leve e faixa/cachecol que reage ao movimento;
-- **Luz** recebeu manto próprio, silhueta elegante, halo e detalhes radiantes;
-- **Escuridão** ganhou capuz, rosto parcialmente oculto, barra irregular e aparência semelhante a uma sombra viva;
-- adicionadas animações procedurais de **idle, corrida, salto, queda e aterrissagem**;
-- o corpo inclina de acordo com o movimento e comprime brevemente ao tocar o chão;
-- os olhos agora reagem a movimento, ameaça, habilidade elemental e acontecimentos especiais;
-- cada personagem possui **símbolo elemental próprio no peito**, facilitando identificação no multiplayer;
-- adicionada borda escura de leitura para os personagens continuarem visíveis em cenários carregados;
-- a **relíquia equipada aparece fisicamente no personagem**, com representação própria para cada uma das seis relíquias;
-- personagens começam a apresentar **marcas de corrupção visual** nas regiões finais do castelo;
-- a fase **666** aplica comportamento visual anômalo adicional aos personagens;
-- Coroa e Aura continuam compatíveis com o novo desenho;
-- o replay de morte e o clone **Eco** das Fases Coringa utilizam o novo renderer;
-- no Multiplayer e no Modo Caos, movimento, estado no chão, direção e relíquia ativa são compartilhados para que os outros jogadores vejam corretamente as novas animações;
-- a tela de seleção também recebeu **quatro mini-silhuetas próprias**, em vez de reutilizar praticamente o mesmo boneco com cores diferentes.
+- **Earth** has a broad, heavy silhouette, rocky shoulders, and a sturdy body.
+- **Air** has a slimmer body, a light cape, and a scarf that reacts to movement.
+- **Light** has an elegant robe, a halo, and radiant details.
+- **Darkness** has a hood, a partially hidden face, an uneven hem, and the appearance of a living shadow.
+- Procedural idle, running, jumping, falling, and landing animations include leaning and brief compression on landing.
+- Eyes react to movement, threats, powers, and special events.
+- Chest symbols and dark outlines help identify characters in multiplayer and busy scenes.
+- Each of the six equipped relics appears physically on the character.
+- Visual corruption develops in later regions, with extra anomalies in level 666.
+- Crown, Aura, death replays, and the Joker Level Echo clone use the new renderer.
+- Multiplayer shares motion, grounded state, direction, and the active relic for consistent remote animations.
+- Element selection uses four distinct miniature silhouettes.
 
 ### 🏰 Castle Visual Overhaul
 
-As dez regiões do Infinity Castle Elements receberam uma reformulação visual sem alterar a geometria, a hitbox das plataformas ou a dificuldade base das fases.
+All ten regions received their own atmosphere, weather, story details, platform materials, depth, and parallax without changing level geometry or collisions.
 
-- adicionadas **camadas de profundidade e parallax** para torres, muralhas, nuvens e arquitetura distante;
-- cada uma das **10 regiões** recebeu clima, ambientação e detalhes narrativos próprios;
-- as plataformas agora utilizam **materiais visuais diferentes por região**, mantendo exatamente as mesmas colisões;
-- o Portão e Pátio Real ganhou muralhas, bandeiras, aves e pedra com sinais de vegetação;
-- a Galeria Nobre recebeu vitrais, retratos, molduras e olhos que acompanham o jogador;
-- as Masmorras Profundas ganharam correntes, grades, umidade, água e névoa baixa;
-- a Torre do Relógio recebeu engrenagens, mecanismos e um grande pêndulo em movimento;
-- a Biblioteca Viva ganhou estantes profundas, páginas voando e presenças observando entre os livros;
-- a Capela Assombrada recebeu arcos, velas, feixes de luz e aparições distantes;
-- os Jardins Suspensos ganharam vegetação, folhas em movimento, raízes e ruínas suspensas;
-- as Muralhas da Tempestade receberam nuvens, chuva, relâmpagos e sensação de altura;
-- o Trono Rubro ganhou brasas, estandartes rasgados, arquitetura agressiva e veios rubros;
-- o Coração Impossível recebeu geometria flutuante, formas impossíveis e arquitetura cada vez menos natural;
-- adicionada **iluminação ambiente dinâmica** de acordo com a região;
-- as arenas de chefes agora recebem presença visual própria e iluminação baseada no **elemento do guardião**;
-- as entradas das regiões 1–10 agora exibem uma apresentação maior com nome, subtítulo e mecânicas daquele setor;
-- as Fases Coringa continuam visualmente instáveis e passam a contrastar ainda mais com a arquitetura normal;
-- a partir das regiões finais, o castelo recebe **corrupção visual progressiva**;
-- elementos de regiões antigas começam a aparecer em locais errados conforme a campanha se aproxima da fase 1000, dando a impressão de que o castelo está colapsando;
-- adicionada uma camada de **atmosfera em primeiro plano** com névoa, chuva, brasas e partículas específicas de cada região;
-- a fase 666 preserva sua identidade própria e recebe corrupção visual adicional;
-- saídas e portões foram redesenhados para acompanhar a identidade de cada região sem alterar sua área de colisão;
-- toda a reformulação é puramente visual: **plataformas, saltos, armadilhas e rotas continuam usando a geometria original**.
+- **Royal Gate and Courtyard:** walls, flags, birds, and overgrown stone.
+- **Noble Gallery:** stained glass, portraits, frames, and watchful eyes.
+- **Deep Dungeons:** chains, bars, dampness, water, and low fog.
+- **Clock Tower:** gears, mechanisms, and a large moving pendulum.
+- **Living Library:** deep shelves, flying pages, and presences between the books.
+- **Haunted Chapel:** arches, candles, light beams, and distant apparitions.
+- **Hanging Gardens:** foliage, moving leaves, roots, and suspended ruins.
+- **Storm Battlements:** clouds, rain, lightning, and a sense of height.
+- **Crimson Throne:** embers, torn banners, aggressive architecture, and red veins.
+- **Impossible Heart:** floating geometry and increasingly unnatural architecture.
 
-### Fases Coringa evoluídas
+Dynamic ambient lighting, guardian-themed arenas, larger region introductions, foreground atmosphere, and progressive corruption reinforce the new visuals. Fragments of earlier regions appear in unexpected places near level 1000. Level 666 keeps its special identity. Exits and gates match their regions while retaining their collision areas. **Platforms, jumps, traps, and routes keep their original geometry.**
 
-As **Fases Coringa** continuam aparecendo exclusivamente em fases especiais e agora podem combinar entre **1 e 3 maldições** diferentes.
+### Evolved Joker Levels
 
-Entre as regras proibidas disponíveis estão:
+Special **Joker Levels** can combine **one to three curses**: inverted controls, blackouts, heavy gravity, unstable or light gravity, a mirrored world, closing walls, and **Echo**, a delayed clone of the player. Inverted controls remain exclusive to Joker Levels and do not occur in normal levels.
 
-- **controles invertidos**;
-- **apagões**;
-- **gravidade pesada**;
-- **gravidade instável/leve**;
-- **mundo espelhado**;
-- **paredes se fechando**;
-- **Eco**, um clone atrasado do próprio jogador.
+### Adaptive castle
 
-A inversão de controles continua sendo exclusiva das Fases Coringa e **não aparece em fases normais**.
+After repeated attempts, the castle can place new threats along frequently used routes. Multiplayer uses shared room events to keep these traps synchronized.
 
-### Castelo adaptativo
+### Castle whispers
 
-A partir de várias tentativas na mesma sala, o castelo pode adaptar parte das armadilhas ao comportamento do jogador.
+Contextual taunts respond to repeated deaths, multiple attempts, special rooms, the Pursuer, anomalies, and unique events in level 666, suggesting that the castle is watching you.
 
-O sistema pode adicionar novas ameaças em rotas utilizadas repetidamente, dando a sensação de que o castelo está observando e aprendendo como cada jogador tenta atravessar a fase.
+### Rare anomalies
 
-No multiplayer, essas armadilhas continuam utilizando o sistema compartilhado de eventos da sala para manter a experiência sincronizada entre os jogadores.
+Rare rooms can contain background observers, hidden eyes, incorrect room numbers, unusual silence and darkness, or disappearing doors. These events are not part of every level's normal structure.
 
-### Falas do Castelo
+### The Pursuer
 
-O castelo agora possui comentários contextuais durante a partida.
+A recurring entity first appears in the distance. In later rooms, it can emerge from the background and chase you. Surviving such a room can unlock an achievement.
 
-As falas podem reagir a situações como:
+### Elemental bosses
 
-- mortes repetidas;
-- múltiplas tentativas na mesma fase;
-- entrada em salas especiais;
-- presença do Perseguidor;
-- anomalias;
-- acontecimentos únicos da fase 666.
+Guardians can use Earth, Air, Light, or Darkness affinities with corresponding attack patterns. The existing rune and ritual system remains in place.
 
-O objetivo é reforçar a sensação de que o próprio castelo observa o jogador.
+### Chase levels
 
-### Anomalias raras
+A moving wall of corruption forces you to keep moving and reach the exit before it catches you.
 
-Algumas salas podem receber eventos visuais e comportamentais raros, entre eles:
+### Secret rooms
 
-- figuras observando ao fundo;
-- olhos escondidos no cenário;
-- numeração incorreta da sala;
-- silêncio e escurecimento anormal;
-- portas que aparecem e desaparecem.
+Hidden entrances can reward exploration with coins, lore fragments, relics, and achievements.
 
-Essas ocorrências são raras e não fazem parte da estrutura normal de todas as fases.
+### Relics
 
-### O Perseguidor
+Only **one relic can be active at a time**. Finding another equips it automatically.
 
-Uma entidade recorrente pode começar aparecendo apenas como uma presença distante no cenário.
+| Relic | Effect |
+| --- | --- |
+| 🫀 Fractured Heart | Can prevent one death per level. |
+| 🪽 Windstep | Increases maximum speed and acceleration by 8%. |
+| 🪶 Abyss Feather | Increases jump strength by 8%. |
+| ⌛ Chronoglass | Reduces elemental ability cooldown by 10%. |
+| 👁️ Eye of Greed | Increases coin rewards by 25%. |
+| ◉ Seer's Mark | Helps reveal secret rooms and anomalies. |
 
-Em fases mais avançadas, determinadas salas podem transformar essa presença em uma ameaça real, fazendo a criatura sair do fundo e perseguir o jogador.
+### Suffering ranks
 
-Sobreviver a uma dessas salas também pode liberar uma conquista específica.
+Completion results consider time, deaths, attempts, and special room difficulty. Available ranks are **S · A · B · C · D · THE CASTLE HATES YOU**.
 
-### Chefes elementais
+### Achievements
 
-Os guardiões agora podem possuir afinidades elementais.
+Local achievements reward your first death, large death counts, a deathless Joker Level, a secret room, a defeated guardian, entering level 666, surviving the Pursuer, completing a Chaos room, and finishing all 1,000 levels.
 
-Os padrões de ataque variam conforme o elemento do chefe:
+### Level 666
 
-- **Terra**;
-- **Ar**;
-- **Luz**;
-- **Escuridão**.
+Level **666** has a dedicated layout instead of the usual procedural generation. It features a special scene, a hidden HUD, a distinctive atmosphere, background eyes, an observing entity, exclusive messages, and its own achievement. It remains part of normal campaign progression.
 
-Isso adiciona comportamento próprio aos encontros de chefe sem remover o sistema de runas e rituais já existente.
+### Death replay
 
-### Fases de perseguição
+When possible, the game stores the character's last movements and shows a short visual replay after death, highlighting the route taken before a trap struck.
 
-Algumas fases especiais ativam uma parede de corrupção que avança pelo cenário.
+### Castle Chronicles
 
-O jogador precisa continuar se movendo e alcançar a saída antes que a área tomada pelo castelo o alcance.
+The main menu's **Castle Chronicles** displays achievements, discovered and equipped relics, lore fragments, general statistics, and your best rank.
 
-### Salas secretas
+### Alternate endings
 
-Determinadas fases podem esconder entradas especiais.
+The ending depends on campaign history, deaths, discoveries, and achievements:
 
-Encontrar uma sala secreta pode conceder:
+- **Ending — The Door of Infinity**
+- **True Ending — The Castle Remembers**
+- **Cursed Ending — You Became Part of It**
 
-- moedas;
-- fragmentos de lore;
-- relíquias;
-- conquistas.
+### Multiplayer and Chaos Mode
 
-Essas salas fazem parte do novo sistema de exploração da 0.0.6.
+Adaptive traps remain shared and synchronized. Elemental boss rituals, campaign saves, achievements, and progression systems coexist with two-player co-op and Chaos 4P. A death grants **+5 coins only to the player who died**, even when the shared attempt restarts for everyone.
 
-### Relíquias
+### 0.0.6 validation
 
-A versão 0.0.6 introduz relíquias colecionáveis.
+Before publication, the official pipeline checked JavaScript syntax, all 1,000 levels, structural validity, runtime behavior for all four elements, and multiplayer / Chaos 4P, then built the Windows and Android packages. The published game was **Infinity Castle Elements — INSANITY 0.0.6**.
 
-Atualmente existem:
+## What's new in 0.0.5
 
-- **🫀 Coração Trincado** — pode impedir uma morte por fase;
-- **🪽 Passo do Vendaval** — aumenta velocidade e aceleração;
-- **🪶 Pena do Abismo** — aumenta a força do salto;
-- **⌛ Vidro Cronal** — reduz a recarga da habilidade elemental;
-- **👁️ Olho da Avareza** — aumenta as moedas recebidas;
-- **◉ Marca do Vidente** — facilita a percepção de salas secretas e anomalias.
+### 🛠️ Startup hotfix
 
-Apenas **uma relíquia pode permanecer ativa por vez**.
+- Fixed `SyntaxError: missing ) after argument list` in `desktop/main.cjs` and the updater's PowerShell strings.
+- Added `node --check desktop/main.cjs` to the Windows workflow so a release cannot publish an executable with a main-process syntax error.
+- Players whose 0.0.4 installation would not open needed to install **Setup 0.0.5** manually once.
+- Traps revealed by a multiplayer player became authoritative room state, replicated to every client for the current attempt.
+- Surprise spikes, trap walls, and other shared traps remain consistent across clients.
+- Corrected death rewards to **+5 coins only for the player who died**.
 
-### Ranking de sofrimento
+### 📱 Mobile / Android
 
-Ao concluir fases, o jogo agora pode avaliar o desempenho considerando fatores como:
+The new **Android 0.0.5** app uses Capacitor and the same campaign, multiplayer, Chaos Mode, and central Railway server as desktop. Landscape fullscreen and touch controls support movement, jumping, and elemental abilities. The interface displays the actual game version instead of the old `0.0.2` label. GitHub Actions builds the APK and publishes it with the corresponding release.
 
-- tempo;
-- mortes;
-- quantidade de tentativas;
-- dificuldade especial da sala.
+## What's new in 0.0.4
 
-Os ranks possíveis são:
+### 🔄 Updater fixes
 
-**S · A · B · C · D · CASTELO TE ODEIA**
+The updater stopped repeatedly requesting the same update. It waits for the old process to exit, applies a silent update to the current installation, verifies the installed version before reopening, and automatically starts the new version. A local installation log helps diagnose failures. The Windows workflow reads the version from `package.json` to avoid outdated release numbers.
 
-### Conquistas
+## What's new in 0.0.3
 
-A 0.0.6 adiciona um sistema de conquistas locais ligado a acontecimentos da campanha.
+### 🃏 Joker Levels
 
-Entre os desafios estão:
+Joker rooms appear deterministically throughout the campaign and are marked on the HUD. They feature watchful eyes, crooked portraits, tears in reality, and an unsettling atmosphere. Inverted controls are limited to these rooms, and **no element is immune, including Darkness**. Boss rooms remain outside the Joker rotation.
 
-- morrer pela primeira vez;
-- alcançar grandes quantidades de mortes;
-- concluir uma Coringa sem morrer;
-- encontrar uma sala secreta;
-- derrotar um guardião;
-- entrar na fase 666;
-- sobreviver ao Perseguidor;
-- superar uma sala no Modo Caos;
-- chegar ao fim das 1000 fases.
+### 🔗 Synchronized multiplayer traps
 
-### Fase 666
+Surprise and pop-up spikes, false floors, breakable bridges, disappearing platforms, chandeliers, falling blocks, sudden walls, moving exits, and fake exits share their state. When one player triggers a trap, everyone receives the room event and sees the change. The server retains trap state for the current attempt and clears it on restart, in both two-player co-op and Chaos 4P.
 
-A **fase 666** agora possui tratamento próprio e não utiliza o layout procedural normal.
+### ⚡ Four-player Chaos Mode
 
-Ela inclui:
+- Four players must be present and ready.
+- Earth, Air, Light, and Darkness must all be represented; duplicate elements are not allowed.
+- Each normal room has four elemental seals, and each player activates their own element's seal.
+- The exit stays locked until all four seals are active.
+- Bosses require four simultaneous runes.
+- One death restarts the attempt for the whole group.
+- Additional enemies increase the pressure.
+- State and visuals synchronize across up to four characters.
+- Chaos has a separate campaign save and a Continue option that creates a new online room at the saved level.
 
-- cenário especial;
-- HUD completamente oculto;
-- atmosfera diferenciada;
-- olhos no cenário;
-- entidade observando ao fundo;
-- mensagens exclusivas;
-- conquista própria.
+### 🌐 Online multiplayer
 
-A fase continua fazendo parte da progressão normal até a sala 1000.
+The central multiplayer server is hosted on **Railway**. Players on different computers can join private rooms over the internet using room codes, without running a server or leaving a PC acting as host. Two-player and four-player campaigns remain separate, with persistent saves for all three modes.
 
-### Replay de morte
+### ⬇ In-game updates
 
-Quando possível, o jogo guarda os últimos instantes de movimento do personagem e mostra um pequeno replay visual após a morte.
+GitHub Releases powers automatic version checks, menu notices, release notes, download progress, restart-and-install support, and save preservation. In 0.0.7 these features moved to the dedicated Update Hub.
 
-O efeito destaca a rota utilizada imediatamente antes da armadilha atingir o jogador.
+### 🎮 Revised controls
 
-### Crônicas do Castelo
+Movement uses **A / D** or **← / →**, jumping uses **W** or **↑**, and **Space** activates your ability. **E** no longer activates powers. **R**, **ESC**, and **F11** retain their functions.
 
-O menu principal ganhou a seção **Crônicas do Castelo**.
+### ✨ Elemental abilities
 
-Nela podem ser consultados:
+Each ability has a distinct animation, active duration, range, target limit, and visible cooldown. **Cooldown lasts five seconds after the effect ends.**
 
-- conquistas;
-- relíquias encontradas;
-- relíquia atualmente equipada;
-- fragmentos de lore;
-- estatísticas gerais;
-- melhor rank alcançado.
+| Element | Ability | Duration | Maximum targets | Behavior |
+| --- | --- | --- | --- | --- |
+| Earth | Roots of the Abyss | 1.9s | 2 | Roots seek nearby enemies from the floor. |
+| Air | Mini Hurricane | 2.2s | 2 | A tornado travels in the facing direction while air mobility improves. |
+| Light | Solar Crown | 2.8s | 3 | A pulsing solar aura attacks nearby enemies. |
+| Darkness | Black Fire | 2.6s | 2 | Black and purple flames attack nearby enemies. |
 
-### Finais alternativos
+Light and Darkness receive only brief initial defensive protection, rather than invulnerability for the full duration. Limits preserve the INSANITY difficulty.
 
-A conclusão das 1000 fases agora pode variar conforme o histórico da campanha.
+### 💾 Retained improvements
 
-Existem diferentes resultados, incluindo:
+A Return to Main Menu button is available in multiplayer rooms. Desktop saves persist between sessions. Every death awards five coins only to the player who died.
 
-- **Final — A Porta do Infinito**;
-- **Final Verdadeiro — O Castelo Lembra**;
-- **Final Amaldiçoado — Você Virou Parte Dele**.
+## Opening and identity
 
-As condições levam em consideração fatores da progressão, descobertas e desempenho acumulado.
+The presentation has three stages:
 
-### Multiplayer e Modo Caos
+1. A black **NYX PROJECT R** studio screen with its purple owl, red eyes, and **Presents** signature.
+2. The cinematic **INFINITY CASTLE ELEMENTS — INSANITY** title screen, introducing the four elements and the campaign's dark fantasy atmosphere.
+3. The main menu: **Singleplayer, Multiplayer, Chaos Mode, Settings, Castle Chronicles, Updates, and Exit**. The Arcane Shop remains available inside the game.
 
-Os novos sistemas foram integrados sem remover o funcionamento existente do multiplayer.
+The current identity combines the 0.0.6 character and castle redesigns, Chronicles, Joker Levels, anomalies, the Pursuer, and level 666 with 0.0.7's cinematic HUD, camera, effects, tower progress, final-room treatment, and Update Hub. On desktop, **Exit** closes the game directly.
 
-A versão 0.0.6 mantém:
+## The 1,000-level campaign
 
-- Multiplayer de 2 jogadores;
-- Modo Caos de 4 jogadores;
-- morte compartilhada;
-- armadilhas sincronizadas;
-- portões cooperativos;
-- selos elementais;
-- runas dos chefes;
-- habilidades dos quatro elementos.
+The campaign runs from level **1 to 1000**. INSANITY difficulty escalates from **level 5**. Traps are deterministic: die, learn what happened, and try a better route. The generator uses **12 layout archetypes**, **10 regions**, and **10 bosses**, one every 100 levels.
 
-### Validação da 0.0.6
+### Regions
 
-Antes da publicação, a versão final passou pelo pipeline oficial do projeto com:
+| Levels | Region |
+| --- | --- |
+| 001–100 | Royal Gate and Courtyard |
+| 101–200 | Noble Gallery |
+| 201–300 | Deep Dungeons |
+| 301–400 | Clock Tower |
+| 401–500 | Living Library |
+| 501–600 | Haunted Chapel |
+| 601–700 | Hanging Gardens |
+| 701–800 | Storm Battlements |
+| 801–900 | Crimson Throne |
+| 901–1000 | Impossible Heart |
 
-- **checagem de sintaxe JavaScript**;
-- **auditoria das 1000 fases**;
-- **teste de runtime dos quatro elementos**;
-- **validação estrutural das fases**;
-- **teste do Multiplayer / Modo Caos com 4 jogadores**;
-- **build Windows**;
-- **build Android**.
+## Playable elements
 
-A versão publicada corresponde à **Infinity Castle Elements — INSANITY 0.0.6**.
+### 🪨 Earth
 
+Heavier and more controlled, resistant to roots, and equipped with **Roots of the Abyss**. Press **Space** to summon roots toward nearby enemies: **1.9 seconds**, up to **two targets**, and **five seconds of cooldown after the effect ends**.
 
-## Novidades da versão 0.0.5
+### 💨 Air
 
-### 🛠️ Hotfix de inicialização
+Faster and more mobile, immune to storms, and equipped with **Mini Hurricane**. Press **Space** to send a tornado in your facing direction and temporarily improve aerial mobility: **2.2 seconds**, up to **two enemies**, and **five seconds of cooldown after the effect ends**.
 
-- corrige o erro `SyntaxError: missing ) after argument list` em `desktop/main.cjs`;
-- corrige as strings do PowerShell usadas pelo atualizador;
-- adiciona `node --check desktop/main.cjs` ao workflow de Windows;
-- o GitHub não publica mais um executável se o processo principal Electron tiver erro de sintaxe;
-- quem instalou a 0.0.4 e está com o jogo sem abrir deve instalar o **Setup 0.0.5** manualmente uma vez.
-- no Multiplayer e no Modo Caos, armadilhas reveladas por um jogador agora são registradas como **estado autoritativo da sala** e replicadas para todos os demais jogadores;
-- espinhos surpresa, paredes-armadilha e demais armadilhas sincronizadas permanecem iguais para todos os clientes durante a tentativa;
-- a recompensa de morte foi corrigida para **+5 moedas somente para o jogador que morreu**;
+### ☀️ Light
 
-### 📱 Versão mobile / Android
+Resistant to curses and equipped with **Solar Crown**. Press **Space** to surround yourself with a pulsing aura: **2.8 seconds**, up to **three enemies**, and **five seconds of cooldown after the effect ends**. Defensive protection lasts only briefly at activation.
 
-- adicionada uma versão **Android 0.0.5** do Infinity Castle Elements;
-- o app mobile usa a mesma campanha, Multiplayer e **Modo Caos** da versão desktop;
-- Multiplayer e Caos continuam conectados ao mesmo servidor central da **Railway**;
-- adicionados **controles touch** para mover para esquerda/direita, pular e ativar o poder elemental;
-- o gameplay mobile foi adaptado para **tela cheia em orientação horizontal**;
-- a interface passou a exibir a **versão real do jogo**, evitando o texto antigo `0.0.2` aparecer em builds 0.0.5;
-- a base Android usa **Capacitor**, permitindo evoluir o jogo mobile sem manter uma campanha separada da versão de PC;
-- o APK é gerado automaticamente pelo GitHub Actions e publicado junto ao Release da versão.
+### 🌑 Darkness
 
-
-## Novidades da versão 0.0.4
-
-### 🔄 Atualizador corrigido
-
-- corrige o loop em que a versão antiga continuava pedindo a mesma atualização;
-- o jogo espera o processo antigo encerrar antes de instalar;
-- a atualização é aplicada sobre a instalação atual;
-- o instalador é executado em modo de atualização silenciosa;
-- o jogo valida se a versão nova realmente foi instalada antes de reabrir;
-- após concluir, a nova versão é aberta automaticamente;
-- o fluxo grava um log local de instalação para facilitar diagnóstico caso algo falhe;
-- o workflow de Windows agora usa automaticamente a versão do `package.json`, evitando releases presos em números antigos.
-
-## Novidades da versão 0.0.3
-
-A **INSANITY 0.0.3** mantém o Modo Caos e foca em regras mais claras para as pegadinhas: controles invertidos passam a existir apenas em Fases Coringa e armadilhas acionadas no multiplayer passam a ser compartilhadas pela sala.
-
-### 🃏 Fases Coringa
-
-- controles invertidos não aparecem mais em fases normais;
-- a inversão agora é exclusiva das **Fases Coringa**;
-- as Fases Coringa aparecem de forma determinística ao longo da campanha e são marcadas na HUD;
-- essas salas recebem uma camada visual anômala com olhos acompanhando o jogador, quadros tortos, rasgos de realidade e uma ambientação mais perturbadora;
-- **nenhum elemento é imune à inversão** nas Fases Coringa — inclusive a Escuridão;
-- chefes continuam fora da rotação de Fases Coringa.
-
-### 🔗 Armadilhas sincronizadas no multiplayer
-
-- espinhos surpresa, espinhos pop-up, chão falso, pontes quebráveis, plataformas que somem, lustres, blocos que caem, paredes-relâmpago, saída móvel e saída falsa agora compartilham o mesmo estado entre os jogadores;
-- quando um jogador ativa uma armadilha, os demais recebem o evento pela sala online e enxergam a mesma mudança no cenário;
-- o servidor mantém o estado das armadilhas durante a tentativa atual e limpa tudo corretamente quando a fase reinicia;
-- a sincronização vale tanto para o multiplayer de 2 jogadores quanto para o **Modo Caos** de 4 jogadores: quando um jogador ativa espinhos ou outra armadilha compartilhada, todos na sala enxergam a ativação.
-
-### ⚡ Modo Caos — 4 jogadores
-
-- nova campanha online para **4 jogadores**;
-- a sala exige **Terra, Ar, Luz e Escuridão** ao mesmo tempo;
-- elementos não podem ser repetidos dentro da sala Caos;
-- a partida só começa quando os **4/4 jogadores** estiverem presentes e prontos;
-- cada fase normal possui **quatro selos elementais**;
-- cada personagem ativa somente o selo correspondente ao próprio elemento;
-- a saída permanece bloqueada até os **4 selos** terem sido ativados;
-- chefes do Modo Caos usam **quatro runas simultâneas**, uma para cada elemento;
-- uma morte reinicia a tentativa para o quarteto inteiro;
-- fases do Caos recebem pressão extra de inimigos;
-- sincronização visual e de estado ampliada para até **4 personagens**;
-- campanha Caos com **save próprio**, separado do singleplayer e do multiplayer de 2 jogadores;
-- opção **Continuar Caos — fase X**, criando uma nova sala online a partir do progresso salvo.
-
-### 🌐 Multiplayer online
-
-- servidor multiplayer central hospedado na **Railway**;
-- salas privadas por código funcionando entre computadores diferentes pela internet;
-- o jogador não precisa abrir servidor, terminal, Node.js ou deixar um PC atuando como host;
-- campanha multiplayer de 2 jogadores continua disponível separadamente do Modo Caos;
-- saves persistentes para singleplayer, multiplayer e campanha Caos.
-
-### ⬇ Atualizações pelo próprio jogo
-
-- verificação automática de novas versões pelo **GitHub Releases**;
-- aviso de atualização disponível no menu principal;
-- opção **Verificar atualizações** em Configurações;
-- tela com versão instalada, versão nova e notas da atualização;
-- download com progresso dentro do jogo na versão Setup;
-- opção **Reiniciar e instalar** após o download;
-- saves permanecem preservados durante atualizações;
-- correção do fluxo do atualizador para evitar travamento/loop ao abrir a janela de atualização.
-
-### 🎮 Controles revisados
-
-- movimento em **A / D** ou **← / →**;
-- pulo em **W** ou **↑**;
-- **Espaço** ativa a habilidade elemental;
-- **E** não ativa mais a habilidade;
-- **R**, **ESC** e **F11** permanecem sem alteração.
-
-### ✨ Habilidades elementais — novo pacote visual e de combate
-
-As quatro habilidades agora possuem animação própria, janela ativa e cooldown visível na HUD. O objetivo é fazer cada elemento parecer realmente diferente sem transformar o jogo em spam de poder.
-
-- o **cooldown é de 5 segundos depois que o efeito termina**;
-- a HUD mostra **PODER PRONTO**, tempo ativo e tempo restante de recarga;
-- **Luz — Coroa Solar:** aura em formato de pequeno sol ao redor da personagem, dura **2,8s**, alcança inimigos próximos em pulsos e pode derrotar no máximo **3 inimigos por ativação**;
-- **Escuridão — Fogo Negro:** chamas negras/roxas emanam do personagem por **2,6s**, atacando inimigos próximos; pode derrotar no máximo **2 inimigos por ativação** e mantém apenas uma curta janela inicial de fase/proteção;
-- **Terra — Raízes do Abismo:** raízes brotam do chão e procuram inimigos próximos por **1,9s**, alcançando até **2 alvos por ativação**;
-- **Ar — Mini Furacão:** um pequeno tornado é lançado na direção em que o jogador está olhando por **2,2s**, podendo atingir no máximo **2 inimigos por ativação**;
-- o Ar continua recebendo mobilidade adicional enquanto sua habilidade está ativa;
-- Luz e Escuridão não ficam invulneráveis durante toda a duração do poder: existe apenas uma pequena proteção inicial para evitar que a ativação vire morte instantânea;
-- o sistema foi deliberadamente limitado por alcance, duração, quantidade de alvos e recarga para preservar a dificuldade **INSANITY**.
-
-### 💾 Outros ajustes mantidos
-
-- botão **Voltar ao menu inicial** dentro da sala multiplayer;
-- **+5 moedas apenas para o jogador que morreu** em qualquer modo; no Multiplayer e no Modo Caos, a morte ainda reinicia a tentativa compartilhada, mas a recompensa pertence somente a quem morreu;
-- sistema persistente de saves no desktop;
-- menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações e Sair**.
-
-## Downloads para Windows
-
-1. **Instalador:** [Infinity-Castle-Elements-Setup-0.0.7.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Setup-0.0.7.exe)
-2. **Portable:** [Infinity-Castle-Elements-Portable-0.0.7.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Portable-0.0.7.exe)
-3. **Pacote com os dois:** [Infinity-Castle-Elements-Windows-0.0.7.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Windows-0.0.7.zip)
-
-## Download para Android
-
-1. **APK Android:** [Infinity-Castle-Elements-Android-0.0.7.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Android-0.0.7.apk)
-
-> Recomenda-se jogar no celular em **orientação horizontal** para aproveitar o canvas completo e os controles touch.
-
----
-
-## Abertura e identidade
-
-Na versão atual **INSANITY 0.0.7 — Visual Experience Update**, a apresentação acontece em três etapas:
-
-1. tela preta da **NYX PROJECT R**, com a coruja roxa de olhos vermelhos e a assinatura **Apresenta:**;
-2. tela cinematográfica de **INFINITY CASTLE ELEMENTS — INSANITY**, apresentando os quatro elementos diante do castelo e preparando a atmosfera de fantasia sombria da campanha;
-3. menu principal com **Singleplayer, Multiplayer, Modo Caos, Configurações, Crônicas do Castelo, Atualizações e Sair**. A **Loja Arcana** continua disponível dentro do jogo.
-
-A identidade visual atual combina os sistemas da 0.0.6 com o polimento de apresentação da **0.0.7**:
-
-- **Character Visual Overhaul**, dando silhuetas, animações, expressões, relíquias visíveis e corrupção progressiva aos quatro personagens;
-- **Castle Visual Overhaul**, reformulando visualmente as dez regiões com parallax, iluminação, clima, materiais próprios de plataformas, atmosferas e corrupção crescente;
-- **Crônicas do Castelo**, reunindo conquistas, relíquias, fragmentos de lore, estatísticas e melhor rank alcançado;
-- **Fases Coringa, anomalias, Perseguidor e fase 666** integrados à identidade visual e narrativa do castelo.
-- **Visual Experience Update 0.0.7**, com HUD cinematográfica, câmera dinâmica, VFX reforçados, bosses e mortes cinematográficos, progresso visual da torre e tratamento especial da fase 1000.
-- **Update Hub Overhaul 0.0.7**, com Central de Atualizações própria, histórico de versões, downloads retomáveis, verificação SHA-256, backup automático, instalação ao sair e protocolo multiplayer versionado.
-
-Na versão desktop, **Sair** fecha o jogo diretamente.
-
-## Campanha com 1000 fases
-
-A campanha vai da fase **1 até a 1000**. A partir da **fase 5**, a dificuldade INSANITY começa a escalar de verdade. As pegadinhas são determinísticas: a ideia é morrer, aprender o que aconteceu e tentar superar o castelo na próxima tentativa.
-
-O jogo possui **12 arquétipos de layout**, **10 regiões** e um chefe a cada 100 fases, totalizando **10 chefes**.
-
-### Regiões
-
-- **001–100 — Portão e Pátio Real**
-- **101–200 — Galeria Nobre**
-- **201–300 — Masmorras Profundas**
-- **301–400 — Torre do Relógio**
-- **401–500 — Biblioteca Viva**
-- **501–600 — Capela Assombrada**
-- **601–700 — Jardins Suspensos**
-- **701–800 — Muralhas da Tempestade**
-- **801–900 — Trono Rubro**
-- **901–1000 — Coração Impossível**
-
-## Elementos jogáveis
-
-### 🪨 Terra
-Mais pesado e controlado, resistente a raízes e equipado com **Raízes do Abismo**. Ao pressionar **Espaço**, raízes brotam do chão em direção aos inimigos próximos. A habilidade dura **1,9s**, pode atingir até **2 alvos** e entra em recarga por **5s após terminar**.
-
-### 💨 Ar
-Mais rápido e móvel, imune a vendavais e equipado com **Mini Furacão**. Ao pressionar **Espaço**, um pequeno tornado avança na direção em que o personagem está olhando enquanto a mobilidade aérea aumenta temporariamente. O efeito dura **2,2s**, pode atingir até **2 inimigos** e recarrega por **5s após terminar**.
-
-### ☀️ Luz
-Resistente a maldições e equipada com **Coroa Solar**. Ao pressionar **Espaço**, uma aura solar pulsante envolve a personagem e ataca inimigos próximos. O efeito dura **2,8s**, pode derrotar até **3 inimigos** e possui **5s de recarga depois que termina**. A proteção defensiva existe somente por um instante no começo da ativação.
-
-### 🌑 Escuridão
-Ignora zonas de controles invertidos e usa **Fogo Negro**. Ao pressionar **Espaço**, chamas negras e roxas emanam do corpo e atacam inimigos próximos por **2,6s**. A habilidade pode derrotar até **2 inimigos** por uso e concede somente uma curta janela inicial de fase/proteção, seguida de **5s de recarga após o efeito terminar**.
+Ignores inverted-control zones and uses **Black Fire**. Press **Space** to emit black and purple flames: **2.6 seconds**, up to **two enemies**, a brief initial phase/protection window, and **five seconds of cooldown after the effect ends**.
 
 ## Singleplayer
 
-No modo solo, o jogador escolhe **um único elemento** antes de começar. Portões, placas e rituais de chefes são adaptados para que a campanha continue possível com apenas um personagem.
-
-A escolha do elemento agora é feita diretamente pelos **quatro bonequinhos elementais** na tela antes de iniciar a fase, sem precisar descer a interface para procurar a seleção.
-
-O progresso solo inclui fase atual, mortes, elemento, moedas, boosts e cosméticos.
+Choose **one element** before starting. Gates, plates, and boss rituals adapt so the campaign remains possible with one character. Use the four elemental characters on the setup screen to select your element. Solo progress includes your level, deaths, element, coins, boosts, and cosmetics.
 
 ## Multiplayer
 
-O multiplayer foi criado para **2 jogadores**, com salas privadas por código e escolha independente de elemento. O sistema sincroniza jogadores, fase, mortes, chefes, runas, inimigos derrotados e reinícios.
+Two-player co-op uses private rooms with codes and independent element selection, including duplicate elements. Players, levels, deaths, bosses, runes, defeated enemies, traps, and restarts synchronize through the project's online Railway server. A saved campaign creates a new room at the saved level when resumed.
 
-Na edição desktop **0.0.3**, o multiplayer utiliza o servidor online do projeto hospedado na **Railway**. Jogadores em computadores diferentes podem criar e entrar em salas pela internet usando o código da sala, sem precisar iniciar servidor manualmente.
+## Chaos Mode — four players
 
-## Modo Caos — 4 jogadores
+The room requires **Earth, Air, Light, and Darkness**, with one player per element. All four must be present and ready. Each room requires four elemental seals before the exit opens; each player can activate only their own seal. Boss rituals require all four elemental runes simultaneously. One death restarts everyone's attempt, and extra enemies increase the difficulty. Chaos progress has its own save, separate from solo and two-player co-op.
 
-O **Modo Caos** é uma campanha online paralela para exatamente **4 jogadores**. A sala só começa quando os quatro participantes estiverem presentes e prontos.
+## Coins and the Arcane Shop
 
-Cada sala deve conter os quatro elementos, sem repetição:
+Earn coins by completing levels, defeating enemies, and dying. **In every mode, a death grants +5 coins only to the player who died.** Other players receive no coins for that death.
 
-- 🪨 **Terra**
-- 💨 **Ar**
-- ☀️ **Luz**
-- 🌑 **Escuridão**
+Shop items include:
 
-Nas fases normais, quatro **selos elementais** são distribuídos pelo cenário. Cada jogador só ativa o selo do próprio elemento. A saída permanece bloqueada até os quatro selos serem despertados.
+- **Shield Rune:** absorbs a fatal hit.
+- **Wind Boots:** temporarily increases speed.
+- **Arcane Jump:** temporarily increases jump strength.
+- **Castle Crown:** a permanent cosmetic.
+- **Elemental Aura:** a permanent cosmetic.
 
-Nos chefes, o ritual cooperativo é ampliado para **quatro runas simultâneas**, uma para cada elemento. Os quatro jogadores precisam ocupar suas runas ao mesmo tempo e sobreviver ao ritual.
+## Enemies and threats
 
-O Modo Caos também aumenta a presença de inimigos e transforma uma morte em falha coletiva: se um integrante morrer, a tentativa é reiniciada para todo o quarteto.
+The campaign includes sentinels, bats, specters, living armor, ghosts, dragons, projectiles, and falling objects. Threat counts and combinations increase as you climb.
 
-A campanha Caos possui save separado e pode ser retomada criando uma nova sala a partir da fase salva.
+## INSANITY traps
 
-## Sistema de moedas e Loja Arcana
+Expect false floors, disappearing platforms, breakable bridges, ordinary and surprise spikes, ceiling spikes, fake exits, fleeing exits, fake doors, falling blocks and chandeliers, advancing walls, crushers, elevators, moving bookshelves, Joker-only inverted controls, wind gusts, ghosts, living armor, dragons, projectiles, and combinations of several tricks in one room.
 
-Moedas são recebidas ao concluir fases, derrotar inimigos e também ao morrer. Em **qualquer modo**, cada morte rende **+5 moedas somente ao jogador que morreu**. No Multiplayer e no Modo Caos, os demais jogadores não recebem moedas pela morte de outra pessoa. Elas podem ser usadas na **Loja Arcana** para comprar:
+## Bosses
 
-- **Runa de Escudo** — absorve um golpe fatal;
-- **Botas do Vento** — aumenta temporariamente a velocidade;
-- **Salto Arcano** — aumenta temporariamente a força do salto;
-- **Coroa do Castelo** — cosmético permanente;
-- **Aura Elemental** — cosmético permanente.
+Bosses appear in levels **100, 200, 300, 400, 500, 600, 700, 800, 900, and 1000**. Barriers, runes, rituals, projectiles, and arenas adapt to the chosen mode.
 
-## Inimigos e ameaças
+## Protection against impossible levels
 
-A campanha possui sentinelas, morcegos, espectros e ameaças especiais como armaduras vivas, fantasmas, dragões, projéteis e objetos que despencam do cenário.
+The generator protects spawn points, exits, plates, gates, runes, and required routes. If a layout fails structural validation, an **emergency room** replaces it with a safe layout.
 
-A quantidade e a combinação de ameaças aumentam conforme o jogador avança.
+## Level auditing
 
-## Pegadinhas INSANITY
+The built-in audit checks **1,000 levels**, **10 bosses**, **240 levels with gates**, **12 archetypes**, and **10 regions**. It exercises level rendering, runtime behavior for all four elements, and critical spawn and exit areas.
 
-Entre as mecânicas atuais estão:
+## Settings and pause menu
 
-- chão falso;
-- plataformas que desaparecem;
-- pontes quebráveis;
-- espinhos normais e surpresa;
-- espinhos de teto;
-- saídas falsas;
-- saída que foge;
-- portas falsas;
-- blocos e lustres caindo;
-- paredes que avançam de surpresa;
-- esmagadores;
-- elevadores;
-- estantes móveis;
-- controles invertidos **somente em Fases Coringa**;
-- rajadas de vento;
-- fantasmas;
-- armaduras vivas;
-- dragões;
-- projéteis;
-- combinações de várias pegadinhas na mesma sala.
+Desktop starts **fullscreen by default**. Settings offers native resolution, 4K, 1440p, 1080p, 1600×900, 1366×768, and 720p, plus language, fullscreen, screen shake, and reduced animations.
 
-## Chefes
+Press **ESC** during a level to pause. You can **Save game**, open **Settings**, **Exit to menu**, or **Exit to desktop**. Press **ESC** again to continue.
 
-Há chefes nas fases **100, 200, 300, 400, 500, 600, 700, 800, 900 e 1000**.
+## Controls
 
-Eles utilizam barreiras, runas, rituais, projéteis e arenas próprias, com comportamento adaptado para singleplayer e multiplayer.
+| Input | Action |
+| --- | --- |
+| A / D or ← / → | Move |
+| W or ↑ | Jump |
+| Space | Elemental ability |
+| R | Restart level |
+| ESC | Open or close pause menu |
+| F11 | Toggle fullscreen |
 
-## Sistema anti-fase-impossível
+Since 0.0.3, abilities use **Space** instead of **E**.
 
-O gerador protege áreas críticas como spawn, saída, placas, portões, runas e caminhos obrigatórios.
+## System requirements
 
-Também existe uma **sala de emergência**: se uma geração for detectada como estruturalmente inválida, aquela fase é substituída por um layout seguro em vez de deixar a partida quebrada.
+Recommended for the official Windows release:
 
-## Auditoria das 1000 fases
+- **Windows 10 or Windows 11, 64 bit**
+- **x64 processor**
+- **4 GB RAM or more**
+- Compatible graphics acceleration
+- Free space for the game and local saves
+- Internet access for online multiplayer and updates
 
-A build possui auditoria própria para geração, renderização, estruturas críticas, inimigos e runtime dos quatro elementos.
+### Technologies
 
-Na INSANITY 0.0.3, o processo de validação verifica:
+The game uses **Electron, Node.js, JavaScript, HTML5, CSS, Canvas 2D, Express, and Socket.IO**. These are included in the distributed application.
 
-- **1000 fases**;
-- **10 chefes**;
-- **240 fases com portões**;
-- **12 arquétipos**;
-- **10 regiões**;
-- renderização das fases;
-- runtime dos quatro elementos;
-- áreas críticas de spawn e saída.
+### Windows SmartScreen
 
-## Configurações e menu de pausa
+The 0.0 series does not yet use a commercial code-signing certificate. Depending on Windows settings, SmartScreen may show an **unknown publisher** warning on first launch.
 
-A versão desktop inicia **em tela cheia por padrão**.
+## Development
 
-Dentro de **Configurações** ficam centralizadas as opções de:
+Install **Node.js 18 or newer**, then run from the repository directory:
 
-- **resolução** — Nativa, 4K, 1440p, 1080p, 1600×900, 1366×768 e 720p;
-- **idioma da interface** — Português, Inglês, Espanhol, Francês, Alemão, Italiano, Holandês, Polonês, Russo, Turco, Japonês, Coreano, Chinês Simplificado, Chinês Tradicional, Árabe, Hindi, Sueco, Dinamarquês, Finlandês e Tcheco;
-- **tela cheia**;
-- **tremor de tela**;
-- **redução de animações**.
+```sh
+npm install
+npm start
+```
 
-Durante uma fase, pressione **ESC** para abrir o menu de pausa. Nele é possível:
+The local web server uses port **3000** by default; set `PORT` to choose another port. Use `npm run dev` for watch mode.
 
-- **Salvar jogo**;
-- abrir **Configurações**;
-- **Sair para o menu**;
-- **Sair para desktop**.
+```sh
+npm run test:levels
+npm run test:chaos
+```
 
-Pressionar **ESC novamente** fecha o menu de pausa e continua a tentativa.
+The first command audits all 1,000 levels. The second tests live Socket.IO multiplayer, Chaos Mode, synchronized traps, death rewards, and protocol compatibility.
 
-## Controles
-
-- **A / D** ou **← / →** — movimento
-- **W** ou **↑** — pular
-- **Espaço** — habilidade elemental
-- **R** — reiniciar fase
-- **ESC** — abrir/fechar menu de pausa
-- **F11** — alternar tela cheia
-
-> Na **0.0.3**, a habilidade elemental saiu do **E** e passou para o **Espaço**. O pulo pode ser feito com **W** ou **↑**.
-
----
-
-# Especificações de execução
-
-## Versão oficial
-
-A versão oficial é distribuída para **Windows 64 bits** em três opções:
-
-- **Setup** — instalador tradicional do Windows;
-- **Portable** — executável que abre diretamente, sem instalação;
-- **Pacote ZIP** — contém o Setup e o Portable juntos.
-
-O jogo já inclui os componentes necessários para funcionar. **O jogador não precisa instalar Node.js, npm, Express ou Socket.IO separadamente.**
-
-## Requisitos recomendados
-
-- **Windows 10 ou Windows 11 — 64 bits**
-- processador **x64**
-- **4 GB de RAM** ou mais
-- aceleração gráfica compatível
-- espaço livre para o jogo e os dados locais de save
-- conexão com a internet somente para os recursos multiplayer online
-
-## Tecnologias utilizadas
-
-O jogo utiliza internamente:
-
-- **Electron**
-- **Node.js**
-- **JavaScript**
-- **HTML5**
-- **CSS**
-- **Canvas 2D**
-- **Express**
-- **Socket.IO**
-
-Essas tecnologias fazem parte do aplicativo e não precisam ser instaladas manualmente pelo jogador.
-
-## Instalação
-
-### Instalador
-Baixe:
-
-**Infinity-Castle-Elements-Setup-0.0.6.exe**
-
-Abra o arquivo, escolha a pasta de instalação e conclua o assistente. O instalador pode criar atalhos na Área de Trabalho e no Menu Iniciar.
-
-### Portable
-Baixe:
-
-**Infinity-Castle-Elements-Portable-0.0.6.exe**
-
-Abra o executável diretamente. Não é necessário instalar o jogo.
-
-### Pacote completo
-Baixe:
-
-**Infinity-Castle-Elements-Windows-0.0.6.zip**
-
-Extraia o arquivo para encontrar as versões Setup e Portable.
-
-## Windows SmartScreen
-
-A versão 0.0 ainda não utiliza certificado comercial de assinatura de código. Por isso, dependendo das configurações do Windows, o SmartScreen pode exibir um aviso de **editor desconhecido** ao abrir o executável pela primeira vez.
+Optional platform workflows: `npm run desktop` for Electron, `npm run dist:win` for Windows packaging, and the `mobile:*` scripts for Capacitor Android development. Android requires its SDK and native build tools.
