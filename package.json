@@ -1,8 +1,8 @@
 {
   "name": "infinity-castle-elements",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "private": true,
-  "description": "Infinity Castle Elements — INSANITY 0.0.7. Visual Experience Update: HUD cinematográfico, VFX elementais, câmera dinâmica, bosses, morte, progressão visual e polimento do castelo.",
+  "description": "Infinity Castle Elements — INSANITY 0.0.8. Complete in-game localization with instant language switching and offline translations.",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",
@@ -12,6 +12,7 @@
     "dist:win": "electron-builder --win nsis portable",
     "start:multiplayer": "MULTIPLAYER_ONLY=1 node server.js",
     "test:chaos": "node tools/test-chaos-multiplayer.js",
+    "test:i18n": "node tools/test-i18n.js",
     "mobile:add:android": "npx cap add android",
     "mobile:sync": "npx cap sync android",
     "mobile:android": "npx cap open android"

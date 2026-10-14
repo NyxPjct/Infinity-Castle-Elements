@@ -665,13 +665,13 @@ body.game-active #gameWrap .hud.hud-v007{
   grid-template-areas:"orb copy" "bar bar"!important;gap:2px 8px!important;min-width:145px!important;
   padding:3px 7px 4px!important;border-radius:13px!important;
 }
-.ability-orb{grid-area:orb;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;position:relative;
+.ability-orb-hud>.ability-orb{grid-area:orb;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;position:relative;
   background:conic-gradient(var(--v007-element) var(--ability-progress),rgba(255,255,255,.07) 0);
   box-shadow:0 0 15px color-mix(in srgb,var(--v007-element) 20%,transparent);
 }
 .ability-orb::after{content:"";position:absolute;inset:4px;border-radius:50%;background:#080b11;border:1px solid rgba(255,255,255,.08)}
 .ability-orb>span{position:relative;z-index:2;font-size:16px;color:var(--v007-element);filter:drop-shadow(0 0 7px var(--v007-element))}
-.ability-copy{grid-area:copy;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.ability-orb-hud>.ability-copy{grid-area:copy;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
 .ability-copy>b{font-size:7px!important;letter-spacing:.13em!important;color:#929baa!important}
 .ability-copy>span{font-size:8px!important;font-weight:850;color:#e8edf5!important;text-align:left!important}
 .ability-orb-hud>i{grid-area:bar!important;height:2px!important}

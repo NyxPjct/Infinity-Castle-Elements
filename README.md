@@ -1,10 +1,12 @@
-# Infinity Castle Elements — INSANITY 0.0.7
+# Infinity Castle Elements — INSANITY 0.0.8
 
 **Infinity Castle Elements** is an original troll platformer, action, and survival game by **NYX PROJECT R**. Climb a campaign of **1,000 levels**, master four playable elements, and face enemies, bosses, coins, a shop, boosts, cosmetics, and a castle that learns to hate you back. Play solo, cooperate with a friend, or enter online **Chaos Mode with four players**.
 
+**INSANITY 0.0.8 — In-game Language Update** makes the selected language apply throughout the game immediately. All 20 language options have local text catalogs, including menus, the HUD, shop, achievements, lore, multiplayer messages, and canvas text. Brazilian Portuguese remains the default, and translations work offline.
+
 **INSANITY 0.0.7 — Visual Experience Update** brings a dark fantasy HUD, a dynamic camera, stronger elemental effects, cinematic deaths and bosses, visual tower progression, regional enemies, post-processing, and a special presentation for level 1000. It also includes an integrated **Update Hub** with release history, resumable downloads, SHA-256 verification, automatic backups, install-on-exit support, and a versioned multiplayer protocol. All systems introduced in 0.0.6 remain available.
 
-**Current game version:** `0.0.7`
+**Current game version:** `0.0.8`
 
 ## Downloads
 
@@ -12,13 +14,13 @@
 
 | Edition | Download | How to use it |
 | --- | --- | --- |
-| Setup | [Infinity-Castle-Elements-Setup-0.0.7.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Setup-0.0.7.exe) | Run the installer, choose a folder, and finish the wizard. Desktop and Start Menu shortcuts are available. |
-| Portable | [Infinity-Castle-Elements-Portable-0.0.7.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Portable-0.0.7.exe) | Run the executable directly; no installation is required. |
-| Complete ZIP | [Infinity-Castle-Elements-Windows-0.0.7.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Windows-0.0.7.zip) | Extract the archive to access both Setup and Portable. |
+| Setup | [Infinity-Castle-Elements-Setup-0.0.8.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.8/Infinity-Castle-Elements-Setup-0.0.8.exe) | Run the installer, choose a folder, and finish the wizard. Desktop and Start Menu shortcuts are available. |
+| Portable | [Infinity-Castle-Elements-Portable-0.0.8.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.8/Infinity-Castle-Elements-Portable-0.0.8.exe) | Run the executable directly; no installation is required. |
+| Complete ZIP | [Infinity-Castle-Elements-Windows-0.0.8.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.8/Infinity-Castle-Elements-Windows-0.0.8.zip) | Extract the archive to access both Setup and Portable. |
 
 ### Android
 
-[Download Infinity-Castle-Elements-Android-0.0.7.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.7/Infinity-Castle-Elements-Android-0.0.7.apk)
+[Download Infinity-Castle-Elements-Android-0.0.8.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.8/Infinity-Castle-Elements-Android-0.0.8.apk)
 
 Play in **landscape orientation** to use the full canvas and touch controls.
 
@@ -39,26 +41,39 @@ During a level, press **ESC**, choose **Configurações**, and change **Idioma**
 
 Available languages: Portuguese, English, Spanish, French, German, Italian, Dutch, Polish, Russian, Turkish, Japanese, Korean, Simplified Chinese, Traditional Chinese, Arabic, Hindi, Swedish, Danish, Finnish, and Czech.
 
+Changing the language updates the menus, settings, element selection, HUD, shop, achievements, relics, lore, room messages, overlays, and text drawn on the game canvas. Translations are included locally and work offline.
+
 Player names, room codes, version numbers, and externally published release notes retain their original content.
 
-## 📸 Screenshots — INSANITY 0.0.7
+## 📸 Screenshots — INSANITY 0.0.8
 
 The following captures show the current web build. The mobile image shows the responsive touch interface in a mobile browser viewport.
 
 <table>
   <tr>
-    <td><img src="./docs/images/menu-principal.jpg" width="480" alt="Infinity Castle Elements 0.0.7 main menu" /><br /><strong>Main menu</strong></td>
-    <td><img src="./docs/images/selecao-elementos.jpg" width="480" alt="Element selection in Infinity Castle Elements 0.0.7" /><br /><strong>Element selection</strong></td>
+    <td><img src="./docs/images/menu-principal.jpg" width="480" alt="Infinity Castle Elements 0.0.8 main menu" /><br /><strong>Main menu</strong></td>
+    <td><img src="./docs/images/selecao-elementos.jpg" width="480" alt="Element selection in Infinity Castle Elements 0.0.8" /><br /><strong>Element selection</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/gameplay-singleplayer.jpg" width="480" alt="Singleplayer gameplay with the 0.0.7 HUD" /><br /><strong>Singleplayer</strong></td>
-    <td><img src="./docs/images/gameplay-multiplayer.jpg" width="480" alt="Two-player cooperative gameplay in version 0.0.7" /><br /><strong>Online co-op</strong></td>
+    <td><img src="./docs/images/gameplay-singleplayer.jpg" width="480" alt="Singleplayer gameplay with the 0.0.8 HUD" /><br /><strong>Singleplayer</strong></td>
+    <td><img src="./docs/images/gameplay-multiplayer.jpg" width="480" alt="Two-player cooperative gameplay in version 0.0.8" /><br /><strong>Online co-op</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/modo-caos.jpg" width="480" alt="Four-player Chaos Mode in version 0.0.7" /><br /><strong>Chaos Mode</strong></td>
-    <td><img src="./docs/images/android-gameplay.jpg" width="480" alt="Version 0.0.7 touch controls in a landscape mobile browser" /><br /><strong>Mobile touch interface</strong></td>
+    <td><img src="./docs/images/modo-caos.jpg" width="480" alt="Four-player Chaos Mode in version 0.0.8" /><br /><strong>Chaos Mode</strong></td>
+    <td><img src="./docs/images/android-gameplay.jpg" width="480" alt="Version 0.0.8 touch controls in a landscape mobile browser" /><br /><strong>Mobile touch interface</strong></td>
   </tr>
 </table>
+
+## What's new in 0.0.8 — In-game Language Update
+
+- Complete text catalogs for all 20 language options.
+- Immediate language changes across static and dynamic game text, including the canvas and illustration labels.
+- Language preferences persist across restarts without changing campaign progress.
+- Arabic uses right-to-left interface text.
+- Translation works offline and requires no external translation service.
+- Localization checks run before the Windows and Android packages are built.
+
+The core labels and English copy were reviewed. Some translations were prepared automatically and can be refined over time.
 
 ## What's new in 0.0.7 — Visual Experience Update
 
@@ -498,8 +513,11 @@ The local web server uses port **3000** by default; set `PORT` to choose another
 ```sh
 npm run test:levels
 npm run test:chaos
+npm run test:i18n
 ```
 
-The first command audits all 1,000 levels. The second tests live Socket.IO multiplayer, Chaos Mode, synchronized traps, death rewards, and protocol compatibility.
+The first command audits all 1,000 levels. The second tests live Socket.IO multiplayer, Chaos Mode, synchronized traps, death rewards, and protocol compatibility. The third verifies all 20 language catalogs, placeholders, dynamic messages, canvas text, and repeated language switching.
+
+Game translations are bundled in `public/translations.js`; keep the Portuguese source keys and numbered placeholders when refining a translation.
 
 Optional platform workflows: `npm run desktop` for Electron, `npm run dist:win` for Windows packaging, and the `mobile:*` scripts for Capacitor Android development. Android requires its SDK and native build tools.

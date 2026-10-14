@@ -1,4 +1,4 @@
-const APP_VERSION = String(window.electronAPI?.version || window.ICE_APP_VERSION || '0.0.7').trim() || '0.0.7';
+const APP_VERSION = String(window.electronAPI?.version || window.ICE_APP_VERSION || '0.0.8').trim() || '0.0.8';
 const MULTIPLAYER_PROTOCOL = 2;
 const UPDATE_NOTICE_KEY = 'infinity-castle-elements-update-notified-v1';
 const UPDATE_WELCOME_KEY = 'infinity-castle-elements-update-welcome-v1';
@@ -200,7 +200,7 @@ function renderUpdateHighlights(notes){
     const box=document.createElement('div');box.className='update-highlight-group';
     const h=document.createElement('h4');h.textContent=labels[key];box.appendChild(h);
     const ul=document.createElement('ul');
-    for(const item of items){const li=document.createElement('li');li.textContent=item;ul.appendChild(li);}
+    for(const item of items){const li=document.createElement('li');if(notes)li.setAttribute('data-i18n-ignore','');li.textContent=item;ul.appendChild(li);}
     box.appendChild(ul);root.appendChild(box);
   }
 }
@@ -213,8 +213,8 @@ function renderUpdateHistory(history){
     const row=document.createElement('div');row.className='update-history-item'+(normalizeClientVersion(item.version)===normalizeClientVersion(APP_VERSION)?' current':'');
     const version=document.createElement('div');version.className='update-history-version';version.textContent='v'+item.version;
     const copy=document.createElement('div');copy.className='update-history-copy';
-    const b=document.createElement('b');b.textContent=item.name||('Infinity Castle Elements '+item.version);
-    const small=document.createElement('small');small.textContent=item.publishedAt?new Date(item.publishedAt).toLocaleDateString('pt-BR'):'Release publicada';
+    const b=document.createElement('b');b.setAttribute('data-i18n-ignore','');b.textContent=item.name||('Infinity Castle Elements '+item.version);
+    const small=document.createElement('small');small.textContent=item.publishedAt?new Date(item.publishedAt).toLocaleDateString(profile?.settings?.language||'pt-BR'):'Release publicada';
     copy.appendChild(b);copy.appendChild(small);
     const tag=document.createElement('div');tag.className='update-history-tag';tag.textContent=normalizeClientVersion(item.version)===normalizeClientVersion(APP_VERSION)?'INSTALADA':'RELEASE';
     row.appendChild(version);row.appendChild(copy);row.appendChild(tag);root.appendChild(row);
@@ -234,7 +234,7 @@ function renderUpdateState(st){
   const modal=$('#updateModal'),current=$('#updateCurrentVersion'),latest=$('#updateLatestVersion'),headline=$('#updateHeadline'),notes=$('#updateNotes');
   if(current)current.textContent=st.currentVersion||APP_VERSION;if(latest)latest.textContent=st.latestVersion||APP_VERSION;
   if(headline)headline.textContent=st.status==='available'?`A versão ${st.latestVersion} está esperando por você.`:st.status==='downloaded'?`A versão ${st.latestVersion} já está pronta.`:st.status==='up-to-date'?'Você já está na versão mais recente do Castelo.':updateStatusMessage(st);
-  if(notes)notes.textContent=st.notes||'Nenhuma nota adicional foi publicada para esta versão.';
+  if(notes){if(st.notes)notes.setAttribute('data-i18n-ignore','');else notes.removeAttribute('data-i18n-ignore');notes.textContent=st.notes||'Nenhuma nota adicional foi publicada para esta versão.';}
   renderUpdateHighlights(st.notes);renderUpdateHistory(st.history);
 
   const required=$('#updateRequiredBanner');required?.classList.toggle('hidden',!st.required);modal?.classList.toggle('update-required',!!st.required);
@@ -255,7 +255,8 @@ function renderUpdateState(st){
   }
 
   const status=$('#updateStatusText');
-  if(status)status.textContent=st.status==='error'?(st.error||'Falha ao atualizar.'):
+  const errorText=String(st.error||'Falha ao atualizar.');
+  if(status)status.textContent=st.status==='error'?(window.ICEI18N?.hasTranslation(errorText)?errorText:'Falha ao atualizar.'):
     st.status==='downloaded'?(st.installOnExit?'Atualização pronta. Ela será instalada quando você sair do jogo.':'Atualização pronta. Um backup dos saves será criado antes da instalação.'):
     st.status==='downloading'?'O download continua mesmo se você fechar esta janela e voltar a jogar.':
     st.installMode==='android'?'Quando houver uma versão nova, o APK oficial será aberto para instalação pelo Android.':
@@ -281,13 +282,14 @@ function renderUpdateState(st){
   if(newNotice&&mainMenu&&!mainMenu.classList.contains('hidden')){
     persistentSet(UPDATE_NOTICE_KEY,latestVersion);updateDismissed=false;modal?.classList.remove('hidden');
   }
-}
   const welcome=window.electronAPI?.wasUpdated&&st.status==='up-to-date'&&persistentGet(UPDATE_WELCOME_KEY)!==normalizeClientVersion(APP_VERSION);
   if(welcome&&mainMenu&&!mainMenu.classList.contains('hidden')){
     persistentSet(UPDATE_WELCOME_KEY,normalizeClientVersion(APP_VERSION));
     const title=$('#updateTitle'),head=$('#updateHeadline');if(title)title.textContent='Bem-vindo à versão '+APP_VERSION;if(head)head.textContent='O Castelo foi atualizado. Estas são as principais mudanças.';
     modal?.classList.remove('hidden');
   }
+
+}
 
 function openUpdateModal(manual=true){
   updateDismissed=false;$('#updateModal')?.classList.remove('hidden');
@@ -513,7 +515,8 @@ $('#chatgptBtn').onclick = async () => {
 
 function playerName(){
   const input=(state.mode==='chaos'||state.setupKind==='chaos')?$('#chaosPlayerName'):$('#playerName');
-  return (input?.value || 'Jogador').trim().slice(0,18);
+  const name=String(input?.value||'').trim();
+  return (name || window.ICEI18N?.translate('Jogador') || 'Jogador').slice(0,18);
 }
 
 function defaultProfile(){return {
@@ -527,17 +530,41 @@ function defaultProfile(){return {
   lore:[],
   stats:{deaths:0,jokers:0,secrets:0,bosses:0,finished:0,bestRank:null}
 };}
-const UI_I18N={"pt-BR":{"single":"Singleplayer","multi":"Multiplayer","shop":"Loja","settings":"Configurações","exit":"Sair","save":"Salvar jogo","menu":"Sair para o menu","desktop":"Sair para desktop","paused":"JOGO PAUSADO","esc":"ESC para continuar a tentativa.","choose":"ESCOLHA SEU ELEMENTO","newGame":"Nova aventura solo","continue":"Continuar","level":"fase","resolution":"Resolução","language":"Idioma","fullscreen":"Tela cheia","saved":"Jogo salvo.","profileSaved":"Perfil local salvo. A sala multiplayer continua no servidor."},"en-US":{"single":"Singleplayer","multi":"Multiplayer","shop":"Shop","settings":"Settings","exit":"Exit","save":"Save game","menu":"Exit to menu","desktop":"Exit to desktop","paused":"GAME PAUSED","esc":"Press ESC to continue.","choose":"CHOOSE YOUR ELEMENT","newGame":"New solo adventure","continue":"Continue","level":"level","resolution":"Resolution","language":"Language","fullscreen":"Fullscreen","saved":"Game saved.","profileSaved":"Local profile saved. The multiplayer room remains on the server."},"es-ES":{"single":"Un jugador","multi":"Multijugador","shop":"Tienda","settings":"Configuración","exit":"Salir","save":"Guardar partida","menu":"Salir al menú","desktop":"Salir al escritorio","paused":"JUEGO EN PAUSA","esc":"Pulsa ESC para continuar.","choose":"ELIGE TU ELEMENTO","newGame":"Nueva aventura","continue":"Continuar","level":"fase","resolution":"Resolución","language":"Idioma","fullscreen":"Pantalla completa","saved":"Partida guardada.","profileSaved":"Perfil local guardado. La sala multijugador sigue en el servidor."},"fr-FR":{"single":"Solo","multi":"Multijoueur","shop":"Boutique","settings":"Paramètres","exit":"Quitter","save":"Sauvegarder","menu":"Retour au menu","desktop":"Quitter vers le bureau","paused":"JEU EN PAUSE","esc":"Appuyez sur Échap pour continuer.","choose":"CHOISISSEZ VOTRE ÉLÉMENT","newGame":"Nouvelle aventure solo","continue":"Continuer","level":"niveau","resolution":"Résolution","language":"Langue","fullscreen":"Plein écran","saved":"Partie sauvegardée.","profileSaved":"Profil local sauvegardé. La salle multijoueur reste sur le serveur."},"de-DE":{"single":"Einzelspieler","multi":"Mehrspieler","shop":"Shop","settings":"Einstellungen","exit":"Beenden","save":"Spiel speichern","menu":"Zum Menü","desktop":"Zum Desktop","paused":"SPIEL PAUSIERT","esc":"ESC zum Fortsetzen.","choose":"WÄHLE DEIN ELEMENT","newGame":"Neues Solo-Abenteuer","continue":"Fortsetzen","level":"Level","resolution":"Auflösung","language":"Sprache","fullscreen":"Vollbild","saved":"Spiel gespeichert.","profileSaved":"Lokales Profil gespeichert. Der Mehrspielerraum bleibt auf dem Server."},"it-IT":{"single":"Giocatore singolo","multi":"Multigiocatore","shop":"Negozio","settings":"Impostazioni","exit":"Esci","save":"Salva partita","menu":"Torna al menu","desktop":"Esci al desktop","paused":"GIOCO IN PAUSA","esc":"Premi ESC per continuare.","choose":"SCEGLI IL TUO ELEMENTO","newGame":"Nuova avventura","continue":"Continua","level":"livello","resolution":"Risoluzione","language":"Lingua","fullscreen":"Schermo intero","saved":"Partita salvata.","profileSaved":"Profilo locale salvato. La stanza multiplayer resta sul server."},"nl-NL":{"single":"Singleplayer","multi":"Multiplayer","shop":"Winkel","settings":"Instellingen","exit":"Afsluiten","save":"Spel opslaan","menu":"Naar menu","desktop":"Naar bureaublad","paused":"SPEL GEPAUZEERD","esc":"Druk op ESC om door te gaan.","choose":"KIES JE ELEMENT","newGame":"Nieuw solo-avontuur","continue":"Doorgaan","level":"level","resolution":"Resolutie","language":"Taal","fullscreen":"Volledig scherm","saved":"Spel opgeslagen.","profileSaved":"Lokaal profiel opgeslagen. De multiplayerruimte blijft op de server."},"pl-PL":{"single":"Jeden gracz","multi":"Wielu graczy","shop":"Sklep","settings":"Ustawienia","exit":"Wyjście","save":"Zapisz grę","menu":"Wyjdź do menu","desktop":"Wyjdź na pulpit","paused":"GRA WSTRZYMANA","esc":"Naciśnij ESC, aby kontynuować.","choose":"WYBIERZ SWÓJ ŻYWIOŁ","newGame":"Nowa przygoda solo","continue":"Kontynuuj","level":"poziom","resolution":"Rozdzielczość","language":"Język","fullscreen":"Pełny ekran","saved":"Gra zapisana.","profileSaved":"Profil lokalny zapisany. Pokój multiplayer pozostaje na serwerze."},"ru-RU":{"single":"Одиночная игра","multi":"Сетевая игра","shop":"Магазин","settings":"Настройки","exit":"Выход","save":"Сохранить игру","menu":"Выйти в меню","desktop":"Выйти на рабочий стол","paused":"ИГРА ПРИОСТАНОВЛЕНА","esc":"Нажмите ESC, чтобы продолжить.","choose":"ВЫБЕРИТЕ СТИХИЮ","newGame":"Новое приключение","continue":"Продолжить","level":"уровень","resolution":"Разрешение","language":"Язык","fullscreen":"Полный экран","saved":"Игра сохранена.","profileSaved":"Локальный профиль сохранён. Комната остаётся на сервере."},"tr-TR":{"single":"Tek oyunculu","multi":"Çok oyunculu","shop":"Mağaza","settings":"Ayarlar","exit":"Çıkış","save":"Oyunu kaydet","menu":"Menüye dön","desktop":"Masaüstüne çık","paused":"OYUN DURAKLATILDI","esc":"Devam etmek için ESC.","choose":"ELEMENTİNİ SEÇ","newGame":"Yeni solo macera","continue":"Devam et","level":"seviye","resolution":"Çözünürlük","language":"Dil","fullscreen":"Tam ekran","saved":"Oyun kaydedildi.","profileSaved":"Yerel profil kaydedildi. Çok oyunculu oda sunucuda kalır."},"ja-JP":{"single":"シングルプレイ","multi":"マルチプレイ","shop":"ショップ","settings":"設定","exit":"終了","save":"ゲームを保存","menu":"メニューへ戻る","desktop":"デスクトップへ終了","paused":"一時停止","esc":"ESCでゲームに戻ります。","choose":"エレメントを選択","newGame":"新しい冒険","continue":"続ける","level":"ステージ","resolution":"解像度","language":"言語","fullscreen":"フルスクリーン","saved":"保存しました。","profileSaved":"ローカルプロフィールを保存しました。マルチプレイルームはサーバーに残ります。"},"ko-KR":{"single":"싱글플레이","multi":"멀티플레이","shop":"상점","settings":"설정","exit":"종료","save":"게임 저장","menu":"메뉴로 나가기","desktop":"바탕화면으로 나가기","paused":"게임 일시정지","esc":"ESC를 눌러 계속합니다.","choose":"원소를 선택하세요","newGame":"새 솔로 모험","continue":"계속하기","level":"스테이지","resolution":"해상도","language":"언어","fullscreen":"전체 화면","saved":"게임이 저장되었습니다.","profileSaved":"로컬 프로필이 저장되었습니다. 멀티플레이 방은 서버에 유지됩니다."},"zh-CN":{"single":"单人游戏","multi":"多人游戏","shop":"商店","settings":"设置","exit":"退出","save":"保存游戏","menu":"返回主菜单","desktop":"退出到桌面","paused":"游戏暂停","esc":"按 ESC 继续。","choose":"选择你的元素","newGame":"新的单人冒险","continue":"继续","level":"关卡","resolution":"分辨率","language":"语言","fullscreen":"全屏","saved":"游戏已保存。","profileSaved":"本地资料已保存。多人房间仍保留在服务器。"},"zh-TW":{"single":"單人遊戲","multi":"多人遊戲","shop":"商店","settings":"設定","exit":"退出","save":"儲存遊戲","menu":"返回主選單","desktop":"退出到桌面","paused":"遊戲暫停","esc":"按 ESC 繼續。","choose":"選擇你的元素","newGame":"新的單人冒險","continue":"繼續","level":"關卡","resolution":"解析度","language":"語言","fullscreen":"全螢幕","saved":"遊戲已儲存。","profileSaved":"本機資料已儲存。多人房間仍保留在伺服器。"},"ar-SA":{"single":"لاعب واحد","multi":"متعدد اللاعبين","shop":"المتجر","settings":"الإعدادات","exit":"خروج","save":"حفظ اللعبة","menu":"العودة إلى القائمة","desktop":"الخروج إلى سطح المكتب","paused":"اللعبة متوقفة","esc":"اضغط ESC للمتابعة.","choose":"اختر عنصرك","newGame":"مغامرة فردية جديدة","continue":"متابعة","level":"المرحلة","resolution":"الدقة","language":"اللغة","fullscreen":"ملء الشاشة","saved":"تم حفظ اللعبة.","profileSaved":"تم حفظ الملف المحلي. تبقى غرفة اللعب الجماعي على الخادم."},"hi-IN":{"single":"एकल खिलाड़ी","multi":"मल्टीप्लेयर","shop":"दुकान","settings":"सेटिंग्स","exit":"बाहर निकलें","save":"गेम सेव करें","menu":"मेनू पर जाएँ","desktop":"डेस्कटॉप पर जाएँ","paused":"गेम रुका हुआ है","esc":"जारी रखने के लिए ESC दबाएँ।","choose":"अपना तत्व चुनें","newGame":"नई एकल यात्रा","continue":"जारी रखें","level":"स्तर","resolution":"रिज़ॉल्यूशन","language":"भाषा","fullscreen":"पूर्ण स्क्रीन","saved":"गेम सेव हो गया।","profileSaved":"स्थानीय प्रोफ़ाइल सेव हो गई। मल्टीप्लेयर रूम सर्वर पर बना रहेगा।"},"sv-SE":{"single":"Enspelare","multi":"Flerspelare","shop":"Butik","settings":"Inställningar","exit":"Avsluta","save":"Spara spelet","menu":"Till menyn","desktop":"Till skrivbordet","paused":"SPELET ÄR PAUSAT","esc":"Tryck ESC för att fortsätta.","choose":"VÄLJ DITT ELEMENT","newGame":"Nytt soloäventyr","continue":"Fortsätt","level":"nivå","resolution":"Upplösning","language":"Språk","fullscreen":"Helskärm","saved":"Spelet sparades.","profileSaved":"Lokal profil sparades. Flerspelarrummet finns kvar på servern."},"da-DK":{"single":"Singleplayer","multi":"Multiplayer","shop":"Butik","settings":"Indstillinger","exit":"Afslut","save":"Gem spil","menu":"Til menuen","desktop":"Til skrivebordet","paused":"SPILLET ER PAUSET","esc":"Tryk ESC for at fortsætte.","choose":"VÆLG DIT ELEMENT","newGame":"Nyt solo-eventyr","continue":"Fortsæt","level":"niveau","resolution":"Opløsning","language":"Sprog","fullscreen":"Fuld skærm","saved":"Spillet er gemt.","profileSaved":"Lokal profil gemt. Multiplayer-rummet forbliver på serveren."},"fi-FI":{"single":"Yksinpeli","multi":"Moninpeli","shop":"Kauppa","settings":"Asetukset","exit":"Poistu","save":"Tallenna peli","menu":"Poistu valikkoon","desktop":"Poistu työpöydälle","paused":"PELI TAUOLLA","esc":"Jatka painamalla ESC.","choose":"VALITSE ELEMENTTISI","newGame":"Uusi sooloseikkailu","continue":"Jatka","level":"taso","resolution":"Resoluutio","language":"Kieli","fullscreen":"Koko näyttö","saved":"Peli tallennettu.","profileSaved":"Paikallinen profiili tallennettu. Moninpelihuone pysyy palvelimella."},"cs-CZ":{"single":"Jeden hráč","multi":"Více hráčů","shop":"Obchod","settings":"Nastavení","exit":"Ukončit","save":"Uložit hru","menu":"Zpět do menu","desktop":"Ukončit na plochu","paused":"HRA POZASTAVENA","esc":"Pokračujte klávesou ESC.","choose":"VYBERTE SVŮJ ŽIVEL","newGame":"Nové sólo dobrodružství","continue":"Pokračovat","level":"úroveň","resolution":"Rozlišení","language":"Jazyk","fullscreen":"Celá obrazovka","saved":"Hra uložena.","profileSaved":"Místní profil uložen. Multiplayerová místnost zůstává na serveru."}};
-function uiT(){const code=profile?.settings?.language||'pt-BR';return UI_I18N[code]||UI_I18N['en-US'];}
+const UI_SOURCE = {
+  "single": "Singleplayer",
+  "multi": "Multiplayer",
+  "shop": "Loja",
+  "settings": "Configurações",
+  "exit": "Sair",
+  "save": "Salvar jogo",
+  "menu": "Sair para o menu",
+  "desktop": "Sair para desktop",
+  "paused": "JOGO PAUSADO",
+  "esc": "ESC para continuar a tentativa.",
+  "choose": "ESCOLHA SEU ELEMENTO",
+  "newGame": "Nova aventura solo",
+  "continue": "Continuar",
+  "level": "fase",
+  "resolution": "Resolução",
+  "language": "Idioma",
+  "fullscreen": "Tela cheia",
+  "saved": "Jogo salvo.",
+  "profileSaved": "Perfil local salvo. A sala multiplayer continua no servidor."
+};
+function uiT(){
+  // Keep dynamic messages in the source language; the renderer localizes them.
+  return UI_SOURCE;
+}
 function applyInterfaceLanguage(){
-  const t=uiT(),pairs=[['#menuSingleBtn b',t.single],['#menuMultiBtn b',t.multi],['#menuShopBtn b',t.shop],['#menuSettingsBtn b',t.settings],['#menuExitBtn b',t.exit],['#pauseSaveBtn b',t.save],['#pauseSettingsBtn b',t.settings],['#pauseMainMenuBtn b',t.menu],['#pauseDesktopBtn b',t.desktop],['#pauseTitle',t.paused],['#pauseSubtitle',t.esc],['.character-select-title',t.choose]];
-  for(const [sel,val] of pairs){const el=document.querySelector(sel);if(el)el.textContent=val;}
-  const rr0=$('#settingResolution'),ll0=$('#settingLanguage'),ff0=$('#settingFullscreen');
-  const rr=rr0&&typeof rr0.closest==='function'?rr0.closest('.setting-row')?.querySelector('b'):null;if(rr)rr.textContent=t.resolution;
-  const ll=ll0&&typeof ll0.closest==='function'?ll0.closest('.setting-row')?.querySelector('b'):null;if(ll)ll.textContent=t.language;
-  const ff=ff0&&typeof ff0.closest==='function'?ff0.closest('.setting-row')?.querySelector('b'):null;if(ff)ff.textContent=t.fullscreen;
-  if($('#soloBtn'))$('#soloBtn').textContent='▶ '+t.newGame;
+  const code=profile?.settings?.language||'pt-BR';
+  if(window.ICEI18N){
+    const previous=window.ICEI18N.language;
+    profile.settings.language=window.ICEI18N.setLanguage(code);
+    if(previous!==profile.settings.language&&desktopUpdateState)renderUpdateState(desktopUpdateState);
+  }
   if(typeof refreshSoloSaveButton==='function')refreshSoloSaveButton();
+  if(typeof refreshMultiplayerSaveButton==='function')refreshMultiplayerSaveButton();
+  if(typeof refreshChaosSaveButton==='function')refreshChaosSaveButton();
 }
 function loadProfile(){
   try{
@@ -922,11 +949,11 @@ function openShop({death=false,multiplayer=false}={}){
 function closeShop(){state.shopOpen=false;$('#shopModal').classList.add('hidden');$('#shopCountdown').textContent='';}
 function applySettings(){
   const cfg=profile?.settings||{};document.body?.classList.toggle('reduce-motion',!!cfg.reducedMotion);
+  if(typeof applyInterfaceLanguage==='function')applyInterfaceLanguage();
   const shake=$('#settingScreenShake'),motion=$('#settingReducedMotion'),resolution=$('#settingResolution'),language=$('#settingLanguage'),fullscreen=$('#settingFullscreen');
   if(shake)shake.checked=cfg.screenShake!==false;if(motion)motion.checked=!!cfg.reducedMotion;
   if(resolution)resolution.value=cfg.resolution||'native';if(language)language.value=cfg.language||'pt-BR';if(fullscreen)fullscreen.checked=cfg.fullscreen!==false;
   if(document.documentElement)document.documentElement.lang=cfg.language||'pt-BR';
-  if(typeof applyInterfaceLanguage==='function')applyInterfaceLanguage();
 }
 async function applyResolutionSetting(value){
   if(profile?.settings?.fullscreen!==false)return;
@@ -1141,7 +1168,7 @@ socket.on('room-state', room => {
   room.players.forEach(p=>{
     const e=ELEMENTS[p.role]||ELEMENTS.earth,div=document.createElement('div');div.className=`player-card ${p.role}`;
     const seal=state.mode==='chaos'?(room.chaosSeals||[]).includes(p.role)?' · SELO ✓':' · SELO ○':'';
-    div.innerHTML=`<span class="ready-dot">${p.ready?'● PRONTO':'○'}</span><div class="avatar">${e.icon}</div><h3>${escapeHtml(p.name)}${p.id===state.id?' (você)':''}</h3><p>${e.name.toUpperCase()} · ${e.ability}${seal}</p>`;
+    div.innerHTML=`<span class="ready-dot">${p.ready?'● PRONTO':'○'}</span><div class="avatar">${e.icon}</div><h3><span data-i18n-ignore>${escapeHtml(p.name)}</span>${p.id===state.id?' (você)':''}</h3><p>${e.name.toUpperCase()} · ${e.ability}${seal}</p>`;
     players.appendChild(div);
   });
   updateHud();

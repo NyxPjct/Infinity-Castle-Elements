@@ -36,5 +36,8 @@ jobs:
       - name: Audit all 1000 levels
         run: npm run test:levels
 
+      - name: Test language catalogs and localization
+        run: npm run test:i18n
+
       - name: Test four-player Chaos multiplayer
         run: npm run test:chaos

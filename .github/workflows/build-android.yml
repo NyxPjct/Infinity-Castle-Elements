@@ -40,6 +40,9 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Test game localization
+        run: npm run test:i18n
+
       - name: Prepare Android SDK
         shell: bash
         run: |

@@ -26,7 +26,7 @@ const rooms = new Map();
 app.get('/health', (_req, res) => res.status(200).json({
   ok: true,
   service: 'infinity-castle-elements-multiplayer',
-  version: '0.0.7',
+  version: '0.0.8',
   protocolVersion: MULTIPLAYER_PROTOCOL,
   rooms: rooms.size,
   modes: { multiplayer: 2, chaos: 4 }
@@ -34,7 +34,7 @@ app.get('/health', (_req, res) => res.status(200).json({
 
 app.get('/multiplayer/status', (_req, res) => res.json({
   online: true,
-  version: '0.0.7',
+  version: '0.0.8',
   protocolVersion: MULTIPLAYER_PROTOCOL,
   activeRooms: rooms.size,
   maxPlayersPerRoom: 4,
@@ -109,7 +109,7 @@ function maybeStartBossCharge(room){
 }
 
 io.on('connection', socket => {
-  socket.emit('protocol-info',{protocolVersion:MULTIPLAYER_PROTOCOL,serverVersion:'0.0.7'});
+  socket.emit('protocol-info',{protocolVersion:MULTIPLAYER_PROTOCOL,serverVersion:'0.0.8'});
   socket.on('create-room', ({name,element,resumeLevel,resumeDeaths,mode,protocol}={}, ack=()=>{}) => {
     if(Number(protocol)!==MULTIPLAYER_PROTOCOL)return ack({ok:false,code:'UPDATE_REQUIRED',requiredProtocol:MULTIPLAYER_PROTOCOL,error:'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'});
     const roomMode=normalizeMode(mode);
@@ -269,7 +269,7 @@ function startServer(port = PORT, host = '0.0.0.0') {
   server.listen(port, host, () => {
     const addr = server.address();
     const actualPort = typeof addr === 'object' && addr ? addr.port : port;
-    console.log(`Infinity Castle Elements 0.0.7 multiplayer server listening on 0.0.0.0:${actualPort}`);
+    console.log(`Infinity Castle Elements 0.0.8 multiplayer server listening on 0.0.0.0:${actualPort}`);
   });
   return server;
 }
