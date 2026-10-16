@@ -1,8 +1,8 @@
 {
   "name": "infinity-castle-elements",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "private": true,
-  "description": "Infinity Castle Elements — INSANITY 0.0.8. Complete in-game localization with instant language switching and offline translations.",
+  "description": "Infinity Castle Elements — INSANITY 0.0.9. Learn, reconnect, explore and master the castle with custom controls, reactive audio and daily challenges.",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",
@@ -13,6 +13,10 @@
     "start:multiplayer": "MULTIPLAYER_ONLY=1 node server.js",
     "test:chaos": "node tools/test-chaos-multiplayer.js",
     "test:i18n": "node tools/test-i18n.js",
+    "test:visuals": "node tools/test-visuals.js",
+    "test:features": "node tools/test-features.js",
+    "test:reconnect": "node tools/test-reconnect.js",
+    "test:browser": "node tools/test-browser.js",
     "mobile:add:android": "npx cap add android",
     "mobile:sync": "npx cap sync android",
     "mobile:android": "npx cap open android"
@@ -22,9 +26,10 @@
     "socket.io": "^4.8.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "devDependencies": {
+    "playwright-core": "1.62.1",
     "electron": "44.5.1",
     "electron-builder": "26.17.0",
     "socket.io-client": "^4.8.1",

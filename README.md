@@ -1,12 +1,12 @@
-# Infinity Castle Elements — INSANITY 0.0.8
+# Infinity Castle Elements — INSANITY 0.0.9
 
 **Infinity Castle Elements** is an original troll platformer, action, and survival game by **NYX PROJECT R**. Climb a campaign of **1,000 levels**, master four playable elements, and face enemies, bosses, coins, a shop, boosts, cosmetics, and a castle that learns to hate you back. Play solo, cooperate with a friend, or enter online **Chaos Mode with four players**.
 
-**INSANITY 0.0.8 — In-game Language Update** makes the selected language apply throughout the game immediately. All 20 language options have local text catalogs, including menus, the HUD, shop, achievements, lore, multiplayer messages, and canvas text. Brazilian Portuguese remains the default, and translations work offline.
+**INSANITY 0.0.9 — Player Experience Update** adds a playable tutorial, 30-second multiplayer reconnection, campaign practice and local best times, customizable keyboard and touch controls, reactive procedural audio, a shared daily challenge, and richer elemental graphics. All 20 offline languages remain available, with terminology corrections and new activity text.
 
 **INSANITY 0.0.7 — Visual Experience Update** brings a dark fantasy HUD, a dynamic camera, stronger elemental effects, cinematic deaths and bosses, visual tower progression, regional enemies, post-processing, and a special presentation for level 1000. It also includes an integrated **Update Hub** with release history, resumable downloads, SHA-256 verification, automatic backups, install-on-exit support, and a versioned multiplayer protocol. All systems introduced in 0.0.6 remain available.
 
-**Current game version:** `0.0.8`
+**Current game version:** `0.0.9`
 
 ## Downloads
 
@@ -14,13 +14,13 @@
 
 | Edition | Download | How to use it |
 | --- | --- | --- |
-| Setup | [Infinity-Castle-Elements-Setup-0.0.8.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.8/Infinity-Castle-Elements-Setup-0.0.8.exe) | Run the installer, choose a folder, and finish the wizard. Desktop and Start Menu shortcuts are available. |
-| Portable | [Infinity-Castle-Elements-Portable-0.0.8.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.8/Infinity-Castle-Elements-Portable-0.0.8.exe) | Run the executable directly; no installation is required. |
-| Complete ZIP | [Infinity-Castle-Elements-Windows-0.0.8.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.8/Infinity-Castle-Elements-Windows-0.0.8.zip) | Extract the archive to access both Setup and Portable. |
+| Setup | [Infinity-Castle-Elements-Setup-0.0.9.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.9/Infinity-Castle-Elements-Setup-0.0.9.exe) | Run the installer, choose a folder, and finish the wizard. Desktop and Start Menu shortcuts are available. |
+| Portable | [Infinity-Castle-Elements-Portable-0.0.9.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.9/Infinity-Castle-Elements-Portable-0.0.9.exe) | Run the executable directly; no installation is required. |
+| Complete ZIP | [Infinity-Castle-Elements-Windows-0.0.9.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.9/Infinity-Castle-Elements-Windows-0.0.9.zip) | Extract the archive to access both Setup and Portable. |
 
 ### Android
 
-[Download Infinity-Castle-Elements-Android-0.0.8.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.8/Infinity-Castle-Elements-Android-0.0.8.apk)
+[Download Infinity-Castle-Elements-Android-0.0.9.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.9/Infinity-Castle-Elements-Android-0.0.9.apk)
 
 Play in **landscape orientation** to use the full canvas and touch controls.
 
@@ -32,7 +32,7 @@ The distributed game includes its runtime. **Players do not need to install Node
 
 The game starts in **Brazilian Portuguese** by default. You can change the language without starting a new campaign:
 
-1. Open the main menu and select **Configurações** (Settings), the fourth menu option.
+1. Open the main menu and select **Configurações** (Settings).
 2. Find **Idioma** (Language).
 3. Select **English** or your preferred language from the list.
 4. The interface updates immediately. Close Settings with **✕** to return to the menu.
@@ -45,24 +45,50 @@ Changing the language updates the menus, settings, element selection, HUD, shop,
 
 Player names, room codes, version numbers, and externally published release notes retain their original content.
 
-## 📸 Screenshots — INSANITY 0.0.8
+## 📸 Screenshots — INSANITY 0.0.9
 
 The following captures show the current web build. The mobile image shows the responsive touch interface in a mobile browser viewport.
 
 <table>
   <tr>
-    <td><img src="./docs/images/menu-principal.jpg" width="480" alt="Infinity Castle Elements 0.0.8 main menu" /><br /><strong>Main menu</strong></td>
-    <td><img src="./docs/images/selecao-elementos.jpg" width="480" alt="Element selection in Infinity Castle Elements 0.0.8" /><br /><strong>Element selection</strong></td>
+    <td><img src="./docs/images/menu-principal.jpg" width="480" alt="Infinity Castle Elements 0.0.9 main menu" /><br /><strong>Main menu</strong></td>
+    <td><img src="./docs/images/selecao-elementos.jpg" width="480" alt="Element selection in Infinity Castle Elements 0.0.9" /><br /><strong>Element selection</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/gameplay-singleplayer.jpg" width="480" alt="Singleplayer gameplay with the 0.0.8 HUD" /><br /><strong>Singleplayer</strong></td>
-    <td><img src="./docs/images/gameplay-multiplayer.jpg" width="480" alt="Two-player cooperative gameplay in version 0.0.8" /><br /><strong>Online co-op</strong></td>
+    <td><img src="./docs/images/gameplay-singleplayer.jpg" width="480" alt="Singleplayer gameplay with the 0.0.9 HUD" /><br /><strong>Singleplayer</strong></td>
+    <td><img src="./docs/images/gameplay-multiplayer.jpg" width="480" alt="Two-player cooperative gameplay in version 0.0.9" /><br /><strong>Online co-op</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/modo-caos.jpg" width="480" alt="Four-player Chaos Mode in version 0.0.8" /><br /><strong>Chaos Mode</strong></td>
-    <td><img src="./docs/images/android-gameplay.jpg" width="480" alt="Version 0.0.8 touch controls in a landscape mobile browser" /><br /><strong>Mobile touch interface</strong></td>
+    <td><img src="./docs/images/modo-caos.jpg" width="480" alt="Four-player Chaos Mode in version 0.0.9" /><br /><strong>Chaos Mode</strong></td>
+    <td><img src="./docs/images/android-gameplay.jpg" width="480" alt="Version 0.0.9 touch controls in a landscape mobile browser" /><br /><strong>Mobile touch interface</strong></td>
   </tr>
 </table>
+
+## What’s new in 0.0.9 — Player Experience Update
+
+- **Playable tutorial:** choose **Tutorial** in the main menu. Learn movement, jumping, elemental powers, and two-pressure-plate cooperation with a demonstration partner. Falling returns you to a checkpoint. Tutorial progress never replaces your campaign save.
+- **30-second reconnection:** a dropped connection reserves the same slot and element for 30 seconds. The room waits, then restores positions, revealed traps, seals, defeated enemies, and power cooldowns. Reloading the same browser tab can also resume the reservation. Choosing Back to menu releases the slot immediately. Reservations are held in server memory and cannot survive a server restart.
+- **Campaign map:** choose **Mapa da campanha** (Campaign map), select a region, element, and unlocked level, then choose **Treinar fase** (Practice level). Crown icons mark bosses. Campaign and practice best times are kept separately. Existing saves unlock previously reached levels; detailed times start recording with 0.0.9.
+- **Custom controls:** in **Configurações → Controles**, select an action and press a new key. Conflicts and reserved interface keys are rejected; Escape cancels a binding and remains the pause/back key. **Controles de toque** lets you choose a touch button and adjust its size and horizontal/vertical position, with a preview. Reset controls restores the defaults.
+- **Reactive audio:** original procedural sounds distinguish Earth, Air, Light, and Darkness. The music changes for bosses and pursuits. Master, music, and effects volumes and mute are saved under **Áudio**. Browser audio begins after a click, tap, or key press and stops when the game loses focus.
+- **Daily challenge:** choose **Desafio diário**. Everyone receives the same deterministic level and element for the same UTC date. The challenge changes at midnight UTC. Relics, boosts, and adaptive traps are disabled. Results are stored locally for up to 60 days; there is no global leaderboard. Daily play and practice do not spend campaign boosts, grant campaign rewards, or overwrite campaign progress.
+- **Translation review:** Portuguese and English copy received an editorial pass, 18 locale glossaries were corrected, and all new messages are included offline. Independent native-speaker review remains open; see [localization review notes](./docs/LOCALIZATION.md).
+
+![Campaign map with unlocked levels and boss practice](./docs/images/campaign-map-0.0.9.png)
+
+![Daily challenge with a shared level and element](./docs/images/daily-challenge-0.0.9.png)
+
+**Server deployment:** 0.0.9 uses multiplayer protocol **3**. Deploy this version of `server.js` to the central server before playing online with 0.0.9 clients. The health endpoint reports the server version and protocol. Older incompatible clients are directed to update.
+
+## Elemental graphics
+
+Version 0.0.9 adds motion trails that follow each character's actual path while an elemental power is active: leaves and green ribbons for Earth, pale wind streams for Air, a golden comet trail for Light, and black and purple fragments for Darkness. Running and jumping use articulated poses, while traps have beveled metal, falling debris, speed streaks, and dust on impact. Hazard pools have shaded surfaces, waves, and rising bubbles.
+
+Effects also appear on the other players in online co-op and Chaos Mode. The added trails, impact particles, and pool animations pause with the local game. Trails clear on room changes, teleports, and resume so players who moved during a pause do not leave a streak across the screen. **Settings → Reduce animations** disables trails and impact particles and stills the pools. Trail history and particle counts are limited. These changes affect presentation; the graphics keep collision geometry and movement rules unchanged.
+
+![In-engine reference scene showing four elemental powers and active traps](./docs/images/chaos-visual-effects.png)
+
+This preview is composed in the game renderer with four local clients.
 
 ## What's new in 0.0.8 — In-game Language Update
 
@@ -514,9 +540,17 @@ The local web server uses port **3000** by default; set `PORT` to choose another
 npm run test:levels
 npm run test:chaos
 npm run test:i18n
+npm run test:visuals
+npm run test:features
+npm run test:reconnect
+# Once, if a system Chrome/Chromium is unavailable:
+npx playwright-core install --with-deps chromium
+npm run test:browser
 ```
 
 The first command audits all 1,000 levels. The second tests live Socket.IO multiplayer, Chaos Mode, synchronized traps, death rewards, and protocol compatibility. The third verifies all 20 language catalogs, placeholders, dynamic messages, canvas text, and repeated language switching.
+
+The fourth checks visual effect lifecycles, four-element trails, landing and trap impacts, pause/resume, teleports, reduced motion, canvas state isolation, and memory limits. Feature tests cover deterministic UTC challenges, practice records, input configuration, and WebAudio scheduling. Reconnection tests exercise real 2P/4P sockets and the full 30-second expiry. Chromium tests exercise playable tutorial inputs, campaign save isolation, boss practice, saved controls and audio, offline activities, touch input, and disconnect/reload recovery. Set `CHROMIUM_PATH` to select an installed Chrome or Chromium executable.
 
 Game translations are bundled in `public/translations.js`; keep the Portuguese source keys and numbered placeholders when refining a translation.
 

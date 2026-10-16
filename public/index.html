@@ -10,6 +10,7 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <title>Infinity Castle Elements</title>
   <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/journey.css" />
 </head>
 <body class="boot-sequence">
   <div class="ambient"></div>
@@ -58,12 +59,13 @@
           <button id="menuSingleBtn" class="menu-choice primary-choice"><span class="menu-index">01</span><span><b>Singleplayer</b><small>Entre sozinho. O castelo não terá pena.</small></span><em>›</em></button>
           <button id="menuMultiBtn" class="menu-choice"><span class="menu-index">02</span><span><b>Multiplayer</b><small>Campanha cooperativa online para 2 jogadores.</small></span><em>›</em></button>
           <button id="menuChaosBtn" class="menu-choice chaos-choice"><span class="menu-index">03</span><span><b>Modo Caos</b><small>4 jogadores · 4 elementos · uma campanha sem misericórdia.</small></span><em>⚡</em></button>
+          <div class="journey-launch"><button id="menuTutorialBtn" type="button">Tutorial</button><button id="menuMapBtn" type="button">Mapa da campanha</button><button id="menuDailyBtn" type="button">Desafio diário</button></div>
           <button id="menuSettingsBtn" class="menu-choice"><span class="menu-index">04</span><span><b>Configurações</b><small>Visual, movimento e tela cheia.</small></span><em>›</em></button>
           <button id="menuChronicleBtn" class="menu-choice chronicle-choice"><span class="menu-index">05</span><span><b>Crônicas do Castelo</b><small>Conquistas, relíquias, fragmentos e estatísticas.</small></span><em>◈</em></button>
-          <button id="menuUpdatesBtn" class="menu-choice updates-choice"><span class="menu-index">06</span><span><b>Atualizações</b><small id="menuUpdatesStatus">Versão 0.0.8 · verificando novidades...</small></span><em id="menuUpdatesIcon">↻</em></button>
+          <button id="menuUpdatesBtn" class="menu-choice updates-choice"><span class="menu-index">06</span><span><b>Atualizações</b><small id="menuUpdatesStatus">Versão 0.0.9 · verificando novidades...</small></span><em id="menuUpdatesIcon">↻</em></button>
           <button id="menuExitBtn" class="menu-choice danger-choice"><span class="menu-index">07</span><span><b>Sair</b><small>Fuja enquanto ainda consegue.</small></span><em>›</em></button>
         </nav>
-        <div class="menu-footer"><span id="menuConnectionPill">● Conectando</span><span>INSANITY <b data-app-version>0.0.8</b></span></div>
+        <div class="menu-footer"><span id="menuConnectionPill">● Conectando</span><span>INSANITY <b data-app-version>0.0.9</b></span></div>
       </aside>
       <div class="menu-story-card">
         <p id="menuCastleState">O CASTELO DESPERTOU</p>
@@ -90,7 +92,7 @@
         <div class="brand-mark">✦</div>
         <div>
           <h1>INFINITY CASTLE <span>ELEMENTS</span></h1>
-          <p>INSANITY <span data-app-version>0.0.8</span> · 1000 FASES · SOLO · CO-OP · MODO CAOS 4P</p>
+          <p>INSANITY <span data-app-version>0.0.9</span> · 1000 FASES · SOLO · CO-OP · MODO CAOS 4P</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -344,8 +346,11 @@
           </select>
         </label>
         <label class="setting-row"><span><b>Tremor de tela</b><small>Impactos, mortes e pegadinhas sacodem a câmera.</small></span><input id="settingScreenShake" type="checkbox" checked /></label>
-        <label class="setting-row"><span><b>Reduzir animações</b><small>Diminui fades e movimentos das telas de abertura.</small></span><input id="settingReducedMotion" type="checkbox" /></label>
+        <label class="setting-row"><span><b>Reduzir animações</b><small>Diminui fades, rastros e partículas. Os perigos continuam visíveis.</small></span><input id="settingReducedMotion" type="checkbox" /></label>
         <label class="setting-row"><span><b>Tela cheia</b><small>Ativada por padrão. Quando desligada, a resolução escolhida acima define o tamanho da janela.</small></span><input id="settingFullscreen" type="checkbox" checked /></label>
+        <fieldset class="feature-settings"><legend>Controles</legend><p>Selecione uma ação e pressione a nova tecla. Escape cancela.</p><div id="keyBindings" class="key-bindings"></div><p id="bindingStatus" role="status" aria-live="polite"></p><button id="resetControlsBtn" type="button">Restaurar controles</button></fieldset>
+        <fieldset class="feature-settings"><legend>Controles de toque</legend><label>Botão <select id="touchButtonSelect"><option value="left">Esquerda</option><option value="right">Direita</option><option value="jump">Pular</option><option value="ability">Poder</option></select></label><label>Tamanho <input id="touchSize" type="range" min="44" max="120" step="2" /><output id="touchSizeValue"></output></label><label>Posição horizontal <input id="touchX" type="range" min="0" max="100" /><output id="touchXValue"></output></label><label>Posição vertical <input id="touchY" type="range" min="0" max="100" /><output id="touchYValue"></output></label><div id="touchLayoutPreview" class="touch-layout-preview" aria-hidden="true"></div></fieldset>
+        <fieldset class="feature-settings"><legend>Áudio</legend><label><span>Silenciar</span><input id="audioMuted" type="checkbox" /></label><label>Volume geral <input id="audioMaster" type="range" min="0" max="100" /><output id="audioMasterValue"></output></label><label>Música <input id="audioMusic" type="range" min="0" max="100" /><output id="audioMusicValue"></output></label><label>Efeitos sonoros <input id="audioSfx" type="range" min="0" max="100" /><output id="audioSfxValue"></output></label><button id="audioPreviewBtn" type="button">Ouvir poder elemental</button></fieldset>
       </div>
       <p class="fine">As preferências ficam salvas neste dispositivo. Na versão desktop, o botão Sair fecha o jogo diretamente.</p>
     </div>
@@ -354,7 +359,7 @@
   <div id="chronicleModal" class="shop-modal hidden chronicle-modal" role="dialog" aria-modal="true" aria-labelledby="chronicleTitle">
     <div class="shop-card chronicle-card">
       <div class="shop-head">
-        <div><p class="eyebrow">ARQUIVO PROIBIDO · INSANITY 0.0.8</p><h2 id="chronicleTitle">Crônicas do Castelo</h2></div>
+        <div><p class="eyebrow">ARQUIVO PROIBIDO · INSANITY 0.0.9</p><h2 id="chronicleTitle">Crônicas do Castelo</h2></div>
         <button id="closeChronicleBtn" class="small" type="button">✕</button>
       </div>
       <p id="chronicleStats" class="chronicle-stats">Mortes: 0 · Segredos: 0 · Guardiões: 0 · Melhor rank: —</p>
@@ -381,7 +386,7 @@
       <div id="updateRequiredBanner" class="update-required-banner hidden">⚠ ATUALIZAÇÃO OBRIGATÓRIA PARA O MULTIPLAYER</div>
 
       <div class="update-version-line update-version-grid">
-        <span>INSTALADA <b id="updateCurrentVersion" data-app-version>0.0.8</b></span>
+        <span>INSTALADA <b id="updateCurrentVersion" data-app-version>0.0.9</b></span>
         <i>→</i>
         <span>DISPONÍVEL <b id="updateLatestVersion">—</b></span>
         <small id="updateSizeText">Tamanho: —</small>
@@ -437,12 +442,28 @@
     </div>
   </div>
 
+  <div id="networkStatus" class="network-status hidden" role="status" aria-live="polite"></div>
+  <div id="activityStatus" class="activity-status hidden"><b id="activityTitle"></b><span id="activityHint"></span><button id="activityExitBtn" type="button">Voltar ao menu</button></div>
+  <div id="journeyModal" class="shop-modal hidden" role="dialog" aria-modal="true" aria-labelledby="journeyTitle">
+    <div class="shop-card journey-card"><div class="shop-head"><h2 id="journeyTitle">Mapa da campanha</h2><button id="journeyCloseBtn" type="button" aria-label="Fechar">✕</button></div>
+      <div id="journeyMapView"><label>Região <select id="mapRegion"></select></label><p>Escolha uma fase liberada para treinar. Seu progresso da campanha será preservado.</p><label>Elemento <select id="journeyRole"><option value="earth">Terra</option><option value="air">Ar</option><option value="light">Luz</option><option value="darkness">Escuridão</option></select></label><div id="mapLevels" class="map-levels"></div><p id="mapSelection" role="status"></p><button id="mapPlayBtn" type="button">Treinar fase</button></div>
+      <div id="journeyDailyView" class="hidden"><p>Uma fase e um elemento iguais para todos. O desafio muda à meia-noite UTC.</p><p id="dailyDescription"></p><p>Sem relíquias, bônus ou armadilhas adaptativas.</p><p id="dailyBest"></p><button id="dailyPlayBtn" type="button">Começar desafio</button></div>
+      <div id="journeyResultView" class="hidden"><p id="activityResult"></p><div class="journey-result-actions"><button id="activityRetryBtn" type="button">Tentar novamente</button><button id="activityMenuBtn" type="button">Voltar ao menu</button></div></div>
+    </div>
+  </div>
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
   <script src="/translations.js"></script>
   <script src="/i18n.js"></script>
+  <script src="/visuals.js"></script>
+  <script src="/journey.js"></script>
+  <script src="/input.js"></script>
+  <script src="/audio.js"></script>
   <script src="/game.js"></script>
+  <script src="/journey-ui.js"></script>
   <script>
     if ('serviceWorker' in navigator && !window.electronAPI) {
+      const hadController=!!navigator.serviceWorker.controller;let refreshing=false;
+      navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadController&&!refreshing){refreshing=true;location.reload();}});
       window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
     }
   </script>

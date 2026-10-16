@@ -30,6 +30,11 @@ jobs:
         run: |
           node --check server.js
           node --check public/game.js
+          node --check public/visuals.js
+          node --check public/journey.js
+          node --check public/input.js
+          node --check public/audio.js
+          node --check public/journey-ui.js
           node --check tools/audit-levels.js
           node --check tools/test-chaos-multiplayer.js
 
@@ -39,5 +44,20 @@ jobs:
       - name: Test language catalogs and localization
         run: npm run test:i18n
 
+      - name: Test visual effects and reduced motion
+        run: npm run test:visuals
+
+      - name: Test activities, controls and audio
+        run: npm run test:features
+
+      - name: Test real thirty-second multiplayer reconnection
+        run: npm run test:reconnect
+
       - name: Test four-player Chaos multiplayer
         run: npm run test:chaos
+
+      - name: Install Chromium for player experience tests
+        run: npx playwright-core install --with-deps chromium
+
+      - name: Test tutorial, campaign isolation, settings and browser reconnection
+        run: npm run test:browser

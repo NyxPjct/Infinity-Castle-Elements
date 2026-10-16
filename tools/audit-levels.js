@@ -42,6 +42,8 @@ const sandbox = {
 };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(path.join(root, 'public', 'visuals.js'), 'utf8'), sandbox, { filename: 'public/visuals.js' });
+for(const file of ['journey.js','input.js','audio.js'])vm.runInContext(fs.readFileSync(path.join(root,'public',file),'utf8'),sandbox,{filename:file});
 const runtimeHook = `
 ;globalThis.__runtimeSmoke = (level) => {
   state.mode='singleplayer';state.running=false;state.shopOpen=false;state.soloResetPending=false;state.soloTransition=false;

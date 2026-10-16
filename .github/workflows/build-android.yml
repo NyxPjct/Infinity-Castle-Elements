@@ -40,6 +40,12 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Test activities, controls and audio
+        run: npm run test:features
+
+      - name: Test multiplayer reconnection
+        run: npm run test:reconnect
+
       - name: Test game localization
         run: npm run test:i18n
 

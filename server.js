@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const { randomBytes } = require('crypto');
 
 const app = express();
 const server = http.createServer(app);
@@ -9,7 +10,8 @@ const io = new Server(server, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 3000;
 const MAX_LEVEL = 1000;
 const DEATH_REWARD_COINS = 5;
-const MULTIPLAYER_PROTOCOL = 2;
+const MULTIPLAYER_PROTOCOL = 3;
+const RECONNECT_GRACE_MS = 30_000;
 const ELEMENTS = new Set(['earth', 'air', 'light', 'darkness']);
 const ELEMENT_ORDER = ['earth', 'air', 'light', 'darkness'];
 const MULTIPLAYER_ONLY = process.env.MULTIPLAYER_ONLY === '1';
@@ -26,7 +28,7 @@ const rooms = new Map();
 app.get('/health', (_req, res) => res.status(200).json({
   ok: true,
   service: 'infinity-castle-elements-multiplayer',
-  version: '0.0.8',
+  version: '0.0.9',
   protocolVersion: MULTIPLAYER_PROTOCOL,
   rooms: rooms.size,
   modes: { multiplayer: 2, chaos: 4 }
@@ -34,7 +36,7 @@ app.get('/health', (_req, res) => res.status(200).json({
 
 app.get('/multiplayer/status', (_req, res) => res.json({
   online: true,
-  version: '0.0.8',
+  version: '0.0.9',
   protocolVersion: MULTIPLAYER_PROTOCOL,
   activeRooms: rooms.size,
   maxPlayersPerRoom: 4,
@@ -66,10 +68,16 @@ function publicRoom(room) {
     maxPlayers: room.maxPlayers,
     level: room.level,
     deaths: room.deaths,
+    started: room.started,
+    paused: room.paused,
+    bossDefeated: room.bossDefeated,
+    defeatedEnemies: [...room.defeatedEnemies],
+    elapsedMs: room.attemptStartedAt ? Math.max(0,(room.pausedAt||Date.now())-room.attemptStartedAt) : 0,
     chaosSeals: [...room.chaosSeals],
     trapStates: [...room.trapStates.entries()].map(([key,activatedAt])=>({key,activatedAt})),
     players: [...room.players.values()].map(p => ({
-      id:p.id, name:p.name, role:p.role, slot:p.slot, ready:p.ready, atSeal:p.atSeal
+      id:p.id, name:p.name, role:p.role, slot:p.slot, ready:p.ready, atSeal:p.atSeal,
+      connected:p.connected, reconnectUntil:p.reconnectUntil||null, state:p.lastState||null
     }))
   };
 }
@@ -85,6 +93,8 @@ function resetChaosState(room){
   for(const p of room.players.values()) p.atSeal=false;
 }
 function resetAttemptState(room){
+  room.defeatedEnemies.clear();room.attemptStartedAt=Date.now();
+  for(const p of room.players.values())p.lastState=null;
   resetGoalFlags(room);
   resetBossState(room);
   resetChaosState(room);
@@ -96,12 +106,12 @@ function bossRequiredSeconds(level,mode){
   return mode==='chaos' ? base+0.7 : base;
 }
 function maybeStartBossCharge(room){
-  if(room.level%100!==0||room.bossDefeated||room.bossTimer||room.players.size!==room.maxPlayers)return;
+  if(room.paused||room.level%100!==0||room.bossDefeated||room.bossTimer||room.players.size!==room.maxPlayers)return;
   if(![...room.players.values()].every(p=>p.atRune))return;
   const level=room.level;
   room.bossTimer=setTimeout(()=>{
     room.bossTimer=null;
-    if(rooms.get(room.code)!==room||room.level!==level||room.players.size!==room.maxPlayers)return;
+    if(room.paused||rooms.get(room.code)!==room||room.level!==level||room.players.size!==room.maxPlayers)return;
     if(![...room.players.values()].every(p=>p.atRune))return;
     room.bossDefeated=true;
     io.to(room.code).emit('boss-defeated',{level,mode:room.mode});
@@ -109,8 +119,28 @@ function maybeStartBossCharge(room){
 }
 
 io.on('connection', socket => {
-  socket.emit('protocol-info',{protocolVersion:MULTIPLAYER_PROTOCOL,serverVersion:'0.0.8'});
+  socket.on('resume-room',({code,token,protocol}={},ack=()=>{})=>{
+    if(Number(protocol)!==MULTIPLAYER_PROTOCOL)return ack({ok:false,code:'UPDATE_REQUIRED',error:'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'});
+    if(socket.data.roomCode)return ack({ok:false,error:'Você já está em uma sala.'});
+    const room=rooms.get(String(code||'').toUpperCase());
+    const p=room&&typeof token==='string'&&[...room.players.values()].find(p=>p.token===token&&!p.connected&&p.reconnectUntil>Date.now());
+    if(!p)return ack({ok:false,code:'RESERVATION_EXPIRED',error:'A reserva da sua vaga expirou. Entre novamente na sala.'});
+    clearTimeout(p.reconnectTimer);room.players.delete(p.id);p.id=socket.id;p.connected=true;p.reconnectUntil=null;if(p.lastState)p.lastState.id=p.id;
+    room.players.set(p.id,p);socket.data.roomCode=room.code;socket.join(room.code);
+    if([...room.players.values()].every(p=>p.connected)){
+      const pause=Math.max(0,Date.now()-(room.pausedAt||Date.now()));
+      room.attemptStartedAt+=pause;
+      for(const [key,t] of room.trapStates)room.trapStates.set(key,t+pause);
+      room.paused=false;room.pausedAt=null;
+    }
+    ack({...joinResult(room,p),resumed:true,room:publicRoom(room)});
+    emitRoom(room);
+    if(!room.paused){io.to(room.code).emit('session-resumed',{room:publicRoom(room)});maybeStartBossCharge(room);}
+  });
+  socket.on('leave-room',()=>{const room=getSocketRoom(socket);if(room)removeSeat(room,socket.id);socket.leave(socket.data.roomCode);socket.data.roomCode=null;});
+  socket.emit('protocol-info',{protocolVersion:MULTIPLAYER_PROTOCOL,serverVersion:'0.0.9'});
   socket.on('create-room', ({name,element,resumeLevel,resumeDeaths,mode,protocol}={}, ack=()=>{}) => {
+    if(socket.data.roomCode)return ack({ok:false,error:'Você já está em uma sala.'});
     if(Number(protocol)!==MULTIPLAYER_PROTOCOL)return ack({ok:false,code:'UPDATE_REQUIRED',requiredProtocol:MULTIPLAYER_PROTOCOL,error:'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'});
     const roomMode=normalizeMode(mode);
     const code=uniqueCode();
@@ -127,7 +157,8 @@ io.on('connection', socket => {
       bossDefeated:false,
       bossTimer:null,
       chaosSeals:new Set(),
-      trapStates:new Map()
+      trapStates:new Map(),
+      defeatedEnemies:new Set(),started:false,paused:false,pausedAt:null,attemptStartedAt:0
     };
     rooms.set(code,room);
     joinRoom(socket,room,name,element,ack);
@@ -144,9 +175,11 @@ io.on('connection', socket => {
 
   socket.on('ready', ({ready}={}) => {
     const room=getSocketRoom(socket);if(!room)return;
+    if(room.started||room.paused)return;
     const player=room.players.get(socket.id);if(!player)return;
     player.ready=Boolean(ready);emitRoom(room);
-    if(room.players.size===room.maxPlayers&&[...room.players.values()].every(p=>p.ready)){
+    if(room.players.size===room.maxPlayers&&[...room.players.values()].every(p=>p.ready&&p.connected)){
+      room.started=true;
       room.resetting=false;
       resetAttemptState(room);
       io.to(room.code).emit('start-level',{level:room.level,deaths:room.deaths,mode:room.mode});
@@ -155,17 +188,29 @@ io.on('connection', socket => {
   });
 
   socket.on('player-state', payload => {
-    const room=getSocketRoom(socket);if(!room||!payload)return;
-    socket.to(room.code).emit('remote-state',{id:socket.id,...payload});
+    const room=getSocketRoom(socket);if(!room||room.paused||!payload||Number(payload.level)!==room.level)return;
+    const p=room.players.get(socket.id);
+    if(!Number.isFinite(payload.x)||!Number.isFinite(payload.y))return;
+    const number=(v,min,max)=>Math.max(min,Math.min(max,Number(v)||0));
+    p.lastState={id:p.id,role:p.role,slot:p.slot,level:room.level,x:number(payload.x,0,1600),y:number(payload.y,-500,1300),
+      vx:number(payload.vx,-1500,1500),vy:number(payload.vy,-1500,1500),onGround:!!payload.onGround,landPulse:!!payload.landPulse,
+      ability:!!payload.ability,abilityProgress:number(payload.abilityProgress,0,1),facing:payload.facing===-1?-1:1,
+      abilityRemaining:number(payload.abilityRemaining,0,3000),abilityCooldownRemaining:number(payload.abilityCooldownRemaining,0,8000),
+      cosmetics:{crown:!!payload.cosmetics?.crown,aura:!!payload.cosmetics?.aura}};
+    p.lastState.rootFx=payload.rootFx&&Number.isFinite(payload.rootFx.x)&&Number.isFinite(payload.rootFx.y)?{x:number(payload.rootFx.x,0,1600),y:number(payload.rootFx.y,-500,1300)}:null;
+    p.lastState.relic=['fracturedHeart','windstep','abyssFeather','chronoglass','greedEye','seerMark'].includes(payload.relic)?payload.relic:null;
+    socket.to(room.code).emit('remote-state',p.lastState);
   });
 
   socket.on('enemy-defeated', ({id,level}={}) => {
     const room=getSocketRoom(socket);if(!room||Number(level)!==room.level||!Number.isFinite(Number(id)))return;
+    if(room.paused)return;room.defeatedEnemies.add(Number(id));
     socket.to(room.code).emit('enemy-defeated',{id:Number(id),level:room.level});
   });
 
   socket.on('trap-trigger', ({level,key}={}) => {
     const room=getSocketRoom(socket);if(!room||Number(level)!==room.level)return;
+    if(room.paused)return;
     const trapKey=String(key||'').slice(0,64);
     if(!/^(?:f|p|as|br|vp|ch|fb|sw|fg)\d+$|^movingExit$/.test(trapKey))return;
     if(room.trapStates.has(trapKey))return;
@@ -177,6 +222,7 @@ io.on('connection', socket => {
 
   socket.on('chaos-seal-activate', ({level}={}) => {
     const room=getSocketRoom(socket);
+    if(room?.paused)return;
     if(!room||room.mode!=='chaos'||room.level%100===0||Number(level)!==room.level)return;
     const player=room.players.get(socket.id);if(!player||player.atSeal)return;
     player.atSeal=true;
@@ -188,6 +234,7 @@ io.on('connection', socket => {
 
   socket.on('rune-state', ({atRune,level}={}) => {
     const room=getSocketRoom(socket);if(!room||room.level%100!==0||Number(level)!==room.level||room.bossDefeated)return;
+    if(room.paused)return;
     const player=room.players.get(socket.id);if(!player)return;
     player.atRune=Boolean(atRune);
     if(!player.atRune)clearBossTimer(room);else maybeStartBossCharge(room);
@@ -195,6 +242,7 @@ io.on('connection', socket => {
 
   socket.on('goal-state', ({atGoal}={}) => {
     const room=getSocketRoom(socket);if(!room)return;
+    if(room.paused)return;
     const player=room.players.get(socket.id);if(!player)return;
     if(room.level%100===0&&!room.bossDefeated){player.atGoal=false;return;}
     if(room.mode==='chaos'&&room.level%100!==0&&room.chaosSeals.size<4){player.atGoal=false;return;}
@@ -202,46 +250,51 @@ io.on('connection', socket => {
     if(room.players.size===room.maxPlayers&&[...room.players.values()].every(p=>p.atGoal)){
       resetGoalFlags(room);
       const completedLevel=room.level,finished=completedLevel>=MAX_LEVEL;
-      if(!finished){room.level+=1;resetAttemptState(room);}
+      if(!finished){room.level+=1;resetAttemptState(room);room.attemptStartedAt+=900;}
       io.to(room.code).emit('level-complete',{level:room.level,finished,completedLevel,mode:room.mode});
-      if(!finished)setTimeout(()=>io.to(room.code).emit('start-level',{level:room.level,deaths:room.deaths,mode:room.mode}),900);
+      if(!finished)setTimeout(()=>{if(!room.paused)io.to(room.code).emit('start-level',{level:room.level,deaths:room.deaths,mode:room.mode});},900);
       else io.to(room.code).emit('game-finished',{deaths:room.deaths,mode:room.mode});
       emitRoom(room);
     }
   });
 
   socket.on('player-death', () => {
-    const room=getSocketRoom(socket);if(!room||room.resetting)return;
+    const room=getSocketRoom(socket);if(!room||room.resetting||room.paused)return;
     room.resetting=true;room.deaths+=1;resetAttemptState(room);
+    room.attemptStartedAt+=5000;
     socket.emit('death-reward',{coins:DEATH_REWARD_COINS});
     io.to(room.code).emit('reset-level',{deaths:room.deaths,mode:room.mode});emitRoom(room);
     setTimeout(()=>{if(rooms.get(room.code)===room)room.resetting=false;},300);
   });
 
   socket.on('restart-level', () => {
-    const room=getSocketRoom(socket);if(!room||room.resetting)return;
+    const room=getSocketRoom(socket);if(!room||room.resetting||room.paused)return;
     room.resetting=true;resetAttemptState(room);
+    room.attemptStartedAt+=340;
     io.to(room.code).emit('reset-level',{deaths:room.deaths,manual:true,mode:room.mode});emitRoom(room);
     setTimeout(()=>{if(rooms.get(room.code)===room)room.resetting=false;},300);
   });
 
   socket.on('disconnect',()=>{
     const room=getSocketRoom(socket);if(!room)return;
-    room.players.delete(socket.id);socket.leave(room.code);
-    if(room.players.size===0)rooms.delete(room.code);
-    else{
-      for(const p of room.players.values()){p.ready=false;p.atGoal=false;p.atRune=false;p.atSeal=false;}
-      room.resetting=false;resetAttemptState(room);emitRoom(room);
-      io.to(room.code).emit('partner-left',{
-        mode:room.mode,
-        maxPlayers:room.maxPlayers,
-        currentPlayers:room.players.size
-      });
-    }
+    const p=room.players.get(socket.id);if(!p)return;
+    p.connected=false;p.reconnectUntil=Date.now()+RECONNECT_GRACE_MS;
+    if(!room.paused){room.paused=true;room.pausedAt=Date.now();}
+    clearBossTimer(room);emitRoom(room);
+    io.to(room.code).emit('session-paused',{until:p.reconnectUntil,room:publicRoom(room)});
+    p.reconnectTimer=setTimeout(()=>removeSeat(room,p.id),RECONNECT_GRACE_MS);p.reconnectTimer.unref?.();
   });
 });
 
 function getSocketRoom(socket){const code=socket.data.roomCode;return code?rooms.get(code):null;}
+function removeSeat(room,id){
+  const p=room.players.get(id);if(!p)return;clearTimeout(p.reconnectTimer);room.players.delete(id);
+  if(!room.players.size){clearBossTimer(room);rooms.delete(room.code);return;}
+  room.started=false;room.paused=false;room.pausedAt=null;room.resetting=false;resetAttemptState(room);
+  for(const p of room.players.values()){p.ready=false;p.lastState=null;}
+  emitRoom(room);io.to(room.code).emit('partner-left',{mode:room.mode,maxPlayers:room.maxPlayers,currentPlayers:[...room.players.values()].filter(p=>p.connected).length});
+}
+function joinResult(room,p){return {ok:true,code:room.code,mode:room.mode,maxPlayers:room.maxPlayers,role:p.role,slot:p.slot,id:p.id,level:room.level,deaths:room.deaths,protocolVersion:MULTIPLAYER_PROTOCOL,token:p.token};}
 function joinRoom(socket,room,rawName,requestedElement,ack){
   if(socket.data.roomCode)return ack({ok:false,error:'Você já está em uma sala.'});
   const name=String(rawName||'Jogador').trim().slice(0,18)||'Jogador';
@@ -252,15 +305,9 @@ function joinRoom(socket,room,rawName,requestedElement,ack){
   }
   const usedSlots=new Set([...room.players.values()].map(p=>p.slot));
   let slot=0;while(usedSlots.has(slot)&&slot<room.maxPlayers)slot++;
-  const player={id:socket.id,name,role,slot,ready:false,atGoal:false,atRune:false,atSeal:false};
+  const player={id:socket.id,name,role,slot,ready:false,atGoal:false,atRune:false,atSeal:false,connected:true,token:randomBytes(32).toString('hex'),lastState:null};
   room.players.set(socket.id,player);socket.data.roomCode=room.code;socket.join(room.code);
-  ack({
-    ok:true,
-    code:room.code,
-    mode:room.mode,
-    maxPlayers:room.maxPlayers,
-    role,slot,id:socket.id,level:room.level,deaths:room.deaths,protocolVersion:MULTIPLAYER_PROTOCOL
-  });
+  ack(joinResult(room,player));
   emitRoom(room);
 }
 
@@ -269,7 +316,7 @@ function startServer(port = PORT, host = '0.0.0.0') {
   server.listen(port, host, () => {
     const addr = server.address();
     const actualPort = typeof addr === 'object' && addr ? addr.port : port;
-    console.log(`Infinity Castle Elements 0.0.8 multiplayer server listening on 0.0.0.0:${actualPort}`);
+    console.log(`Infinity Castle Elements 0.0.9 multiplayer server listening on 0.0.0.0:${actualPort}`);
   });
   return server;
 }

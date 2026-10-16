@@ -62,6 +62,14 @@ jobs:
         shell: pwsh
         run: npm run test:chaos
 
+      - name: Test activities, controls and audio
+        shell: pwsh
+        run: npm run test:features
+
+      - name: Test multiplayer reconnection
+        shell: pwsh
+        run: npm run test:reconnect
+
       - name: Test game localization
         shell: pwsh
         run: npm run test:i18n

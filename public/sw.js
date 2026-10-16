@@ -1,5 +1,5 @@
-const CACHE='infinity-castle-elements-0.0.8-i18n-1';
-const CORE=['/','/index.html','/style.css','/game.js','/translations.js','/i18n.js','/nyx-owl.svg','/element-party.svg','/manifest.webmanifest'];
+const CACHE='infinity-castle-elements-0.0.9-visuals-2';
+const CORE=['/','/index.html','/style.css','/game.js','/translations.js','/i18n.js','/visuals.js','/journey.js','/input.js','/audio.js','/journey-ui.js','/journey.css','/nyx-owl.svg','/element-party.svg','/manifest.webmanifest'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });
