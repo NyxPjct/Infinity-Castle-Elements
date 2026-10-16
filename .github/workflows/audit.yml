@@ -44,6 +44,9 @@ jobs:
       - name: Test language catalogs and localization
         run: npm run test:i18n
 
+      - name: Test mandatory desktop update detection
+        run: npm run test:updates
+
       - name: Test visual effects and reduced motion
         run: npm run test:visuals
 

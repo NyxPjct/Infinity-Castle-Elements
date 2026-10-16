@@ -82,6 +82,8 @@ The following captures show the current web build. The mobile image shows the re
 
 **Server deployment:** 0.0.9 uses multiplayer protocol **3**. Deploy this version of `server.js` to the central server before playing online with 0.0.9 clients. The health endpoint reports the server version and protocol. Older incompatible clients are directed to update.
 
+If the installed game is current but the server is older, the connection indicator shows **Servidor em atualização** (Server updating). Reinstalling the same game does not update the server; its Railway deployment must reach version 0.0.9 and protocol 3. A newer incompatible server without a published client update shows **Multiplayer incompatível** (Multiplayer incompatible). The game only requests a client update when a newer release is available. Singleplayer, the tutorial, practice, and daily challenge stay available.
+
 ## Elemental graphics
 
 Version 0.0.9 adds motion trails that follow each character's actual path while an elemental power is active: leaves and green ribbons for Earth, pale wind streams for Air, a golden comet trail for Light, and black and purple fragments for Darkness. Running and jumping use articulated poses, while traps have beveled metal, falling debris, speed streaks, and dust on impact. Hazard pools have shaded surfaces, waves, and rising bubbles.
@@ -201,7 +203,7 @@ Character and platform hitboxes, trap positions, elemental physics, level routes
 
 ### ⚡ Multiplayer version compatibility
 
-The game version and online compatibility are tracked separately. Multiplayer uses its own protocol; outdated clients receive **UPDATE_REQUIRED** and are directed to the Update Hub. Singleplayer stays available. The Chaos integration test also verifies that clients using an old protocol are rejected.
+The game version and online compatibility are tracked separately. Multiplayer uses its own protocol. **UPDATE_REQUIRED** means the client protocol is older; **SERVER_UPDATE_REQUIRED** means the server is older. Incompatible protocols cannot share a room. The Update Hub only offers a client upgrade when a newer release exists, and a mandatory-release marker does not require reinstalling a version already installed. Singleplayer stays available. Integration tests cover older, missing, and newer client protocols on room creation, joining, and reconnection.
 
 ### ✅ 0.0.7 validation
 
@@ -545,6 +547,7 @@ npm run test:i18n
 npm run test:visuals
 npm run test:features
 npm run test:reconnect
+npm run test:updates
 # Once, if a system Chrome/Chromium is unavailable:
 npx playwright-core install --with-deps chromium
 npm run test:browser
@@ -555,5 +558,7 @@ The first command audits all 1,000 levels. The second tests live Socket.IO multi
 The fourth checks visual effect lifecycles, four-element trails, landing and trap impacts, pause/resume, teleports, reduced motion, canvas state isolation, and memory limits. Feature tests cover deterministic UTC challenges, practice records, input configuration, and WebAudio scheduling. Reconnection tests exercise real 2P/4P sockets and the full 30-second expiry. Chromium tests exercise playable tutorial inputs, campaign save isolation, boss practice, saved controls and audio, offline activities, touch input, and disconnect/reload recovery. Set `CHROMIUM_PATH` to select an installed Chrome or Chromium executable.
 
 Game translations are bundled in `public/translations.js`; keep the Portuguese source keys and numbered placeholders when refining a translation.
+
+`npm run test:updates` exercises the desktop updater through its IPC handler with controlled release responses, checking that current and older releases never request a mandatory reinstall. Browser tests also distinguish an outdated server, an unpublished client update, a real update, and restored compatibility.
 
 Optional platform workflows: `npm run desktop` for Electron, `npm run dist:win` for Windows packaging, and the `mobile:*` scripts for Capacitor Android development. Android requires its SDK and native build tools.

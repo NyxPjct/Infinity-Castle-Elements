@@ -37,6 +37,8 @@ for (const code of expected) {
 }
 i18n.setLanguage('en-US');
 assert.equal(i18n.translate('Mapa da campanha'),'Campaign map');
+assert.equal(i18n.translate('● Servidor em atualização'),'● Server updating');
+assert.equal(i18n.translate('● Multiplayer incompatível'),'● Multiplayer incompatible');
 assert.equal(i18n.translate('2.50s · 3 mortes'),'2.50s · 3 deaths');
 for(const [code,expectedMute] of Object.entries({'es-ES':'Silenciar','fr-FR':'Couper le son','de-DE':'Stummschalten','ja-JP':'ミュート','ko-KR':'음소거','zh-CN':'静音','zh-TW':'靜音'}))assert.equal(catalogs[code]['Silenciar'],expectedMute,code+': audio mute must not be mistranslated');
 assert.equal(i18n.translate(' 🪨 Terra '), ' 🪨 Earth ');

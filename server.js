@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000;
 const MAX_LEVEL = 1000;
 const DEATH_REWARD_COINS = 5;
 const MULTIPLAYER_PROTOCOL = 3;
+const GAME_VERSION = require('./package.json').version;
 const RECONNECT_GRACE_MS = 30_000;
 const ELEMENTS = new Set(['earth', 'air', 'light', 'darkness']);
 const ELEMENT_ORDER = ['earth', 'air', 'light', 'darkness'];
@@ -28,7 +29,7 @@ const rooms = new Map();
 app.get('/health', (_req, res) => res.status(200).json({
   ok: true,
   service: 'infinity-castle-elements-multiplayer',
-  version: '0.0.9',
+  version: GAME_VERSION,
   protocolVersion: MULTIPLAYER_PROTOCOL,
   rooms: rooms.size,
   modes: { multiplayer: 2, chaos: 4 }
@@ -36,7 +37,7 @@ app.get('/health', (_req, res) => res.status(200).json({
 
 app.get('/multiplayer/status', (_req, res) => res.json({
   online: true,
-  version: '0.0.9',
+  version: GAME_VERSION,
   protocolVersion: MULTIPLAYER_PROTOCOL,
   activeRooms: rooms.size,
   maxPlayersPerRoom: 4,
@@ -118,9 +119,16 @@ function maybeStartBossCharge(room){
   },Math.round(bossRequiredSeconds(level,room.mode)*1000));
 }
 
+function protocolError(protocol){
+  const client=Number(protocol);
+  if(client===MULTIPLAYER_PROTOCOL)return null;
+  const serverOutdated=Number.isInteger(client)&&client>MULTIPLAYER_PROTOCOL;
+  return {ok:false,code:serverOutdated?'SERVER_UPDATE_REQUIRED':'UPDATE_REQUIRED',requiredProtocol:MULTIPLAYER_PROTOCOL,serverVersion:GAME_VERSION,error:serverOutdated?'O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.':'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'};
+}
+
 io.on('connection', socket => {
   socket.on('resume-room',({code,token,protocol}={},ack=()=>{})=>{
-    if(Number(protocol)!==MULTIPLAYER_PROTOCOL)return ack({ok:false,code:'UPDATE_REQUIRED',error:'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'});
+    const incompatible=protocolError(protocol);if(incompatible)return ack(incompatible);
     if(socket.data.roomCode)return ack({ok:false,error:'Você já está em uma sala.'});
     const room=rooms.get(String(code||'').toUpperCase());
     const p=room&&typeof token==='string'&&[...room.players.values()].find(p=>p.token===token&&!p.connected&&p.reconnectUntil>Date.now());
@@ -138,10 +146,10 @@ io.on('connection', socket => {
     if(!room.paused){io.to(room.code).emit('session-resumed',{room:publicRoom(room)});maybeStartBossCharge(room);}
   });
   socket.on('leave-room',()=>{const room=getSocketRoom(socket);if(room)removeSeat(room,socket.id);socket.leave(socket.data.roomCode);socket.data.roomCode=null;});
-  socket.emit('protocol-info',{protocolVersion:MULTIPLAYER_PROTOCOL,serverVersion:'0.0.9'});
+  socket.emit('protocol-info',{protocolVersion:MULTIPLAYER_PROTOCOL,serverVersion:GAME_VERSION});
   socket.on('create-room', ({name,element,resumeLevel,resumeDeaths,mode,protocol}={}, ack=()=>{}) => {
     if(socket.data.roomCode)return ack({ok:false,error:'Você já está em uma sala.'});
-    if(Number(protocol)!==MULTIPLAYER_PROTOCOL)return ack({ok:false,code:'UPDATE_REQUIRED',requiredProtocol:MULTIPLAYER_PROTOCOL,error:'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'});
+    const incompatible=protocolError(protocol);if(incompatible)return ack(incompatible);
     const roomMode=normalizeMode(mode);
     const code=uniqueCode();
     const level=Math.max(1,Math.min(MAX_LEVEL,Number(resumeLevel)||1));
@@ -165,7 +173,7 @@ io.on('connection', socket => {
   });
 
   socket.on('join-room', ({code,name,element,mode,protocol}={}, ack=()=>{}) => {
-    if(Number(protocol)!==MULTIPLAYER_PROTOCOL)return ack({ok:false,code:'UPDATE_REQUIRED',requiredProtocol:MULTIPLAYER_PROTOCOL,error:'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'});
+    const incompatible=protocolError(protocol);if(incompatible)return ack(incompatible);
     const normalized=String(code||'').trim().toUpperCase(),room=rooms.get(normalized);
     if(!room)return ack({ok:false,error:'Sala não encontrada.'});
     if(mode&&normalizeMode(mode)!==room.mode)return ack({ok:false,error:room.mode==='chaos'?'Esse código pertence a uma sala do Modo Caos.':'Esse código pertence ao multiplayer de 2 jogadores.'});

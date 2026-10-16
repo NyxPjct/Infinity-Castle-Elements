@@ -80,9 +80,15 @@ async function main() {
 
     const earth = await connect(url); clients.push(earth);
     const legacy = await connect(url); clients.push(legacy);
-    const blocked = await emitAck(legacy, 'create-room', {name:'Legacy',element:'earth',mode:'multiplayer',protocol:MULTIPLAYER_PROTOCOL-1});
-    assert.equal(blocked.ok,false);
-    assert.equal(blocked.code,'UPDATE_REQUIRED');
+    for(const event of ['create-room','join-room','resume-room']){
+      for(const protocol of [undefined,MULTIPLAYER_PROTOCOL-1,MULTIPLAYER_PROTOCOL+1]){
+        const blocked=await emitAck(legacy,event,{name:'Compatibility',element:'earth',mode:'multiplayer',protocol});
+        assert.equal(blocked.ok,false);
+        assert.equal(blocked.code,protocol>MULTIPLAYER_PROTOCOL?'SERVER_UPDATE_REQUIRED':'UPDATE_REQUIRED');
+        assert.equal(blocked.requiredProtocol,MULTIPLAYER_PROTOCOL);
+        assert.equal(blocked.serverVersion,require('../package.json').version);
+      }
+    }
     legacy.close();clients.splice(clients.indexOf(legacy),1);
 
     const created = await emitAck(earth, 'create-room', {

@@ -17,6 +17,7 @@
     "test:features": "node tools/test-features.js",
     "test:reconnect": "node tools/test-reconnect.js",
     "test:browser": "node tools/test-browser.js",
+    "test:updates": "node tools/test-updates.js",
     "mobile:add:android": "npx cap add android",
     "mobile:sync": "npx cap sync android",
     "mobile:android": "npx cap open android"

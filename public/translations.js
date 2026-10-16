@@ -591,7 +591,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Место зарезервировано",
     "Conectado": "Соединены",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Снижает пробки, трассы и частицы. опасности остаются видимыми.",
-    "Treine, explore e encare o desafio do dia.": "Практикуйте, изучайте и принимайте сегодняшние вызовы."
+    "Treine, explore e encare o desafio do dia.": "Практикуйте, изучайте и принимайте сегодняшние вызовы.",
+    "Servidor em atualização": "Обновление сервера",
+    "Multiplayer incompatível": "Сетевая игра несовместима",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Сервер сетевой игры нуждается в обновлении. Попробуйте позже. Одиночный режим по-прежнему доступен.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Сервер и игра несовместимы. Попробуйте позже. Одиночный режим по-прежнему доступен."
   },
   "ko-KR": {
     "+15% força de salto na próxima tentativa.": "+다음 시도에 15% 점프 강도.",
@@ -1182,7 +1186,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "예약된 자리",
     "Conectado": "연결된",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "파도, 트랙 및 입자를 줄이고 위험은 눈에 띄게 남아 있습니다.",
-    "Treine, explore e encare o desafio do dia.": "실천하고, 탐구하고, 오늘날의 도전을 해결하십시오."
+    "Treine, explore e encare o desafio do dia.": "실천하고, 탐구하고, 오늘날의 도전을 해결하십시오.",
+    "Servidor em atualização": "서버 업데이트 중",
+    "Multiplayer incompatível": "멀티플레이 호환 불가",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "멀티플레이 서버를 업데이트해야 합니다. 나중에 다시 시도하세요. 싱글플레이는 계속 이용할 수 있습니다.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "서버와 게임이 호환되지 않습니다. 나중에 다시 시도하세요. 싱글플레이는 계속 이용할 수 있습니다."
   },
   "it-IT": {
     "+15% força de salto na próxima tentativa.": "+15% forza di salto al prossimo tentativo.",
@@ -1773,7 +1781,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Posto riservato",
     "Conectado": "Collegato",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Riduce le fate, i sentieri e le particelle. i pericoli rimangono visibili.",
-    "Treine, explore e encare o desafio do dia.": "Praticare, esplorare e affrontare la sfida di oggi."
+    "Treine, explore e encare o desafio do dia.": "Praticare, esplorare e affrontare la sfida di oggi.",
+    "Servidor em atualização": "Server in aggiornamento",
+    "Multiplayer incompatível": "Multigiocatore incompatibile",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Il server multigiocatore deve essere aggiornato. Riprova più tardi. La modalità giocatore singolo resta disponibile.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Il server e il gioco sono incompatibili. Riprova più tardi. La modalità giocatore singolo resta disponibile."
   },
   "tr-TR": {
     "+15% força de salto na próxima tentativa.": "Bir sonraki denemede +%15 sıçrama gücü.",
@@ -2364,7 +2376,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Ayrılmış yer",
     "Conectado": "Bağlantılı",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Döküntüleri, yolları ve parçacıkları azaltır. tehlikeler görülebilir kalır.",
-    "Treine, explore e encare o desafio do dia.": "Deneyin, keşfedin ve bugünün zorluğunu üstlenin."
+    "Treine, explore e encare o desafio do dia.": "Deneyin, keşfedin ve bugünün zorluğunu üstlenin.",
+    "Servidor em atualização": "Sunucu güncelleniyor",
+    "Multiplayer incompatível": "Çok oyunculu mod uyumsuz",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Çok oyunculu sunucunun güncellenmesi gerekiyor. Daha sonra tekrar deneyin. Tek oyunculu mod hâlâ kullanılabilir.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Sunucu ve oyun uyumsuz. Daha sonra tekrar deneyin. Tek oyunculu mod hâlâ kullanılabilir."
   },
   "hi-IN": {
     "+15% força de salto na próxima tentativa.": "अगले प्रयास में +15% छलांग शक्ति।",
@@ -2955,7 +2971,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "आरक्षित स्थान",
     "Conectado": "कनेक्ट",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "झटके, ट्रैक, और कणों को कम करता है. खतरे दिखाई दे रहे हैं.",
-    "Treine, explore e encare o desafio do dia.": "अभ्यास करें, खोजें, और आज की चुनौती का सामना करें।"
+    "Treine, explore e encare o desafio do dia.": "अभ्यास करें, खोजें, और आज की चुनौती का सामना करें।",
+    "Servidor em atualização": "सर्वर अपडेट हो रहा है",
+    "Multiplayer incompatível": "मल्टीप्लेयर असंगत है",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "मल्टीप्लेयर सर्वर को अपडेट करना आवश्यक है। बाद में फिर प्रयास करें। सिंगलप्लेयर अभी भी उपलब्ध है।",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "सर्वर और गेम संगत नहीं हैं। बाद में फिर प्रयास करें। सिंगलप्लेयर अभी भी उपलब्ध है।"
   },
   "cs-CZ": {
     "+15% força de salto na próxima tentativa.": "+15 % na příští pokus.",
@@ -3546,7 +3566,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Rezervované místo",
     "Conectado": "Připojené",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Sníží vlny, trasy a částice. nebezpečí zůstávají viditelné.",
-    "Treine, explore e encare o desafio do dia.": "Pracujte, prozkoumejte a přijměte dnešní výzvu."
+    "Treine, explore e encare o desafio do dia.": "Pracujte, prozkoumejte a přijměte dnešní výzvu.",
+    "Servidor em atualização": "Aktualizace serveru",
+    "Multiplayer incompatível": "Nekompatibilní hra více hráčů",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Server hry více hráčů potřebuje aktualizaci. Zkus to později znovu. Hra pro jednoho hráče je stále dostupná.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Server a hra nejsou kompatibilní. Zkus to později znovu. Hra pro jednoho hráče je stále dostupná."
   },
   "pt-BR": {
     "+15% força de salto na próxima tentativa.": "+15% força de salto na próxima tentativa.",
@@ -4137,7 +4161,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Vaga reservada",
     "Conectado": "Conectado",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Diminui fades, rastros e partículas. Os perigos continuam visíveis.",
-    "Treine, explore e encare o desafio do dia.": "Treine, explore e encare o desafio do dia."
+    "Treine, explore e encare o desafio do dia.": "Treine, explore e encare o desafio do dia.",
+    "Servidor em atualização": "Servidor em atualização",
+    "Multiplayer incompatível": "Multiplayer incompatível",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível."
   },
   "en-US": {
     "+15% força de salto na próxima tentativa.": "+15% jump strength on the next attempt.",
@@ -4728,7 +4756,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Reserved slot",
     "Conectado": "Connected",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Reduces fades, trails, and particles. Hazards remain visible.",
-    "Treine, explore e encare o desafio do dia.": "Practice, explore, and take on today's challenge."
+    "Treine, explore e encare o desafio do dia.": "Practice, explore, and take on today's challenge.",
+    "Servidor em atualização": "Server updating",
+    "Multiplayer incompatível": "Multiplayer incompatible",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "The multiplayer server needs an update. Try again later. Singleplayer is still available.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "The server and game are incompatible. Try again later. Singleplayer is still available."
   },
   "da-DK": {
     "+15% força de salto na próxima tentativa.": "+15 procent på det næste forsøg.",
@@ -5319,7 +5351,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Reserveret plads",
     "Conectado": "Forbundet",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Reducerer fader, spor og partikler. farer forbliver synlige.",
-    "Treine, explore e encare o desafio do dia.": "Praksisere, udforske og tage på dagens udfordring."
+    "Treine, explore e encare o desafio do dia.": "Praksisere, udforske og tage på dagens udfordring.",
+    "Servidor em atualização": "Serveren opdateres",
+    "Multiplayer incompatível": "Multiplayer er inkompatibel",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Multiplayer-serveren skal opdateres. Prøv igen senere. Singleplayer er stadig tilgængelig.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Serveren og spillet er inkompatible. Prøv igen senere. Singleplayer er stadig tilgængelig."
   },
   "es-ES": {
     "+15% força de salto na próxima tentativa.": "+15% de fuerza de salto en el siguiente intento.",
@@ -5910,7 +5946,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Plaza reservada",
     "Conectado": "Conectados",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Reduce las fadas, los caminos y las partículas. los peligros permanecen visibles.",
-    "Treine, explore e encare o desafio do dia.": "Practica, explora y toma frente al reto de hoy."
+    "Treine, explore e encare o desafio do dia.": "Practica, explora y toma frente al reto de hoy.",
+    "Servidor em atualização": "Servidor en actualización",
+    "Multiplayer incompatível": "Multijugador incompatible",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "El servidor multijugador necesita actualizarse. Inténtalo más tarde. El modo individual sigue disponible.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "El servidor y el juego son incompatibles. Inténtalo más tarde. El modo individual sigue disponible."
   },
   "fr-FR": {
     "+15% força de salto na próxima tentativa.": "+15% de force de saut à la prochaine tentative.",
@@ -6501,7 +6541,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Place réservée",
     "Conectado": "Connecté",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Réduit les faux, les trails et les particules. Les dangers restent visibles.",
-    "Treine, explore e encare o desafio do dia.": "Pratiquez, explorez et prenez le défi d’aujourd’hui."
+    "Treine, explore e encare o desafio do dia.": "Pratiquez, explorez et prenez le défi d’aujourd’hui.",
+    "Servidor em atualização": "Mise à jour du serveur",
+    "Multiplayer incompatível": "Multijoueur incompatible",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Le serveur multijoueur doit être mis à jour. Réessayez plus tard. Le mode solo reste disponible.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Le serveur et le jeu sont incompatibles. Réessayez plus tard. Le mode solo reste disponible."
   },
   "zh-TW": {
     "+15% força de salto na próxima tentativa.": "+15%在下一次嘗試中跳強度。",
@@ -7092,7 +7136,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "已保留名額",
     "Conectado": "連線",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "減少裂縫、軌道和粒子,危險仍然可見。",
-    "Treine, explore e encare o desafio do dia.": "練習,探索,並應對今天的挑戰。"
+    "Treine, explore e encare o desafio do dia.": "練習,探索,並應對今天的挑戰。",
+    "Servidor em atualização": "伺服器更新中",
+    "Multiplayer incompatível": "多人模式不相容",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "多人遊戲伺服器需要更新。請稍後再試。單人模式仍可使用。",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "伺服器與遊戲不相容。請稍後再試。單人模式仍可使用。"
   },
   "fi-FI": {
     "+15% força de salto na próxima tentativa.": "+15 % hyppyvoimaa seuraavassa yrityksessä.",
@@ -7683,7 +7731,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Varattu paikka",
     "Conectado": "Liitetty",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Se vähentää kaareja, reittejä ja hiukkasia. vaarat pysyvät näkyvillä.",
-    "Treine, explore e encare o desafio do dia.": "Harjoittele, tutki ja vastaa nykypäivän haasteeseen."
+    "Treine, explore e encare o desafio do dia.": "Harjoittele, tutki ja vastaa nykypäivän haasteeseen.",
+    "Servidor em atualização": "Palvelinta päivitetään",
+    "Multiplayer incompatível": "Moninpeli ei ole yhteensopiva",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Moninpelipalvelin on päivitettävä. Yritä myöhemmin uudelleen. Yksinpeli on edelleen käytettävissä.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Palvelin ja peli eivät ole yhteensopivia. Yritä myöhemmin uudelleen. Yksinpeli on edelleen käytettävissä."
   },
   "pl-PL": {
     "+15% força de salto na próxima tentativa.": "+15% siły skoku przy następnej próbie.",
@@ -8274,7 +8326,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Zarezerwowane miejsce",
     "Conectado": "Połączone",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Zmniejsza pęknięcia, ścieżki i cząstki. zagrożenia pozostają widoczne.",
-    "Treine, explore e encare o desafio do dia.": "Praktykuj, zbadaj i podejmuj dzisiejsze wyzwanie."
+    "Treine, explore e encare o desafio do dia.": "Praktykuj, zbadaj i podejmuj dzisiejsze wyzwanie.",
+    "Servidor em atualização": "Aktualizacja serwera",
+    "Multiplayer incompatível": "Niezgodny tryb wieloosobowy",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Serwer trybu wieloosobowego wymaga aktualizacji. Spróbuj ponownie później. Tryb jednoosobowy jest nadal dostępny.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Serwer i gra są niezgodne. Spróbuj ponownie później. Tryb jednoosobowy jest nadal dostępny."
   },
   "ja-JP": {
     "+15% força de salto na próxima tentativa.": "次の試行時のジャンプ力が 15% 増加します。",
@@ -8865,7 +8921,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "予約済みの枠",
     "Conectado": "つながる",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "漏れ、トラック、粒子を減らす 危険は目に見える。",
-    "Treine, explore e encare o desafio do dia.": "実践し、探索し、今日の課題に直面する。"
+    "Treine, explore e encare o desafio do dia.": "実践し、探索し、今日の課題に直面する。",
+    "Servidor em atualização": "サーバー更新中",
+    "Multiplayer incompatível": "マルチプレイの互換性なし",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "マルチプレイサーバーの更新が必要です。しばらくしてから再試行してください。シングルプレイは引き続き利用できます。",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "サーバーとゲームに互換性がありません。しばらくしてから再試行してください。シングルプレイは引き続き利用できます。"
   },
   "de-DE": {
     "+15% força de salto na próxima tentativa.": "+15 % Sprungkraft beim nächsten Versuch.",
@@ -9456,7 +9516,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Platz reserviert",
     "Conectado": "Verbunden",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Reduziert Faden, Spuren und Partikeln. Gefahren bleiben sichtbar.",
-    "Treine, explore e encare o desafio do dia.": "Praktizieren, erkunden und die heutige Herausforderung übernehmen."
+    "Treine, explore e encare o desafio do dia.": "Praktizieren, erkunden und die heutige Herausforderung übernehmen.",
+    "Servidor em atualização": "Server wird aktualisiert",
+    "Multiplayer incompatível": "Mehrspieler inkompatibel",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Der Mehrspieler-Server muss aktualisiert werden. Versuche es später erneut. Der Einzelspielermodus bleibt verfügbar.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Server und Spiel sind inkompatibel. Versuche es später erneut. Der Einzelspielermodus bleibt verfügbar."
   },
   "zh-CN": {
     "+15% força de salto na próxima tentativa.": "+15%在下一次尝试中跳强度。",
@@ -10047,7 +10111,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "已预留位置",
     "Conectado": "连接",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "减少裂缝、轨道和粒子,危险仍然可见。",
-    "Treine, explore e encare o desafio do dia.": "练习,探索,并应对今天的挑战。"
+    "Treine, explore e encare o desafio do dia.": "练习,探索,并应对今天的挑战。",
+    "Servidor em atualização": "服务器更新中",
+    "Multiplayer incompatível": "多人模式不兼容",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "多人游戏服务器需要更新。请稍后重试。单人模式仍可使用。",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "服务器与游戏不兼容。请稍后重试。单人模式仍可使用。"
   },
   "ar-SA": {
     "+15% força de salto na próxima tentativa.": "+15% قوة القفز في المحاولة التالية.",
@@ -10638,7 +10706,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "مكان محجوز",
     "Conectado": "متصلة",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "يقلل من البراغيث والطرق والجزء، ويظل المخاطر مرئية.",
-    "Treine, explore e encare o desafio do dia.": "ممارسة، واستكشاف، واتخاذ التحدي اليوم."
+    "Treine, explore e encare o desafio do dia.": "ممارسة، واستكشاف، واتخاذ التحدي اليوم.",
+    "Servidor em atualização": "جارٍ تحديث الخادم",
+    "Multiplayer incompatível": "اللعب الجماعي غير متوافق",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "يحتاج خادم اللعب الجماعي إلى تحديث. حاول مرة أخرى لاحقًا. لا يزال اللعب الفردي متاحًا.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "الخادم واللعبة غير متوافقين. حاول مرة أخرى لاحقًا. لا يزال اللعب الفردي متاحًا."
   },
   "sv-SE": {
     "+15% força de salto na próxima tentativa.": "+15% hoppa styrka vid nästa försök.",
@@ -11229,7 +11301,11 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Reserverad plats",
     "Conectado": "Ansluten",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Reducerar fader, spår och partiklar. faror förblir synliga.",
-    "Treine, explore e encare o desafio do dia.": "Öva, utforska och ta upp dagens utmaning."
+    "Treine, explore e encare o desafio do dia.": "Öva, utforska och ta upp dagens utmaning.",
+    "Servidor em atualização": "Servern uppdateras",
+    "Multiplayer incompatível": "Flerspelarläget är inkompatibelt",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "Flerspelarservern behöver uppdateras. Försök igen senare. Enspelarläget är fortfarande tillgängligt.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "Servern och spelet är inkompatibla. Försök igen senare. Enspelarläget är fortfarande tillgängligt."
   },
   "nl-NL": {
     "+15% força de salto na próxima tentativa.": "+15% springkracht bij de volgende poging.",
@@ -11820,6 +11896,10 @@ globalThis.ICE_TRANSLATIONS = {
     "Vaga reservada": "Gereserveerde plek",
     "Conectado": "Verbonden",
     "Diminui fades, rastros e partículas. Os perigos continuam visíveis.": "Verminder fouten, trails en deeltjes. gevaren blijven zichtbaar.",
-    "Treine, explore e encare o desafio do dia.": "Praat, verkennen en aanpakken van de uitdaging van vandaag."
+    "Treine, explore e encare o desafio do dia.": "Praat, verkennen en aanpakken van de uitdaging van vandaag.",
+    "Servidor em atualização": "Server wordt bijgewerkt",
+    "Multiplayer incompatível": "Multiplayer niet compatibel",
+    "O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.": "De multiplayerserver moet worden bijgewerkt. Probeer het later opnieuw. Singleplayer blijft beschikbaar.",
+    "O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.": "De server en het spel zijn niet compatibel. Probeer het later opnieuw. Singleplayer blijft beschikbaar."
   }
 };

@@ -49,6 +49,9 @@ jobs:
       - name: Test game localization
         run: npm run test:i18n
 
+      - name: Test mandatory desktop update detection
+        run: npm run test:updates
+
       - name: Prepare Android SDK
         shell: bash
         run: |

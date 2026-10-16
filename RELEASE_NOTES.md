@@ -1,5 +1,12 @@
 # Infinity Castle Elements — INSANITY 0.0.9
 
+## Online status correction in 0.0.9
+
+- An older multiplayer server now shows **Server updating**, instead of incorrectly requiring players to update an already current game. Singleplayer activities remain available.
+- Client updates are only offered when a newer release is available. A newer incompatible server without a published client update shows **Multiplayer incompatible**.
+- Mandatory release markers no longer request reinstalling the installed version. Compatibility errors include the server version and required protocol, and distinguish outdated servers from outdated clients.
+- The corrected messages are included in all 20 offline languages. Windows and Android downloads are rebuilt under version 0.0.9.
+
 ## Menu correction in 0.0.9
 
 - Tutorial, Campaign map, and Daily challenge now appear inside the **Singleplayer** setup, below the campaign buttons. They are hidden in Multiplayer and Chaos Mode.

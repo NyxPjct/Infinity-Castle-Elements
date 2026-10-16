@@ -116,21 +116,38 @@ function persistentRemove(key){
   try{if(typeof window!=='undefined'&&window.electronAPI?.storageRemove)window.electronAPI.storageRemove(key);}catch{}
 }
 
+let serverCompatibility=null;
 function setConnectionStatus(online){
-  for(const id of ['#connectionPill','#menuConnectionPill']){const el=$(id);if(!el)continue;el.textContent=online?'● Online':'● Offline';el.style.color=online?'#55e6a5':'#ff7893';}
+  const status=serverCompatibility?.status;
+  const label=!online?'● Offline':status==='server-outdated'?'● Servidor em atualização':status==='client-outdated'?(serverCompatibility.clientUpdateAvailable?'● Atualização exigida':'● Multiplayer incompatível'):'● Online';
+  for(const id of ['#connectionPill','#menuConnectionPill']){const el=$(id);if(!el)continue;el.textContent=label;el.style.color=!online?'#ff7893':status==='server-outdated'?'#e8bd66':status==='client-outdated'?'#ff7893':'#55e6a5';}
 }
-socket.on('connect', () => {setConnectionStatus(true);tryResumeSession();});
+function setServerCompatibility(info){
+  const protocol=Number(info?.protocolVersion);
+  if(!Number.isInteger(protocol)||protocol<1)return;
+  serverCompatibility={protocol,serverVersion:String(info.serverVersion||''),status:protocol<MULTIPLAYER_PROTOCOL?'server-outdated':protocol>MULTIPLAYER_PROTOCOL?'client-outdated':'compatible',clientUpdateAvailable:false};
+  setConnectionStatus(socket.connected);
+}
+function multiplayerCompatibilityError(){
+  if(serverCompatibility?.status==='server-outdated')return 'O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.';
+  if(serverCompatibility?.status==='client-outdated')return serverCompatibility.clientUpdateAvailable?'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.':'O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.';
+  return '';
+}
+async function offerClientUpdate(){
+  if(serverCompatibility?.status==='server-outdated')return;
+  const compatibility=serverCompatibility,next=await checkUpdatesFromUI(true);
+  if(serverCompatibility===compatibility&&clientVersionNewer(next?.latestVersion,APP_VERSION))openUpdateModal(false);
+}
+function requestRoom(event,payload){
+  const error=multiplayerCompatibilityError();
+  if(error){$('#errorText').textContent=error;return;}
+  state.mode=payload.mode==='chaos'?'chaos':'multiplayer';socket.emit(event,payload,handleJoin);
+}
+socket.on('connect', () => {serverCompatibility=null;setConnectionStatus(true);tryResumeSession();});
 socket.on('disconnect', () => {setConnectionStatus(false);if(state.roomCode)pauseNetworkSession();});
 socket.on('protocol-info', info => {
-  const serverProtocol=Number(info?.protocolVersion)||0;
-  if(serverProtocol&&serverProtocol!==MULTIPLAYER_PROTOCOL){
-    for(const id of ['#connectionPill','#menuConnectionPill']){
-      const el=$(id);if(!el)continue;el.textContent='● Atualização exigida';el.style.color='#ff7893';
-    }
-    const status=$('#menuUpdatesStatus');if(status)status.textContent='Atualização exigida para o multiplayer';
-    $('#menuUpdatesBtn')?.classList.add('update-error');
-    setTimeout(()=>checkUpdatesFromUI(true).then(()=>openUpdateModal(false)).catch(()=>{}),250);
-  }
+  setServerCompatibility(info);
+  if(serverCompatibility?.status==='client-outdated')offerClientUpdate().catch(()=>{});
 });
 
 document.querySelectorAll('.character-choice').forEach(btn=>btn.addEventListener('click',()=>selectElement(btn.dataset.element)));
@@ -223,7 +240,8 @@ function renderUpdateHistory(history){
 }
 
 function renderUpdateState(st){
-  if(!st)return;desktopUpdateState=st;
+  if(!st)return;st={...st,required:!!st.required&&clientVersionNewer(st.latestVersion,st.currentVersion||APP_VERSION)};desktopUpdateState=st;
+  if(serverCompatibility?.status==='client-outdated'){serverCompatibility.clientUpdateAvailable=clientVersionNewer(st.latestVersion,APP_VERSION);setConnectionStatus(socket.connected);}
   const menuBtn=$('#menuUpdatesBtn'),menuStatus=$('#menuUpdatesStatus'),menuIcon=$('#menuUpdatesIcon');
   menuBtn?.classList.remove('update-available','update-ready','update-error');
   if(st.status==='available'||st.status==='downloading'||st.status==='verifying')menuBtn?.classList.add('update-available');
@@ -315,7 +333,7 @@ async function checkPublicUpdates(){
     releaseName:release.name||('Infinity Castle Elements '+latestVersion),notes:String(release.body||'').trim(),releaseUrl:release.html_url||null,
     downloadUrl:mode==='android'?(apk?.browser_download_url||release.html_url):release.html_url,assetName:mode==='android'?apk?.name:null,
     digest:mode==='android'?apk?.digest:null,totalBytes:mode==='android'?(Number(apk?.size)||0):0,downloadedBytes:0,partialBytes:0,progress:0,
-    verified:false,required:/<!--\s*required-update\s*-->|\[ATUALIZA[CÇ][AÃ]O OBRIGAT[OÓ]RIA\]/i.test(String(release.body||'')),
+    verified:false,required:available&&/<!--\s*required-update\s*-->|\[ATUALIZA[CÇ][AÃ]O OBRIGAT[OÓ]RIA\]/i.test(String(release.body||'')),
     history:Array.isArray(historyRaw)?historyRaw.filter(x=>!x.draft).slice(0,8).map(x=>({version:normalizeClientVersion(x.tag_name||x.name),name:x.name||x.tag_name,notes:String(x.body||''),publishedAt:x.published_at,url:x.html_url,prerelease:!!x.prerelease})):[],
     installMode:mode,installOnExit:false,error:null
   };
@@ -470,12 +488,12 @@ addEventListener('keydown',e=>{
 });
 $('#soloBtn').onclick = () => startSolo(false);
 $('#continueSoloBtn').onclick = () => startSolo(true);
-$('#createBtn').onclick = () => { state.mode='multiplayer'; socket.emit('create-room', { name: playerName(), element: state.selectedRole, mode:'multiplayer', protocol:MULTIPLAYER_PROTOCOL }, handleJoin); };
+$('#createBtn').onclick = () => requestRoom('create-room', { name: playerName(), element: state.selectedRole, mode:'multiplayer', protocol:MULTIPLAYER_PROTOCOL });
 $('#continueMultiBtn').onclick = continueMultiplayer;
-$('#joinBtn').onclick = () => { state.mode='multiplayer'; socket.emit('join-room', { code: $('#roomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'multiplayer', protocol:MULTIPLAYER_PROTOCOL }, handleJoin); };
-$('#createChaosBtn').onclick = () => { state.mode='chaos'; socket.emit('create-room', { name: playerName(), element: state.selectedRole, mode:'chaos', protocol:MULTIPLAYER_PROTOCOL }, handleJoin); };
+$('#joinBtn').onclick = () => requestRoom('join-room', { code: $('#roomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'multiplayer', protocol:MULTIPLAYER_PROTOCOL });
+$('#createChaosBtn').onclick = () => requestRoom('create-room', { name: playerName(), element: state.selectedRole, mode:'chaos', protocol:MULTIPLAYER_PROTOCOL });
 $('#continueChaosBtn').onclick = continueChaos;
-$('#joinChaosBtn').onclick = () => { state.mode='chaos'; socket.emit('join-room', { code: $('#chaosRoomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'chaos', protocol:MULTIPLAYER_PROTOCOL }, handleJoin); };
+$('#joinChaosBtn').onclick = () => requestRoom('join-room', { code: $('#chaosRoomCodeInput').value, name: playerName(), element: state.selectedRole, mode:'chaos', protocol:MULTIPLAYER_PROTOCOL });
 $('#roomCodeInput').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
 $('#chaosRoomCodeInput').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
 $('#copyCode').onclick = async () => { try { await navigator.clipboard.writeText(state.roomCode); $('#copyCode').textContent='Copiado!'; setTimeout(()=>$('#copyCode').textContent='Copiar código',900); } catch{} };
@@ -1130,28 +1148,26 @@ function startSolo(useSave){
 function continueMultiplayer(){
   const save=loadMultiplayerSave();
   if(!save)return refreshMultiplayerSaveButton();
-  state.mode='multiplayer';
-  socket.emit('create-room',{
+  requestRoom('create-room',{
     name:playerName()||save.name||'Jogador',
     element:state.selectedRole,
     mode:'multiplayer',
     protocol:MULTIPLAYER_PROTOCOL,
     resumeLevel:Math.max(1,Math.min(1000,Number(save.level)||1)),
     resumeDeaths:Math.max(0,Number(save.deaths)||0)
-  },handleJoin);
+  });
 }
 function continueChaos(){
   const save=loadChaosSave();
   if(!save)return refreshChaosSaveButton();
-  state.mode='chaos';
-  socket.emit('create-room',{
+  requestRoom('create-room',{
     name:playerName()||save.name||'Jogador',
     element:ELEMENTS[save.role]?save.role:state.selectedRole,
     mode:'chaos',
     protocol:MULTIPLAYER_PROTOCOL,
     resumeLevel:Math.max(1,Math.min(1000,Number(save.level)||1)),
     resumeDeaths:Math.max(0,Number(save.deaths)||0)
-  },handleJoin);
+  });
 }
 function restartGame(){
   if(state.activity){window.ICEFeatures?.start(state.activity.type,state.activity.level,state.activity.role);return;}
@@ -1164,8 +1180,10 @@ function restartGame(){
 refreshSoloSaveButton();refreshMultiplayerSaveButton();
 function handleJoin(res){
   if(!res?.ok){
-    $('#errorText').textContent = res?.error || 'Não foi possível entrar.';
-    if(res?.code==='UPDATE_REQUIRED')checkUpdatesFromUI(true).then(()=>openUpdateModal(false));
+    const incompatible=['UPDATE_REQUIRED','SERVER_UPDATE_REQUIRED'].includes(res?.code);
+    if(incompatible)setServerCompatibility({protocolVersion:res.requiredProtocol,serverVersion:res.serverVersion});
+    $('#errorText').textContent = incompatible?(multiplayerCompatibilityError()||'O servidor e o jogo são incompatíveis. Tente novamente mais tarde. O Singleplayer continua disponível.'):(res?.error||'Não foi possível entrar.');
+    if(incompatible)offerClientUpdate().catch(()=>{});
     return;
   }
   state.mode=res.mode==='chaos'?'chaos':'multiplayer';state.id=res.id;state.roomCode=res.code;state.role=res.role;state.slot=res.slot||0;state.level=res.level;state.deaths=Number(res.deaths)||0;state.remotePlayers.clear();
@@ -1190,7 +1208,7 @@ function pauseNetworkSession(){
 function tryResumeSession(){
   if(!networkSession?.token)return;
   socket.emit('resume-room',{...networkSession,protocol:MULTIPLAYER_PROTOCOL},res=>{
-    if(!res?.ok){clearNetworkSession();state.running=false;state.roomCode=null;showSetup('multiplayer');$('#errorText').textContent=res?.error||'Não foi possível entrar.';return;}
+    if(!res?.ok){clearNetworkSession();state.running=false;state.roomCode=null;showSetup('multiplayer');handleJoin(res);return;}
     handleJoin(res);restoreNetworkSession(res.room);
   });
 }

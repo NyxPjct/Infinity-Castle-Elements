@@ -74,6 +74,10 @@ jobs:
         shell: pwsh
         run: npm run test:i18n
 
+      - name: Test mandatory desktop update detection
+        shell: pwsh
+        run: npm run test:updates
+
       - name: Build Windows EXE
         shell: pwsh
         run: npm run dist:win -- --publish never

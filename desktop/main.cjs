@@ -173,7 +173,7 @@ async function checkForUpdates() {
       downloadUrl: preferredAsset?.browser_download_url || null,
       assetName: preferredAsset?.name || null,
       digest: preferredAsset?.digest || null,
-      required: releaseRequiresUpdate(release),
+      required: available && releaseRequiresUpdate(release),
       history,
       progress: keepDownloaded ? 100 : 0,
       downloadedBytes: keepDownloaded ? updateState.downloadedBytes : 0,
