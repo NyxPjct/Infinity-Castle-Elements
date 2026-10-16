@@ -1,5 +1,11 @@
 # Infinity Castle Elements — INSANITY 0.0.9
 
+## Menu correction in 0.0.9
+
+- Tutorial, Campaign map, and Daily challenge now appear inside the **Singleplayer** setup, below the campaign buttons. They are hidden in Multiplayer and Chaos Mode.
+- The main menu adapts to the available window height, keeps its footer visible, and prevents horizontal scrolling. Small screens use a narrow purple scrollbar when vertical scrolling is needed.
+- Offline web installations refresh their cached menu assets. Windows and Android downloads are rebuilt under the same 0.0.9 version.
+
 ## Player Experience Update
 
 - A playable tutorial teaches movement, jumping, elemental powers, and pressure-plate cooperation with a demonstration partner and safe checkpoints.

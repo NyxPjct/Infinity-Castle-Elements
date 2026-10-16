@@ -23,10 +23,36 @@ let base;const out=fs.mkdtempSync(path.join(os.tmpdir(),'ice-browser-'));
    const p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));await p.goto(base+'/?menu');await p.waitForFunction(()=>!!window.ICEFeatures);return p;
   }
   const p=await page();
+  await p.waitForTimeout(800);
+  const activities=p.locator('#menuTutorialBtn,#menuMapBtn,#menuDailyBtn');
+  assert.equal(await p.locator('.main-nav .journey-launch').count(),0);
+  assert.equal(await p.locator('#soloSetup .journey-launch button').count(),3);
+  for(const viewport of [{width:1366,height:768},{width:1280,height:720},{width:960,height:540},{width:390,height:844},{width:853,height:393},{width:320,height:568}]){
+   await p.setViewportSize(viewport);
+   const layout=await p.evaluate(()=>{
+    const nav=document.querySelector('.main-nav'),panel=document.querySelector('.menu-panel').getBoundingClientRect(),footer=document.querySelector('.menu-footer').getBoundingClientRect();
+    return {width:innerWidth,height:innerHeight,scrollWidth:nav.scrollWidth,clientWidth:nav.clientWidth,scrollHeight:nav.scrollHeight,clientHeight:nav.clientHeight,panel:{top:panel.top,bottom:panel.bottom},footer:{top:footer.top,bottom:footer.bottom},scrollbar:getComputedStyle(nav).scrollbarWidth};
+   });
+   assert.ok(layout.scrollWidth<=layout.clientWidth+1,JSON.stringify(layout));
+   assert.ok(layout.panel.top>=0&&layout.panel.bottom<=layout.height+1,JSON.stringify(layout));
+   assert.ok(layout.footer.top>=0&&layout.footer.bottom<=layout.height+1,JSON.stringify(layout));
+   assert.equal(layout.scrollbar,'thin');
+   if(viewport.width>=1280)assert.ok(layout.scrollHeight<=layout.clientHeight+1,JSON.stringify(layout));
+   await p.locator('#menuExitBtn').scrollIntoViewIfNeeded();const exit=await p.locator('#menuExitBtn').boundingBox();assert.ok(exit.y>=0&&exit.y+exit.height<=viewport.height+1,JSON.stringify(exit));
+  }
+  await p.setViewportSize({width:1600,height:1000});
+  for(const mode of ['Multi','Chaos']){
+   await p.locator('#menu'+mode+'Btn').click();
+   for(const button of await activities.all())assert.equal(await button.isVisible(),false,'Solo activities must be hidden in '+mode);
+   await p.locator('#backToMenuBtn').click();
+  }
+  await p.locator('#menuSingleBtn').click();
+  for(const button of await activities.all())assert.equal(await button.isVisible(),true,'Solo activities are available inside Singleplayer');
+  await p.locator('#backToMenuBtn').click();
   const campaign=await p.evaluate(()=>localStorage.getItem('infinity-castle-elements-solo-v1'));
   
-  await p.locator('#menuTutorialBtn').click();await p.waitForTimeout(400);
-  assert.equal(await p.evaluate(()=>state.activity.type),'tutorial');
+  await p.locator('#menuSingleBtn').click();await p.locator('#menuTutorialBtn').click();await p.waitForTimeout(400);
+  assert.equal(await p.evaluate(()=>state.activity.type),'tutorial');assert.equal(await p.evaluate(()=>state.mode),'singleplayer');
   await p.keyboard.down('d');await p.waitForFunction(()=>player.x>290);await p.keyboard.down('w');await p.waitForFunction(()=>state.activity.stage>=2);
   await p.keyboard.up('w');await p.keyboard.up('d');await p.keyboard.press('Space');await p.waitForFunction(()=>state.activity.stage===3);
   
@@ -38,17 +64,17 @@ let base;const out=fs.mkdtempSync(path.join(os.tmpdir(),'ice-browser-'));
   assert.equal(await p.evaluate(()=>localStorage.getItem('infinity-castle-elements-solo-v1')),campaign);
   assert.equal(await p.evaluate(()=>profile.coins),73);
   assert.equal(await p.evaluate(()=>profile.stats.deaths),78);
-  await p.locator('#activityMenuBtn').click();await p.locator('#menuMapBtn').click();
+  await p.locator('#activityMenuBtn').click();await p.locator('#menuSingleBtn').click();await p.locator('#menuMapBtn').click();
   await p.locator('#mapRegion').selectOption('0');await p.locator('[data-level="100"]').click();
   
-  await p.locator('#mapPlayBtn').click();assert.ok(await p.evaluate(()=>!!state.levelData.boss));
+  await p.locator('#mapPlayBtn').click();assert.ok(await p.evaluate(()=>!!state.levelData.boss));assert.equal(await p.evaluate(()=>state.mode),'singleplayer');
   await p.evaluate(()=>ICEFeatures.finish());await p.locator('#journeyResultView').waitFor({state:'visible'});
   assert.ok(await p.evaluate(()=>profile.progress.practice[100]));assert.equal(await p.evaluate(()=>profile.progress.records[100]),undefined);
   assert.equal(await p.evaluate(()=>profile.progress.unlocked),214);
   assert.equal(await p.evaluate(()=>localStorage.getItem('infinity-castle-elements-solo-v1')),campaign);
-  await p.locator('#activityMenuBtn').click();await p.locator('#menuDailyBtn').click();await p.locator('#dailyPlayBtn').click();
+  await p.locator('#activityMenuBtn').click();await p.locator('#menuSingleBtn').click();await p.locator('#menuDailyBtn').click();await p.locator('#dailyPlayBtn').click();
   const daily=await p.evaluate(()=>({level:state.level,role:state.role,expected:ICEJourney.daily(),relic:activeRelicId(),boosts:state.activeBoosts,geometry:JSON.stringify(state.levelData)}));
-  assert.equal(daily.level,daily.expected.level);assert.equal(daily.role,daily.expected.role);assert.equal(daily.relic,null);assert.equal(Object.values(daily.boosts).some(Boolean),false);
+  assert.equal(await p.evaluate(()=>state.mode),'singleplayer');assert.equal(daily.level,daily.expected.level);assert.equal(daily.role,daily.expected.role);assert.equal(daily.relic,null);assert.equal(Object.values(daily.boosts).some(Boolean),false);
   await p.evaluate(()=>{addCoins(200);state.invulnUntil=0;die();});await p.waitForTimeout(800);
   assert.equal(await p.evaluate(()=>JSON.stringify(state.levelData)),daily.geometry,'Daily retry geometry is deterministic');assert.equal(await p.evaluate(()=>profile.coins),73);
   await p.keyboard.press('Escape');await p.locator('#pauseSettingsBtn').click();
@@ -63,11 +89,11 @@ let base;const out=fs.mkdtempSync(path.join(os.tmpdir(),'ice-browser-'));
   assert.equal(await p.evaluate(()=>localStorage.getItem('infinity-castle-elements-solo-v1')),campaign);
   await p.locator('#activityMenuBtn').click();await p.reload();await p.waitForFunction(()=>!!window.ICEFeatures);
   assert.equal(await p.evaluate(()=>inputController.bindings.jump[0]),'KeyJ');assert.equal(await p.evaluate(()=>profile.settings.touch.ability.size),110);assert.equal(await p.evaluate(()=>profile.settings.audio.music),.32);
-  await p.locator('#menuTutorialBtn').click();await p.waitForTimeout(350);await p.keyboard.press('KeyW');assert.equal(await p.evaluate(()=>state.runStats.jumps),0);await p.keyboard.press('KeyJ');await p.waitForFunction(()=>state.runStats.jumps===1);
+  await p.locator('#menuSingleBtn').click();await p.locator('#menuTutorialBtn').click();await p.waitForTimeout(350);await p.keyboard.press('KeyW');assert.equal(await p.evaluate(()=>state.runStats.jumps),0);await p.keyboard.press('KeyJ');await p.waitForFunction(()=>state.runStats.jumps===1);
   await p.evaluate(()=>navigator.serviceWorker.ready);await p.waitForFunction(async()=>{for(const name of await caches.keys()){const c=await caches.open(name);if(await c.match('/journey-ui.js'))return true;}return false;});
-  await p.context().setOffline(true);await p.reload();await p.waitForFunction(()=>!!window.ICEFeatures);await p.locator('#menuDailyBtn').click();await p.locator('#dailyPlayBtn').click();assert.equal(await p.evaluate(()=>state.activity.type),'daily');
+  await p.context().setOffline(true);await p.reload();await p.waitForFunction(()=>!!window.ICEFeatures);await p.locator('#menuSingleBtn').click();await p.locator('#menuDailyBtn').click();await p.locator('#dailyPlayBtn').click();assert.equal(await p.evaluate(()=>state.activity.type),'daily');
   await p.context().close();
-  const m=await page(true);await m.locator('#menuTutorialBtn').click();await m.waitForTimeout(550);await m.locator('#mobileControls').waitFor({state:'visible'});
+  const m=await page(true);await m.locator('#menuSingleBtn').click();await m.locator('#menuTutorialBtn').click();await m.waitForTimeout(550);await m.locator('#mobileControls').waitFor({state:'visible'});
   for(const el of await m.locator('.mobile-control-button').all()){const b=await el.boundingBox();assert.ok(b.x>=0&&b.y>=0&&b.x+b.width<=961&&b.y+b.height<=541,JSON.stringify(b));}
   const jump=await m.locator('[data-touch-key="w"]').boundingBox();await m.touchscreen.tap(jump.x+jump.width/2,jump.y+jump.height/2);await m.waitForFunction(()=>state.runStats.jumps>0);
   await m.context().close();
@@ -85,6 +111,6 @@ let base;const out=fs.mkdtempSync(path.join(os.tmpdir(),'ice-browser-'));
   await guest.keyboard.press('Escape');await guest.locator('#pauseMainMenuBtn').click();await host.locator('#room').waitFor({state:'visible'});
   assert.equal(await guest.evaluate(()=>sessionStorage.getItem('ice-network-session')),null);
   await host.context().close();await guest.context().close();
-  assert.deepEqual(errors,[]);console.log('PASS: playable tutorial inputs, cooperation gate, boss practice, campaign isolation, daily determinism, rebinding/conflicts, saved touch/audio preferences, offline activities, mobile tap jump and browser reconnect/reload.');
+  assert.deepEqual(errors,[]);console.log('PASS: responsive menu without horizontal overflow, Singleplayer-only activity navigation, playable tutorial inputs, cooperation gate, boss practice, campaign isolation, daily determinism, rebinding/conflicts, saved touch/audio preferences, offline activities, mobile tap jump and browser reconnect/reload.');
  }finally{await browser?.close();if(server.listening)await new Promise(r=>server.close(r));fs.rmSync(out,{recursive:true,force:true});}
 })().catch(e=>{console.error(e);process.exitCode=1;});
