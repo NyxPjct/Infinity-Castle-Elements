@@ -527,7 +527,7 @@ The 0.0 series does not yet use a commercial code-signing certificate. Depending
 
 ## Development
 
-Install **Node.js 18 or newer**, then run from the repository directory:
+Install **Node.js 20 or newer**, then run from the repository directory:
 
 ```sh
 npm install
