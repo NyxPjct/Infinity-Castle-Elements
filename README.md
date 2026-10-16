@@ -4,8 +4,6 @@
 
 **INSANITY 0.0.9 — Player Experience Update** adds a playable tutorial, 30-second multiplayer reconnection, campaign practice and local best times, customizable keyboard and touch controls, reactive procedural audio, a shared daily challenge, and richer elemental graphics. All 20 offline languages remain available, with terminology corrections and new activity text.
 
-**INSANITY 0.0.7 — Visual Experience Update** brings a dark fantasy HUD, a dynamic camera, stronger elemental effects, cinematic deaths and bosses, visual tower progression, regional enemies, post-processing, and a special presentation for level 1000. It also includes an integrated **Update Hub** with release history, resumable downloads, SHA-256 verification, automatic backups, install-on-exit support, and a versioned multiplayer protocol. All systems introduced in 0.0.6 remain available.
-
 **Current game version:** `0.0.9`
 
 ## Downloads
