@@ -89,7 +89,7 @@
         if (!reduced && a.ability && distance > .5 && time - old.lastSample >= 14) {
           old.points.push({ x: a.x + 21, y: a.y + 28, t: time }); old.lastSample = time;
         }
-        old.points = old.points.filter(p => time - p.t < TRAIL_MS).slice(-MAX_POINTS);
+        old.points = old.points.filter(p => time - p.t < TRAIL_MS).slice(-Math.max(1,Math.min(MAX_POINTS,Number(frame.maxPoints)||MAX_POINTS)));
         Object.assign(old, a, { grounded: !!a.onGround });
       }
       for (const id of actors.keys()) if (!seen.has(id)) actors.delete(id);

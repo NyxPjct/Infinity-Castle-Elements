@@ -1,8 +1,10 @@
-# Localization review — 0.0.9
+# Localization review — 0.0.10
 
 The game ships 20 offline catalogs in `public/translations.js`. Each catalog contains the same Portuguese source keys and numbered placeholders. Keep UI text in its Portuguese source form; the DOM and canvas renderer apply the selected language. Never save translated strings as identifiers, room codes, player names, or campaign data.
 
 This release received an AI-assisted editorial pass on Portuguese and English, corrections to 18 locale glossaries (campaign map, daily challenge, tutorial, controls, touch controls, audio, mute, master volume, music, sound effects, practice, and reserved slot), and targeted phrase corrections. Examples include replacing incorrect automatic translations of “Mute” that meant death, seagull, mothers, or bees, and correcting “campaign” in the Chinese map label.
+
+Version 0.0.10 adds 43 messages per locale (636 total), including diagnostics, graphics settings, combos, boss stages, and online rankings. Portuguese/English received an editorial pass; new core terms in 18 other locales were corrected after local automatic translation.
 
 **Independent native-speaker review has not been performed.** Longer passages in other locales still include automatic translations. Catalog completeness and automated tests establish technical coverage; they do not establish native fluency.
 

@@ -35,6 +35,12 @@ jobs:
           node --check public/input.js
           node --check public/audio.js
           node --check public/journey-ui.js
+          node --check public/update010-ui.js
+          node --check public/mechanics.js
+          node --check public/daily-run.js
+          node --check backend/leaderboard.cjs
+          node --check backend/daily-engine.cjs
+          node --check backend/daily-worker.cjs
           node --check tools/audit-levels.js
           node --check tools/test-chaos-multiplayer.js
 
@@ -59,8 +65,17 @@ jobs:
       - name: Test four-player Chaos multiplayer
         run: npm run test:chaos
 
+      - name: Test movement, quality and verified daily replay validation
+        run: npm run test:mastery
+
+      - name: Test online combos, three-stage bosses and ranking transport
+        run: npm run test:mastery-online
+
       - name: Install Chromium for player experience tests
         run: npx playwright-core install --with-deps chromium
 
       - name: Test tutorial, campaign isolation, settings and browser reconnection
         run: npm run test:browser
+
+      - name: Test graphics settings, diagnostics and browser replay parity
+        run: npm run test:mastery-browser

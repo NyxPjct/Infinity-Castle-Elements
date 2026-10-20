@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "desktop/**"
+      - "backend/**"
       - "public/**"
       - "build/**"
       - "server.js"
@@ -73,6 +74,10 @@ jobs:
       - name: Test game localization
         shell: pwsh
         run: npm run test:i18n
+
+      - name: Test daily replay validation and movement
+        shell: pwsh
+        run: npm run test:mastery
 
       - name: Test mandatory desktop update detection
         shell: pwsh

@@ -1,35 +1,24 @@
-# Infinity Castle Elements — INSANITY 0.0.9
+# Infinity Castle Elements — INSANITY 0.0.10
 
-## Online status correction in 0.0.9
+## Player Mastery Update
 
-- An older multiplayer server now shows **Server updating**, instead of incorrectly requiring players to update an already current game. Singleplayer activities remain available.
-- Client updates are only offered when a newer release is available. A newer incompatible server without a published client update shows **Multiplayer incompatible**.
-- Mandatory release markers no longer request reinstalling the installed version. Compatibility errors include the server version and required protocol, and distinguish outdated servers from outdated clients.
-- The corrected messages are included in all 20 offline languages. Windows and Android downloads are rebuilt under version 0.0.9.
+- More responsive movement: 110 ms of coyote time, faster direction changes, firmer ground braking, and buffered touch/keyboard jumps.
+- Cooperative elemental combos: Earth + Air creates a moving, rising platform for four seconds; Light + Darkness creates a protective area for three seconds. Both powers must be active within 320 world pixels; combos have a shared 12-second cooldown and synchronize online.
+- All ten guardians now have three ritual stages, changing projectile patterns, visible boss attack windups, and additional arena platforms. Completed stages are checkpoints for the current attempt; death resets the encounter.
+- Automatic, Low, Medium, and High graphics settings adjust cosmetic effects while preserving gameplay rules.
+- Connection diagnostics show versions, protocol, latency, room, and compatibility, with a reconnect action using the existing 30-second reservation.
+- An optional online daily leaderboard verifies completed runs by replaying their controls on the server. The server computes deaths and time, ranks fewer deaths first, and stores one best result per guest device identity per day. Local daily play remains available offline.
+- New UI and canvas text is bundled in all 20 offline languages, with editorial corrections to core terminology. Independent native-speaker review remains pending.
+- English README, fresh in-engine captures, and versioned Windows and Android downloads.
 
-## Menu correction in 0.0.9
+## Online compatibility and storage
 
-- Tutorial, Campaign map, and Daily challenge now appear inside the **Singleplayer** setup, below the campaign buttons. They are hidden in Multiplayer and Chaos Mode.
-- The main menu adapts to the available window height, keeps its footer visible, and prevents horizontal scrolling. Small screens use a narrow purple scrollbar when vertical scrolling is needed.
-- Offline web installations refresh their cached menu assets. Windows and Android downloads are rebuilt under the same 0.0.9 version.
+Deploy the matching **0.0.10 server / protocol 4**. Older incompatible clients cannot join; offline Singleplayer remains available. Ranked sessions and multiplayer reconnect reservations live in memory and do not survive server restarts.
 
-## Player Experience Update
+**Railway: attach a persistent volume at `/data` to retain leaderboard history across deployments.** The server reads `RAILWAY_VOLUME_MOUNT_PATH` automatically; `ICE_DATA_DIR` can select another persistent directory. Default unmounted container storage is not guaranteed across deploys. Use one replica and back up `daily-leaderboard.json`.
 
-- A playable tutorial teaches movement, jumping, elemental powers, and pressure-plate cooperation with a demonstration partner and safe checkpoints.
-- Multiplayer and Chaos reserve disconnected players' slots for 30 seconds. The room waits and restores the same element, position, traps, seals, defeated enemies, and power cooldowns. Reloading the same browser tab can resume the session. Leaving through the menu frees the slot immediately.
-- A campaign map opens practice on reached levels, including bosses, with separate campaign and practice best times. Old saves retain their progress.
-- Keyboard actions can be rebound with conflict checks. Touch buttons have saved size and position settings and a layout preview. Short jump taps are buffered for the next physics frame.
-- Original procedural elemental sounds and adaptive music respond to exploration, bosses, and pursuits. Master, music, effects, and mute preferences persist.
-- A UTC daily challenge gives everyone the same level and element. Relics, boosts, and adaptive traps are disabled. Local daily results are kept separately from campaign saves.
-- Elemental motion trails, articulated running and jumping, shaded metal traps, falling debris, impact dust, and animated hazard pools improve visual feedback. Reduced animation settings disable the added trails and impact particles.
-- All 20 offline language catalogs include the new text. Portuguese and English received editorial corrections, along with core terminology in 18 other locales. Independent native-speaker review is still pending.
-
-## Online compatibility
-
-This release uses multiplayer protocol **3**. Deploy the 0.0.9 server before using 0.0.9 clients online. Reservations last 30 seconds in server memory; they cannot survive a server restart. After expiry, players can create or join a room and continue a saved campaign.
-
-Practice and daily play do not overwrite campaign saves, spend campaign boosts, or farm campaign rewards. Daily results are local; no online leaderboard is included. The existing 1,000-level campaign, two-player mode, four-player Chaos, shop, achievements, and offline localization remain available.
+Daily challenges allow ten minutes of active simulation, including respawn delays, with a 30-minute online session lifetime. The leaderboard retains up to 200 entries per UTC day for 60 days and displays the top 100. Nicknames are public guest names, not verified accounts. Replay verification rejects fabricated scores and unfinished runs; it cannot identify automated or tool-assisted valid inputs.
 
 ## Validation
 
-The validation suite covers all 1,000 levels, 20 translation catalogs and dynamic language switching, visual effect lifecycles, deterministic daily challenges, control configuration, WebAudio scheduling, live multiplayer and Chaos, real 30-second reconnection expiry, and Chromium player flows including offline play and mobile touch controls.
+Audits cover all 1,000 levels; language coverage and placeholders; graphics and reduced motion; activities, audio, controls, and campaign isolation; real 2P/4P multiplayer and 30-second reconnect expiry; combo synchronization and boss stages; valid and invalid daily replays; ordered file storage; and Chromium flows including browser/server replay parity, diagnostics, saved graphics settings, offline play, and mobile touch input.

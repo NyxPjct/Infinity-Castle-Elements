@@ -394,6 +394,7 @@ app.setName('Infinity Castle Elements');
 app.setAppUserModelId('com.nyxprojectr.infinitycastleelements');
 
 async function startEmbeddedServer() {
+  if(!process.env.ICE_DATA_DIR)process.env.ICE_DATA_DIR=path.join(app.getPath('userData'),'server-data');
   const serverModule = require(path.join(__dirname, '..', 'server.js'));
   gameServer = serverModule.server;
   if (gameServer.listening) return gameServer.address().port;

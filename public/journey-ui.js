@@ -38,15 +38,16 @@
   }
   function openDaily(){
     const d=ICEJourney.daily();text('#dailyDescription',`${d.date} UTC · Fase ${d.level} · ${ELEMENTS[d.role].name}`);
-    text('#dailyBest','Melhor resultado: '+bestLabel(profile.daily?.[d.date]));show('daily');
+    text('#dailyBest','Melhor resultado: '+bestLabel(profile.daily?.[d.date]));show('daily');window.ICE010UI?.loadBoard();
   }
-  function start(type,level,role){
+  function start(type,level,role,ranking=null){
     if(type==='practice'&&Number(level)>campaignProgress().unlocked)return false;
     leaveMultiplayerSession();closePauseMenu(false);closeSettings(false);hide();hideCinematicScreens();appShell.classList.remove('hidden');
-    let daily=null;if(type==='daily'){daily=ICEJourney.daily();level=daily.level;role=daily.role;}
-    state.activity={type,level:type==='tutorial'?1:Number(level)||1,role:ELEMENTS[role]?role:state.selectedRole,stage:0,power:false,coop:false,date:daily?.date,complete:false};
+    state.dailyRun=null;state.dailyClock=null;state.dailyAbilityQueued=state.dailyRestartQueued=false;
+    let daily=null;if(type==='daily'){daily=ranking?.spec||ICEJourney.daily();level=daily.level;role=daily.role;}
+    state.activity={type,level:type==='tutorial'?1:Number(level)||1,role:ELEMENTS[role]?role:state.selectedRole,stage:0,power:false,coop:false,date:daily?.date,ranking,complete:false};
     lastActivity={...state.activity};state.mode='singleplayer';state.id='solo';state.slot=0;state.room=null;state.roomCode=null;state.networkPaused=false;state.deaths=0;
-    state.role=state.activity.role;state.levelAttempts=new Map();startLevel(state.activity.level);
+    state.role=state.activity.role;state.levelAttempts=new Map();if(type==='daily')createDailyRun(daily,()=>finish());else startLevel(state.activity.level);
     $('#activityStatus').classList.remove('hidden');
     text('#activityTitle',type==='tutorial'?'Tutorial':type==='daily'?'Desafio diário':'Treino');
     text('#activityHint',type==='daily'?'Sem relíquias, bônus ou armadilhas adaptativas.':type==='practice'?'Este treino não altera o progresso da campanha.':'Use os controles de movimento para chegar à primeira marca.');
@@ -63,8 +64,9 @@
   }
   function finish(){
     const a=state.activity;if(!a||a.complete||(a.type==='tutorial'&&a.stage<4))return;
+    if(a.type==='daily'&&!state.dailyRun?.complete){if(!player.dead)state.dailyRun?.finish();return;}
     a.complete=true;state.running=false;inputController?.clear();sound?.play('complete',state.role);
-    const result={time:Math.max(.01,elapsed()),deaths:state.deaths};
+    const result={time:Math.max(.01,a.type==='daily'?state.dailyRun.time:elapsed()),deaths:state.deaths};
     if(a.type==='tutorial')profile.tutorialCompleted=true;
     else if(a.type==='practice'){profile.progress=campaignProgress();ICEJourney.record(profile.progress.practice,a.level,result);}
     else if(a.type==='daily'){
@@ -74,12 +76,14 @@
     }
     saveProfile();$('#activityStatus').classList.add('hidden');text('#activityResult',`${result.time.toFixed(2)}s · ${result.deaths} mortes`);show('result');
     text('#journeyTitle',a.type==='tutorial'?'Tutorial concluído':a.type==='daily'?'Desafio concluído':'Treino concluído');
+    window.ICE010UI?.dailyFinished(a,result);
   }
   function die(){
-    const a=state.activity;if(!a||a.complete||player.dead||performance.now()<state.invulnUntil)return;
+    const a=state.activity;if(!a||a.complete||player.dead||gameNow()<state.invulnUntil)return;
+    if(a.type==='daily'){state.dailyRun?.die();return;}
     state.deaths++;sound?.play('death',state.role);
     if(a.type==='tutorial'){
-      Object.assign(player,{x:a.stage>=3?1020:a.stage>=2?520:90,y:a.stage===2?684:734,vx:0,vy:0,dead:false});state.invulnUntil=performance.now()+600;
+      Object.assign(player,{x:a.stage>=3?1020:a.stage>=2?520:90,y:a.stage===2?684:734,vx:0,vy:0,dead:false});state.invulnUntil=gameNow()+600;
     }else{
       player.dead=true;state.running=false;
       setTimeout(()=>{if(state.activity===a&&state.mode==='singleplayer'&&!a.complete)startLevel(a.level);},600);
@@ -117,7 +121,10 @@
   $('#menuTutorialBtn').onclick=()=>start('tutorial',1,state.selectedRole);$('#menuMapBtn').onclick=openMap;$('#menuDailyBtn').onclick=openDaily;
   $('#mapRegion').onchange=renderMap;$('#mapPlayBtn').onclick=()=>start('practice',selected,$('#journeyRole').value);$('#dailyPlayBtn').onclick=()=>start('daily');
   $('#journeyCloseBtn').onclick=()=>{hide();if(view==='result')showMainMenu();};modal.addEventListener('click',e=>{if(e.target===modal)$('#journeyCloseBtn').click();});
-  $('#activityExitBtn').onclick=pauseToMainMenu;$('#activityMenuBtn').onclick=()=>{hide();showMainMenu();};$('#activityRetryBtn').onclick=()=>start(lastActivity.type,lastActivity.level,lastActivity.role);
+  $('#activityExitBtn').onclick=pauseToMainMenu;$('#activityMenuBtn').onclick=()=>{hide();showMainMenu();};$('#activityRetryBtn').onclick=()=>{
+    if(lastActivity?.ranking){hide();showMainMenu();openDaily();return;}
+    start(lastActivity.type,lastActivity.level,lastActivity.role);
+  };
   for(let i=0;i<10;i++){const o=document.createElement('option');o.value=String(i);o.textContent=castleRegion(i*100+1).name;$('#mapRegion').appendChild(o);}
   $('#resetControlsBtn').onclick=()=>{pendingBinding=null;profile.settings.controls=null;profile.settings.touch=null;saveProfile();text('#bindingStatus','Controles restaurados.');};
   $('#touchButtonSelect').onchange=refreshControls;
@@ -137,5 +144,5 @@
   },true);
   addEventListener('resize',applyTouchLayout);addEventListener('pointerdown',()=>sound?.unlock(),{capture:true});addEventListener('keydown',()=>sound?.unlock(),{capture:true});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){inputController?.clear();sound?.suspend();}});
-  window.ICEFeatures={start,finish,die,updateTutorial,refreshControls,openMap,openDaily,cancelBinding(){pendingBinding=null;}};sound?.configure(profile.settings.audio);refreshControls();
+  window.ICEFeatures={start,finish,die,updateTutorial,refreshControls,openMap,openDaily,dailyLimit(){text('#activityHint','Limite de 10 minutos atingido. Reinicie o desafio.');},cancelBinding(){pendingBinding=null;}};sound?.configure(profile.settings.audio);refreshControls();
 })();

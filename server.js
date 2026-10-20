@@ -3,6 +3,14 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const { randomBytes } = require('crypto');
+const mechanics = require('./public/mechanics');
+const {createLeaderboard}=require('./backend/leaderboard.cjs');
+let leaderboard;
+try{leaderboard=createLeaderboard();}catch(error){
+  console.error('Daily ranking storage unavailable:',error.code||error.message);
+  const unavailable=()=>({ok:false,code:'RANKING_UNAVAILABLE'});
+  leaderboard={begin:unavailable,submit:async()=>unavailable(),list:unavailable,status:()=>({available:false,storage:'file'})};
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -10,7 +18,7 @@ const io = new Server(server, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 3000;
 const MAX_LEVEL = 1000;
 const DEATH_REWARD_COINS = 5;
-const MULTIPLAYER_PROTOCOL = 3;
+const MULTIPLAYER_PROTOCOL = 4;
 const GAME_VERSION = require('./package.json').version;
 const RECONNECT_GRACE_MS = 30_000;
 const ELEMENTS = new Set(['earth', 'air', 'light', 'darkness']);
@@ -43,6 +51,7 @@ app.get('/multiplayer/status', (_req, res) => res.json({
   maxPlayersPerRoom: 4,
   modes: { multiplayer: 2, chaos: 4 }
 }));
+app.get('/daily/leaderboard',(_req,res)=>res.json(leaderboard.list()));
 
 app.get('/auth/chatgpt/status', (_req, res) => {
   res.json({ enabled: false, reason: 'Requires an approved Sign in with ChatGPT integration/client configuration for this app.' });
@@ -72,6 +81,8 @@ function publicRoom(room) {
     started: room.started,
     paused: room.paused,
     bossDefeated: room.bossDefeated,
+    bossPhase: room.bossPhase||0,
+    combos: (room.combos||[]).filter(c=>mechanics.comboPose(c,Math.max(0,(room.pausedAt||Date.now())-room.attemptStartedAt))),
     defeatedEnemies: [...room.defeatedEnemies],
     elapsedMs: room.attemptStartedAt ? Math.max(0,(room.pausedAt||Date.now())-room.attemptStartedAt) : 0,
     chaosSeals: [...room.chaosSeals],
@@ -86,7 +97,7 @@ function emitRoom(room){ io.to(room.code).emit('room-state', publicRoom(room)); 
 function resetGoalFlags(room){ for(const p of room.players.values()) p.atGoal=false; }
 function clearBossTimer(room){ if(room.bossTimer) clearTimeout(room.bossTimer); room.bossTimer=null; }
 function resetBossState(room){
-  clearBossTimer(room);room.bossDefeated=false;
+  clearBossTimer(room);room.bossDefeated=false;room.bossPhase=0;
   for(const p of room.players.values()) p.atRune=false;
 }
 function resetChaosState(room){
@@ -94,6 +105,7 @@ function resetChaosState(room){
   for(const p of room.players.values()) p.atSeal=false;
 }
 function resetAttemptState(room){
+  room.combos=[];room.comboCooldowns={};
   room.defeatedEnemies.clear();room.attemptStartedAt=Date.now();
   for(const p of room.players.values())p.lastState=null;
   resetGoalFlags(room);
@@ -114,8 +126,8 @@ function maybeStartBossCharge(room){
     room.bossTimer=null;
     if(room.paused||rooms.get(room.code)!==room||room.level!==level||room.players.size!==room.maxPlayers)return;
     if(![...room.players.values()].every(p=>p.atRune))return;
-    room.bossDefeated=true;
-    io.to(room.code).emit('boss-defeated',{level,mode:room.mode});
+    if((room.bossPhase||0)<2){room.bossPhase=(room.bossPhase||0)+1;io.to(room.code).emit('boss-phase',{level,phase:room.bossPhase});maybeStartBossCharge(room);}
+    else{room.bossDefeated=true;io.to(room.code).emit('boss-defeated',{level,mode:room.mode});}
   },Math.round(bossRequiredSeconds(level,room.mode)*1000));
 }
 
@@ -126,7 +138,33 @@ function protocolError(protocol){
   return {ok:false,code:serverOutdated?'SERVER_UPDATE_REQUIRED':'UPDATE_REQUIRED',requiredProtocol:MULTIPLAYER_PROTOCOL,serverVersion:GAME_VERSION,error:serverOutdated?'O servidor multiplayer precisa ser atualizado. Tente novamente mais tarde. O Singleplayer continua disponível.':'Seu jogo está desatualizado para o multiplayer. Atualize o Infinity Castle Elements para continuar online.'};
 }
 
+function checkCombos(room){
+  if(!room.started||room.paused)return;
+  const now=Date.now(),elapsed=now-room.attemptStartedAt;
+  room.comboCooldowns=room.comboCooldowns||{};room.combos=(room.combos||[]).filter(c=>mechanics.comboPose(c,elapsed));
+  const active=[...room.players.values()].filter(p=>p.connected&&p.lastState?.ability);
+  for(const [type,a,b] of [['earth-air','earth','air'],['light-darkness','light','darkness']]){
+    if(room.combos.some(combo=>combo.type===type))continue;
+    if(now<(room.comboCooldowns[type]||0))continue;
+    const first=active.find(p=>p.role===a),second=active.find(p=>p.role===b);if(!first||!second)continue;
+    const combo=mechanics.combo(type,first.lastState,second.lastState,elapsed,randomBytes(8).toString('hex'));if(!combo)continue;
+    room.comboCooldowns[type]=now+12000;room.combos.push(combo);io.to(room.code).emit('combo-created',{level:room.level,combo});
+  }
+}
+
 io.on('connection', socket => {
+  socket.on('diagnostics',(_payload={},ack=()=>{})=>{if(typeof ack==='function')ack({ok:true,serverVersion:GAME_VERSION,protocolVersion:MULTIPLAYER_PROTOCOL,uptime:Math.floor(process.uptime()),ranking:leaderboard.status()});});
+  socket.on('daily-board',(_payload={},ack=()=>{})=>{if(typeof ack==='function')ack(leaderboard.list());});
+  socket.on('daily-start',(payload={},ack=()=>{})=>{
+    payload=payload&&typeof payload==='object'?payload:{};ack=typeof ack==='function'?ack:()=>{};
+    const incompatible=protocolError(payload.protocol);if(incompatible)return ack(incompatible);
+    ack(leaderboard.begin(payload,socket.handshake.address));
+  });
+  socket.on('daily-submit',async(payload={},ack=()=>{})=>{
+    payload=payload&&typeof payload==='object'?payload:{};ack=typeof ack==='function'?ack:()=>{};
+    const incompatible=protocolError(payload.protocol);if(incompatible)return ack(incompatible);
+    ack(await leaderboard.submit(payload));
+  });
   socket.on('resume-room',({code,token,protocol}={},ack=()=>{})=>{
     const incompatible=protocolError(protocol);if(incompatible)return ack(incompatible);
     if(socket.data.roomCode)return ack({ok:false,error:'Você já está em uma sala.'});
@@ -208,6 +246,7 @@ io.on('connection', socket => {
     p.lastState.rootFx=payload.rootFx&&Number.isFinite(payload.rootFx.x)&&Number.isFinite(payload.rootFx.y)?{x:number(payload.rootFx.x,0,1600),y:number(payload.rootFx.y,-500,1300)}:null;
     p.lastState.relic=['fracturedHeart','windstep','abyssFeather','chronoglass','greedEye','seerMark'].includes(payload.relic)?payload.relic:null;
     socket.to(room.code).emit('remote-state',p.lastState);
+    checkCombos(room);
   });
 
   socket.on('enemy-defeated', ({id,level}={}) => {
@@ -324,7 +363,7 @@ function startServer(port = PORT, host = '0.0.0.0') {
   server.listen(port, host, () => {
     const addr = server.address();
     const actualPort = typeof addr === 'object' && addr ? addr.port : port;
-    console.log(`Infinity Castle Elements 0.0.9 multiplayer server listening on 0.0.0.0:${actualPort}`);
+    console.log(`Infinity Castle Elements ${GAME_VERSION} multiplayer server listening on 0.0.0.0:${actualPort}`);
   });
   return server;
 }

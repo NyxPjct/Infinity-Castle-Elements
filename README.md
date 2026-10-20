@@ -1,10 +1,6 @@
-# Infinity Castle Elements — INSANITY 0.0.9
+# Infinity Castle Elements — INSANITY 0.0.10
 
-**Infinity Castle Elements** is an original troll platformer, action, and survival game by **NYX PROJECT R**. Climb a campaign of **1,000 levels**, master four playable elements, and face enemies, bosses, coins, a shop, boosts, cosmetics, and a castle that learns to hate you back. Play solo, cooperate with a friend, or enter online **Chaos Mode with four players**.
-
-**INSANITY 0.0.9 — Player Experience Update** adds a playable tutorial, 30-second multiplayer reconnection, campaign practice and local best times, customizable keyboard and touch controls, reactive procedural audio, a shared daily challenge, and richer elemental graphics. All 20 offline languages remain available, with terminology corrections and new activity text.
-
-**Current game version:** `0.0.9`
+**Current game version:** `0.0.10`
 
 ## Downloads
 
@@ -12,19 +8,25 @@
 
 | Edition | Download | How to use it |
 | --- | --- | --- |
-| Setup | [Infinity-Castle-Elements-Setup-0.0.9.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.9/Infinity-Castle-Elements-Setup-0.0.9.exe) | Run the installer, choose a folder, and finish the wizard. Desktop and Start Menu shortcuts are available. |
-| Portable | [Infinity-Castle-Elements-Portable-0.0.9.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.9/Infinity-Castle-Elements-Portable-0.0.9.exe) | Run the executable directly; no installation is required. |
-| Complete ZIP | [Infinity-Castle-Elements-Windows-0.0.9.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.9/Infinity-Castle-Elements-Windows-0.0.9.zip) | Extract the archive to access both Setup and Portable. |
+| Setup | [Infinity-Castle-Elements-Setup-0.0.10.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.10/Infinity-Castle-Elements-Setup-0.0.10.exe) | Run the installer, choose a folder, and finish the wizard. Desktop and Start Menu shortcuts are available. |
+| Portable | [Infinity-Castle-Elements-Portable-0.0.10.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.10/Infinity-Castle-Elements-Portable-0.0.10.exe) | Run the executable directly; no installation is required. |
+| Complete ZIP | [Infinity-Castle-Elements-Windows-0.0.10.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.10/Infinity-Castle-Elements-Windows-0.0.10.zip) | Extract the archive to access both Setup and Portable. |
 
 ### Android
 
-[Download Infinity-Castle-Elements-Android-0.0.9.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.9/Infinity-Castle-Elements-Android-0.0.9.apk)
+[Download Infinity-Castle-Elements-Android-0.0.10.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.10/Infinity-Castle-Elements-Android-0.0.10.apk)
 
 Play in **landscape orientation** to use the full canvas and touch controls.
 
 [Browse all releases](https://github.com/NyxPjct/Infinity-Castle-Elements/releases)
 
 The distributed game includes its runtime. **Players do not need to install Node.js, npm, Express, or Socket.IO separately.**
+
+## About the game
+
+**Infinity Castle Elements** is an original troll platformer, action, and survival game by **NYX PROJECT R**. Climb a campaign of **1,000 levels**, master four playable elements, and face enemies, bosses, coins, a shop, boosts, cosmetics, and a castle that learns to hate you back. Play solo, cooperate with a friend, or enter online **Chaos Mode with four players**.
+
+**INSANITY 0.0.10 — Player Mastery Update** adds more responsive movement, cooperative elemental combos, three-stage bosses, adaptive graphics quality, connection diagnostics, and an optional online daily leaderboard validated by replaying the run on the server. All 20 languages work offline.
 
 ## How to change the game language
 
@@ -43,26 +45,59 @@ Changing the language updates the menus, settings, element selection, HUD, shop,
 
 Player names, room codes, version numbers, and externally published release notes retain their original content.
 
-## 📸 Screenshots — INSANITY 0.0.9
+## 📸 Screenshots — INSANITY 0.0.10
 
 The following captures show the current web build. The mobile image shows the responsive touch interface in a mobile browser viewport.
 
 <table>
   <tr>
-    <td><img src="./docs/images/menu-principal.jpg" width="480" alt="Infinity Castle Elements 0.0.9 main menu" /><br /><strong>Main menu</strong></td>
-    <td><img src="./docs/images/selecao-elementos.jpg" width="480" alt="Element selection in Infinity Castle Elements 0.0.9" /><br /><strong>Element selection</strong></td>
+    <td><img src="./docs/images/menu-principal.jpg" width="480" alt="Infinity Castle Elements 0.0.10 main menu" /><br /><strong>Main menu</strong></td>
+    <td><img src="./docs/images/selecao-elementos.jpg" width="480" alt="Element selection in Infinity Castle Elements 0.0.10" /><br /><strong>Element selection</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/gameplay-singleplayer.jpg" width="480" alt="Singleplayer gameplay with the 0.0.9 HUD" /><br /><strong>Singleplayer</strong></td>
-    <td><img src="./docs/images/gameplay-multiplayer.jpg" width="480" alt="Two-player cooperative gameplay in version 0.0.9" /><br /><strong>Online co-op</strong></td>
+    <td><img src="./docs/images/gameplay-singleplayer.jpg" width="480" alt="Singleplayer gameplay with the 0.0.10 HUD" /><br /><strong>Singleplayer</strong></td>
+    <td><img src="./docs/images/gameplay-multiplayer.jpg" width="480" alt="Two-player cooperative gameplay in version 0.0.10" /><br /><strong>Online co-op</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/modo-caos.jpg" width="480" alt="Four-player Chaos Mode in version 0.0.9" /><br /><strong>Chaos Mode</strong></td>
-    <td><img src="./docs/images/android-gameplay.jpg" width="480" alt="Version 0.0.9 touch controls in a landscape mobile browser" /><br /><strong>Mobile touch interface</strong></td>
+    <td><img src="./docs/images/modo-caos.jpg" width="480" alt="Four-player Chaos Mode in version 0.0.10" /><br /><strong>Chaos Mode</strong></td>
+    <td><img src="./docs/images/android-gameplay.jpg" width="480" alt="Version 0.0.10 touch controls in a landscape mobile browser" /><br /><strong>Mobile touch interface</strong></td>
   </tr>
 </table>
 
-## What’s new in 0.0.9 — Player Experience Update
+## What’s new in 0.0.10 — Player Mastery Update
+
+- **Responsive movement:** jumping remains available for 110 ms after leaving a ledge. Direction changes accelerate faster, ground braking is firmer, and the existing short-tap jump buffer supports keyboard and touch controls.
+- **Cooperative combos:** activate both elemental powers within 320 world pixels of each other in two-player co-op or Chaos. **Earth + Air** creates a moving, rising platform for four seconds. **Light + Darkness** creates a protective area for three seconds. Each combo has a shared 12-second cooldown; the server synchronizes its creation and remaining duration. Players using other pairings retain their usual powers.
+- **Three-stage guardians:** every boss ritual now has three stages, with completed stages retained during that attempt. Later stages introduce faster attack patterns and additional arena platforms. A visible boss windup precedes each attack cycle. In online rooms, all required runes must stay occupied to complete each stage. Deaths restart the encounter.
+- **Graphics quality:** select **Settings → Graphics quality → Automatic, Low, Medium, or High**. Automatic quality samples frame times and adjusts particle budgets, trail length, shadows, and cosmetic effects. Collisions, hazards, powers, and timing rules remain identical at every setting.
+- **Connection diagnostics:** select the connection indicator in the menu or lobby, or **Pause → Connection diagnostics**. Check game/server versions, protocol, round-trip latency, room code, and compatibility. **Reconnect** uses the existing 30-second slot reservation while the server remains running.
+- **Online daily leaderboard:** open **Singleplayer → Daily challenge**, enter a public nickname, and choose **Play ranked challenge**. The server issues the UTC day's level and element, records the session, and replays the submitted controls using the same fixed-step physics as the game. Only completed runs enter the leaderboard; time and deaths are computed by the server. Fewer deaths rank first, then shorter time. Ordinary **Play challenge** remains local and works offline.
+
+Ranked runs allow up to ten minutes of active simulation, including respawn delays. Pausing stops the simulation clock; online sessions expire after 30 minutes of wall time. The server retains one best result per device identity and UTC date, up to 200 entries per day for 60 days, displaying the top 100. A fresh browser profile creates a new guest identity; nicknames are public and are not verified accounts. Replay validation rejects fabricated scores, positions, and incomplete runs; it does not distinguish human inputs from automated or tool-assisted inputs.
+
+![Cooperative elemental combos in a live four-player room](./docs/images/elemental-combos-0.0.10.png)
+
+![Third-stage guardian arena preview](./docs/images/boss-stages-0.0.10.png)
+
+The guardian preview uses the actual renderer with the third stage selected for capture. The combo image comes from a live four-client local room.
+
+![Graphics quality settings](./docs/images/graphics-quality-0.0.10.png)
+
+![Daily challenge and optional online leaderboard](./docs/images/daily-challenge-0.0.10.png)
+
+![Connection diagnostics in the current build](./docs/images/connection-0.0.10.png)
+
+### Multiplayer deployment and leaderboard storage
+
+Version **0.0.10** uses multiplayer protocol **4**. Deploy the matching server before playing online. The existing Railway service should track **NyxPjct/Infinity-Castle-Elements → main**, with auto-deploy enabled and no root subdirectory. Use `npm run start:multiplayer` as its start command. After the deployment becomes active, `/health` must report `"version":"0.0.10"` and `"protocolVersion":4`.
+
+**To keep online rankings across Railway deployments, attach a volume to the server service at `/data`.** Railway supplies `RAILWAY_VOLUME_MOUNT_PATH`, which the server uses automatically. Alternatively, set `ICE_DATA_DIR` to a directory on an attached persistent volume. Without a volume, file storage can survive a process restart within the same container but may be lost when Railway replaces that container. Back up `daily-leaderboard.json` from the mounted directory. Multiple replicas do not share in-memory sessions; use one replica for this release.
+
+Locally, rankings are written to `data/daily-leaderboard.json` (ignored by Git). The Windows embedded server uses its application-data directory. Ranking storage errors disable rankings while keeping ordinary multiplayer available. The `diagnostics` socket response includes `ranking.volumeConfigured`, based on Railway’s mount variable; verify the actual volume and backups as well.
+
+An older server shows **Server updating**; a newer incompatible server without a published matching client shows **Multiplayer incompatible**. The Update Hub requests a client upgrade only when a newer release exists. Singleplayer, tutorial, practice, and local daily play remain available during server updates. Multiplayer slot reservations and ranked session tokens live in server memory and cannot survive a server restart.
+
+## Previous update: 0.0.9 — Player Experience Update
 
 **Singleplayer activities:** open **Singleplayer** from the main menu to find **Tutorial**, **Mapa da campanha** (Campaign map), and **Desafio diário** (Daily challenge) below the campaign buttons. These activities belong to Singleplayer and are not available in Multiplayer or Chaos Mode. The corrected 0.0.9 menu fits standard desktop windows without a horizontal scrollbar; smaller screens keep a narrow, themed vertical scrollbar when needed.
 
@@ -71,16 +106,10 @@ The following captures show the current web build. The mobile image shows the re
 - **Campaign map:** choose **Singleplayer → Mapa da campanha** (Campaign map), select a region, element, and unlocked level, then choose **Treinar fase** (Practice level). Crown icons mark bosses. Campaign and practice best times are kept separately. Existing saves unlock previously reached levels; detailed times start recording with 0.0.9.
 - **Custom controls:** in **Configurações → Controles**, select an action and press a new key. Conflicts and reserved interface keys are rejected; Escape cancels a binding and remains the pause/back key. **Controles de toque** lets you choose a touch button and adjust its size and horizontal/vertical position, with a preview. Reset controls restores the defaults.
 - **Reactive audio:** original procedural sounds distinguish Earth, Air, Light, and Darkness. The music changes for bosses and pursuits. Master, music, and effects volumes and mute are saved under **Áudio**. Browser audio begins after a click, tap, or key press and stops when the game loses focus.
-- **Daily challenge:** choose **Singleplayer → Desafio diário**. Everyone receives the same deterministic level and element for the same UTC date. The challenge changes at midnight UTC. Relics, boosts, and adaptive traps are disabled. Results are stored locally for up to 60 days; there is no global leaderboard. Daily play and practice do not spend campaign boosts, grant campaign rewards, or overwrite campaign progress.
+- **Daily challenge:** choose **Singleplayer → Desafio diário**. Everyone receives the same deterministic level and element for the same UTC date. The challenge changes at midnight UTC. Relics, boosts, and adaptive traps are disabled. Results are stored locally for up to 60 days. Version 0.0.10 adds the optional online leaderboard described above. Daily play and practice do not spend campaign boosts, grant campaign rewards, or overwrite campaign progress.
 - **Translation review:** Portuguese and English copy received an editorial pass, 18 locale glossaries were corrected, and all new messages are included offline. Independent native-speaker review remains open; see [localization review notes](./docs/LOCALIZATION.md).
 
-![Campaign map with unlocked levels and boss practice](./docs/images/campaign-map-0.0.9.png)
-
-![Daily challenge with a shared level and element](./docs/images/daily-challenge-0.0.9.png)
-
-**Server deployment:** 0.0.9 uses multiplayer protocol **3**. Deploy this version of `server.js` to the central server before playing online with 0.0.9 clients. The health endpoint reports the server version and protocol. Older incompatible clients are directed to update.
-
-If the installed game is current but the server is older, the connection indicator shows **Servidor em atualização** (Server updating). Reinstalling the same game does not update the server; its Railway deployment must reach version 0.0.9 and protocol 3. A newer incompatible server without a published client update shows **Multiplayer incompatível** (Multiplayer incompatible). The game only requests a client update when a newer release is available. Singleplayer, the tutorial, practice, and daily challenge stay available.
+![Campaign map with unlocked levels and boss practice](./docs/images/campaign-map-0.0.10.png)
 
 ## Elemental graphics
 
@@ -546,14 +575,19 @@ npm run test:visuals
 npm run test:features
 npm run test:reconnect
 npm run test:updates
+npm run test:mastery
+npm run test:mastery-online
 # Once, if a system Chrome/Chromium is unavailable:
 npx playwright-core install --with-deps chromium
 npm run test:browser
+npm run test:mastery-browser
 ```
 
 The first command audits all 1,000 levels. The second tests live Socket.IO multiplayer, Chaos Mode, synchronized traps, death rewards, and protocol compatibility. The third verifies all 20 language catalogs, placeholders, dynamic messages, canvas text, and repeated language switching.
 
 The fourth checks visual effect lifecycles, four-element trails, landing and trap impacts, pause/resume, teleports, reduced motion, canvas state isolation, and memory limits. Feature tests cover deterministic UTC challenges, practice records, input configuration, and WebAudio scheduling. Reconnection tests exercise real 2P/4P sockets and the full 30-second expiry. Chromium tests exercise playable tutorial inputs, campaign save isolation, boss practice, saved controls and audio, offline activities, touch input, and disconnect/reload recovery. Set `CHROMIUM_PATH` to select an installed Chrome or Chromium executable.
+
+The 0.0.10 mastery tests check coyote-time boundaries, moving-platform carry, protective areas, adaptive graphics, three-stage online bosses, replay validation against real completed runs, forged-score rejection, persistent ranking order, and exact browser/server physics parity. Browser diagnostics and quality persistence are also exercised.
 
 Game translations are bundled in `public/translations.js`; keep the Portuguese source keys and numbered placeholders when refining a translation.
 

@@ -29,6 +29,9 @@ for (const code of expected) {
   }
   i18n.setLanguage(code);
   assert.equal(i18n.translate('Configurações'), catalog['Configurações']);
+  for(const label of ['Diagnóstico da conexão','Qualidade gráfica','Ranking online','PLATAFORMA ELEMENTAL','VÉU PROTETOR'])assert.equal(i18n.translate(label),catalog[label]);
+  assert.equal(i18n.translate('Qualidade atual: Alta'),catalog['Qualidade atual: {0}'].replace('{0}',catalog['Alta']));
+  assert.equal(i18n.translate('FASE DO CHEFE 3/3 · RITUAL ELEMENTAL'),catalog['FASE DO CHEFE {0}/3 · {1}'].replace('{0}','3').replace('{1}',i18n.translate('RITUAL ELEMENTAL')));
   assert.equal(i18n.translate('Sala não encontrada.'), catalog['Sala não encontrada.']);
   assert.equal(i18n.translate('RECARGA 2.5s'), catalog['RECARGA {0}s'].replace('{0}', '2.5'));
   assert.equal(i18n.translate('🪽 PASSO DO VENDAVAL'), '🪽 ' + catalog['Passo do Vendaval'].toLocaleUpperCase(code));
@@ -37,6 +40,7 @@ for (const code of expected) {
 }
 i18n.setLanguage('en-US');
 assert.equal(i18n.translate('Mapa da campanha'),'Campaign map');
+assert.equal(i18n.translate('Posição no ranking: 12'),'Leaderboard position: 12');
 assert.equal(i18n.translate('● Servidor em atualização'),'● Server updating');
 assert.equal(i18n.translate('● Multiplayer incompatível'),'● Multiplayer incompatible');
 assert.equal(i18n.translate('2.50s · 3 mortes'),'2.50s · 3 deaths');

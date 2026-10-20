@@ -1,8 +1,8 @@
 {
   "name": "infinity-castle-elements",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "private": true,
-  "description": "Infinity Castle Elements — INSANITY 0.0.9. Learn, reconnect, explore and master the castle with custom controls, reactive audio and daily challenges.",
+  "description": "Infinity Castle Elements — INSANITY 0.0.10. Precision movement, cooperative elemental combos, three-stage bosses and verified daily rankings.",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",
@@ -18,6 +18,9 @@
     "test:reconnect": "node tools/test-reconnect.js",
     "test:browser": "node tools/test-browser.js",
     "test:updates": "node tools/test-updates.js",
+    "test:mastery": "node tools/test-mastery.js",
+    "test:mastery-online": "node tools/test-mastery-online.js",
+    "test:mastery-browser": "node tools/test-mastery-browser.js",
     "mobile:add:android": "npx cap add android",
     "mobile:sync": "npx cap sync android",
     "mobile:android": "npx cap open android"
@@ -53,7 +56,8 @@
       "package.json",
       "README.md",
       "COMO_JOGAR.txt",
-      "build/icon.ico"
+      "build/icon.ico",
+      "backend/**/*"
     ],
     "asar": true,
     "win": {
@@ -86,6 +90,10 @@
     },
     "portable": {
       "artifactName": "Infinity-Castle-Elements-Portable-${version}.${ext}"
-    }
+    },
+    "asarUnpack": [
+      "backend/**/*",
+      "public/**/*"
+    ]
   }
 }
