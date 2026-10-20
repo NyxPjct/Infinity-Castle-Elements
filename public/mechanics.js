@@ -7,7 +7,7 @@
   function qualityName(value){return ['auto','low','medium','high'].includes(value)?value:'auto';}
   function qualityController(initial='auto'){
     let setting=qualityName(initial),level=1,samples=0,total=0,lastChange=0;
-    return {set(value){setting=qualityName(value);samples=total=0;},sample(ms,now){if(setting!=='auto'||!Number.isFinite(ms)||ms<=0||ms>250)return;total+=ms;samples++;if(samples<120)return;const average=total/samples;samples=total=0;if(now-lastChange<8000)return;if(average>24&&level>0){level--;lastChange=now;}else if(average<17.5&&level<2){level++;lastChange=now;}},get name(){return setting==='auto'?['low','medium','high'][level]:setting;},get config(){return quality[this.name];}};
+    return {set(value){const next=qualityName(value);if(next!==setting){setting=next;samples=total=0;}},sample(ms,now){if(setting!=='auto'||!Number.isFinite(ms)||ms<=0||ms>250)return;total+=ms;samples++;if(samples<120)return;const average=total/samples;samples=total=0;if(now-lastChange<8000)return;if(average>24&&level>0){level--;lastChange=now;}else if(average<17.5&&level<2){level++;lastChange=now;}},get name(){return setting==='auto'?['low','medium','high'][level]:setting;},get config(){return quality[this.name];}};
   }
   function bossPhase(charge,required){return clamp(Math.floor((Number(charge)||0)/(Number(required)||1)),0,2);}
   function bossPlatforms(phase){return phase<1?[]:[{x:520,y:690,w:120,h:22},{x:960,y:690,w:120,h:22},...(phase>1?[{x:680,y:520,w:240,h:20}]:[])];}

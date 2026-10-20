@@ -16,6 +16,7 @@ function ledge(wait){
   assert.ok(ledge(3).vy<0,'A late jump within 110 ms of leaving a ledge succeeds');
   assert.ok(ledge(8).vy>=0,'A jump outside the grace window cannot become an air jump');
   const q=rules.qualityController('auto');for(let i=0;i<120;i++)q.sample(30,10000);assert.equal(q.name,'low');
+  const saving=rules.qualityController('auto');for(let i=0;i<120;i++){saving.sample(30,10000);if(i%20===0)saving.set('auto');}assert.equal(saving.name,'low','Saving coins/preferences cannot discard automatic performance samples');
   for(let i=0;i<120;i++)q.sample(16,20000);assert.equal(q.name,'medium');q.set('high');for(let i=0;i<200;i++)q.sample(90,30000);assert.equal(q.name,'high');
   assert.equal(rules.bossPhase(1,2),0);assert.equal(rules.bossPhase(2,2),1);assert.equal(rules.bossPhase(6,2),2);
   assert.equal(rules.bossPlatforms(0).length,0);assert.equal(rules.bossPlatforms(1).length,2);assert.equal(rules.bossPlatforms(2).length,3);

@@ -1,4 +1,4 @@
-const CACHE='infinity-castle-elements-0.0.10-player-mastery-1';
+const CACHE='infinity-castle-elements-0.0.10-player-mastery-2';
 const CORE=['/','/index.html','/style.css','/game.js','/translations.js','/i18n.js','/visuals.js','/journey.js','/input.js','/audio.js','/journey-ui.js','/journey.css','/mechanics.js','/daily-run.js','/update010-ui.js','/nyx-owl.svg','/element-party.svg','/manifest.webmanifest'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));

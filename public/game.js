@@ -1603,7 +1603,7 @@ function createDailyRun(spec,onFinish){
   let run;
   const engine={
     clock(now){state.dailyClock=now;},
-    reset(current,session){state.role=current.role;state.deaths=session.deaths;state.invulnUntil=0;state.dailyInputMask=0;startLevel(current.level);},
+    reset(current,session){state.role=current.role;state.deaths=session.deaths;state.invulnUntil=0;state.dailyInputMask=0;startLevel(current.level);player.facing=1;},
     input(mask){state.dailyInputMask=mask;},
     ability(){state.dailyExecuting=true;try{activateAbility();}finally{state.dailyExecuting=false;}},
     step(dt){player.update(dt);},
