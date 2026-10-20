@@ -177,6 +177,7 @@ io.on('connection', socket => {
       const pause=Math.max(0,Date.now()-(room.pausedAt||Date.now()));
       room.attemptStartedAt+=pause;
       for(const [key,t] of room.trapStates)room.trapStates.set(key,t+pause);
+      for(const type of Object.keys(room.comboCooldowns||{}))room.comboCooldowns[type]+=pause;
       room.paused=false;room.pausedAt=null;
     }
     ack({...joinResult(room,p),resumed:true,room:publicRoom(room)});

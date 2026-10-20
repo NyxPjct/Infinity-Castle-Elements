@@ -1233,7 +1233,8 @@ function restoreNetworkSession(room){
   const now=gameNow();state.level=room.level;state.deaths=room.deaths;state.levelStart=now-room.elapsedMs;
   state.trapState.clear();syncRoomTrapSnapshot(room);
   for(const id of room.defeatedEnemies||[])state.trapState.set('enemyDead'+id,true);
-  state.bossDefeated=!!room.bossDefeated;state.bossPhase=Number(room.bossPhase)||0;state.combos=room.combos||[];if(state.bossDefeated)state.bossCharge=(state.levelData.boss?.required||0)*3;
+  state.bossDefeated=!!room.bossDefeated;state.bossPhase=Number(room.bossPhase)||0;state.combos=room.combos||[];
+  state.bossCharge=(state.levelData.boss?.required||0)*(state.bossDefeated?3:state.bossPhase);
   state.remotePlayers.clear();
   for(const p of room.players){
     if(!p.state)continue;

@@ -6,7 +6,7 @@
 - Cooperative elemental combos: Earth + Air creates a moving, rising platform for four seconds; Light + Darkness creates a protective area for three seconds. Both powers must be active within 320 world pixels; combos have a shared 12-second cooldown and synchronize online.
 - All ten guardians now have three ritual stages, changing projectile patterns, visible boss attack windups, and additional arena platforms. Completed stages are checkpoints for the current attempt; death resets the encounter.
 - Automatic, Low, Medium, and High graphics settings adjust cosmetic effects while preserving gameplay rules.
-- Connection diagnostics show versions, protocol, latency, room, and compatibility, with a reconnect action using the existing 30-second reservation.
+- Connection diagnostics show versions, protocol, latency, room, and compatibility, with a reconnect action using the existing 30-second reservation. Reconnection preserves combo lifetimes/cooldowns and restores the completed boss-stage progress bar.
 - An optional online daily leaderboard verifies completed runs by replaying their controls on the server. The server computes deaths and time, ranks fewer deaths first, and stores one best result per guest device identity per day. Local daily play remains available offline.
 - New UI and canvas text is bundled in all 20 offline languages, with editorial corrections to core terminology. Independent native-speaker review remains pending.
 - English README, fresh in-engine captures, and versioned Windows and Android downloads.

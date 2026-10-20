@@ -35,6 +35,7 @@ let browser;
   state.combos=[ICEMechanics.combo('light-darkness',{x:player.x,y:player.y},{x:player.x,y:player.y},elapsed()*1000,'protect')];state.invulnUntil=0;applyComboPhysics(player);return {...carried,protected:state.invulnUntil>gameNow()};
  });assert.ok(carry.dx>10&&carry.dy<0);assert.equal(carry.protected,true);
  const boss=await page.evaluate(()=>{ICEFeatures.start('practice',100,'earth');state.bossCharge=state.levelData.boss.required;const second=bossArenaPlatforms().length;state.bossCharge*=2;return {second,third:bossArenaPlatforms().length,phase:bossCurrentPhase()};});assert.deepEqual(boss,{second:2,third:3,phase:2});
+ const restoredBoss=await page.evaluate(()=>{state.mode='multiplayer';state.networkWasRunning=false;restoreNetworkSession({started:true,level:100,deaths:0,elapsedMs:1000,bossPhase:2,bossDefeated:false,combos:[],trapStates:[],defeatedEnemies:[],players:[{id:state.id,role:'earth'}]});return state.bossCharge/state.levelData.boss.required;});assert.equal(restoredBoss,2,'Reconnection restores completed boss stages in the progress bar');
  // A known completed run goes through the real browser finish + socket + worker + board UI.
  const fixture=require('./fixtures/daily-010-earth.json'),realNow=Date.now;let serverNow=Date.parse(fixture.spec.date+'T12:00:00Z');
  try{
