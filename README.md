@@ -1,6 +1,6 @@
-# Infinity Castle Elements — INSANITY 0.0.10
+# Infinity Castle Elements — INSANITY 0.0.11
 
-**Current game version:** `0.0.10`
+**Current game version:** `0.0.11`
 
 ## Downloads
 
@@ -8,13 +8,13 @@
 
 | Edition | Download | How to use it |
 | --- | --- | --- |
-| Setup | [Infinity-Castle-Elements-Setup-0.0.10.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.10/Infinity-Castle-Elements-Setup-0.0.10.exe) | Run the installer, choose a folder, and finish the wizard. Desktop and Start Menu shortcuts are available. |
-| Portable | [Infinity-Castle-Elements-Portable-0.0.10.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.10/Infinity-Castle-Elements-Portable-0.0.10.exe) | Run the executable directly; no installation is required. |
-| Complete ZIP | [Infinity-Castle-Elements-Windows-0.0.10.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.10/Infinity-Castle-Elements-Windows-0.0.10.zip) | Extract the archive to access both Setup and Portable. |
+| Setup | [Infinity-Castle-Elements-Setup-0.0.11.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.11/Infinity-Castle-Elements-Setup-0.0.11.exe) | Run the installer, choose a folder, and finish the wizard. Desktop and Start Menu shortcuts are available. |
+| Portable | [Infinity-Castle-Elements-Portable-0.0.11.exe](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.11/Infinity-Castle-Elements-Portable-0.0.11.exe) | Run the executable directly; no installation is required. |
+| Complete ZIP | [Infinity-Castle-Elements-Windows-0.0.11.zip](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.11/Infinity-Castle-Elements-Windows-0.0.11.zip) | Extract the archive to access both Setup and Portable. |
 
 ### Android
 
-[Download Infinity-Castle-Elements-Android-0.0.10.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.10/Infinity-Castle-Elements-Android-0.0.10.apk)
+[Download Infinity-Castle-Elements-Android-0.0.11.apk](https://github.com/NyxPjct/Infinity-Castle-Elements/releases/download/v0.0.11/Infinity-Castle-Elements-Android-0.0.11.apk)
 
 Play in **landscape orientation** to use the full canvas and touch controls.
 
@@ -26,7 +26,7 @@ The distributed game includes its runtime. **Players do not need to install Node
 
 **Infinity Castle Elements** is an original troll platformer, action, and survival game by **NYX PROJECT R**. Climb a campaign of **1,000 levels**, master four playable elements, and face enemies, bosses, coins, a shop, boosts, cosmetics, and a castle that learns to hate you back. Play solo, cooperate with a friend, or enter online **Chaos Mode with four players**.
 
-**INSANITY 0.0.10 — Player Mastery Update** adds more responsive movement, cooperative elemental combos, three-stage bosses, adaptive graphics quality, connection diagnostics, and an optional online daily leaderboard validated by replaying the run on the server. All 20 languages work offline.
+**INSANITY 0.0.11 — Solo Expedition Update** expands Singleplayer with 40 authored rooms, elemental side routes, mastery cosmetics, optional objectives, practice ghosts, decisions between regions, and a separate New Game+ campaign. All 20 languages work offline.
 
 ## How to change the game language
 
@@ -45,26 +45,77 @@ Changing the language updates the menus, settings, element selection, HUD, shop,
 
 Player names, room codes, version numbers, and externally published release notes retain their original content.
 
-## 📸 Screenshots — INSANITY 0.0.10
+## 📸 Screenshots — INSANITY 0.0.11
 
-The following captures show the current web build. The mobile image shows the responsive touch interface in a mobile browser viewport.
+The following captures show the 0.0.11 web build. Mastery, story, and New Game+ previews use a demonstration save. The mobile image shows the responsive touch interface in a mobile browser viewport.
 
 <table>
   <tr>
-    <td><img src="./docs/images/menu-principal.jpg" width="480" alt="Infinity Castle Elements 0.0.10 main menu" /><br /><strong>Main menu</strong></td>
-    <td><img src="./docs/images/selecao-elementos.jpg" width="480" alt="Element selection in Infinity Castle Elements 0.0.10" /><br /><strong>Element selection</strong></td>
+    <td><img src="./docs/images/menu-principal.jpg" width="480" alt="Infinity Castle Elements 0.0.11 main menu" /><br /><strong>Main menu</strong></td>
+    <td><img src="./docs/images/selecao-elementos.jpg" width="480" alt="Element selection in Infinity Castle Elements 0.0.11" /><br /><strong>Element selection</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/gameplay-singleplayer.jpg" width="480" alt="Singleplayer gameplay with the 0.0.10 HUD" /><br /><strong>Singleplayer</strong></td>
-    <td><img src="./docs/images/gameplay-multiplayer.jpg" width="480" alt="Two-player cooperative gameplay in version 0.0.10" /><br /><strong>Online co-op</strong></td>
+    <td><img src="./docs/images/gameplay-singleplayer.jpg" width="480" alt="Singleplayer gameplay with the 0.0.11 HUD" /><br /><strong>Singleplayer</strong></td>
+    <td><img src="./docs/images/gameplay-multiplayer.jpg" width="480" alt="Two-player cooperative gameplay in version 0.0.11" /><br /><strong>Online co-op</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/modo-caos.jpg" width="480" alt="Four-player Chaos Mode in version 0.0.10" /><br /><strong>Chaos Mode</strong></td>
-    <td><img src="./docs/images/android-gameplay.jpg" width="480" alt="Version 0.0.10 touch controls in a landscape mobile browser" /><br /><strong>Mobile touch interface</strong></td>
+    <td><img src="./docs/images/modo-caos.jpg" width="480" alt="Four-player Chaos Mode in version 0.0.11" /><br /><strong>Chaos Mode</strong></td>
+    <td><img src="./docs/images/android-gameplay.jpg" width="480" alt="Version 0.0.11 touch controls in a landscape mobile browser" /><br /><strong>Mobile touch interface</strong></td>
   </tr>
 </table>
 
-## What’s new in 0.0.10 — Player Mastery Update
+## What’s new in 0.0.11 — Solo Expedition Update
+
+### Special rooms and elemental routes
+
+Singleplayer levels **20, 40, 60, and 80 of each region** now use **40 authored layouts**, built around four challenge families: Crown Steps, Three-Rune Circuit, Echo Stairway, and Shattered Reliquary. The circuit requires three runes to be activated in order with your power; the reliquary requires three fragments. Levels 100, 200, and the other region finales remain guardian encounters. Multiplayer, Chaos, tutorial geometry, and daily challenges retain their existing layouts.
+
+Each special room also has an optional **Elemental Route**. Its main exit remains reachable with any of the four elements.
+
+| Element | How its side route works |
+| --- | --- |
+| Earth | Jump onto the left pedestal and activate Roots to create a stone bridge. |
+| Air | Activate the power on the pedestal, then use the updraft to reach the upper platform. |
+| Light | Illuminate the pedestal with the power to reveal the upper steps. |
+| Darkness | Climb the steps and activate the power beside the violet veil to pass through it. Collect the route crest while phasing. |
+
+![Authored special room and optional elemental route](./docs/images/solo-special-0.0.11.png)
+
+### Mastery, objectives, and cosmetics
+
+Open **Singleplayer → Mastery and memories** to inspect each element's progress. A first clear earns **2 XP**, or **4 XP** in a special room; a first elemental-route discovery earns **4 XP**. Completing a new optional objective earns **3 XP**. Rewards are tracked per element, level, and original/NG+ campaign, so repeating the same achievement does not farm XP. Practice and daily play do not award mastery.
+
+Optional objectives include no deaths during the level visit, no powers during the winning attempt, a target time, secret discovery where available, and exploring a special room's elemental route. Rune-circuit rooms require powers and do not offer the no-power objective. The collapsible objectives panel shows your current conditions.
+
+Mastery unlocks **Initiate at 60 XP**, **Elemental guardian at 180 XP**, and **Elemental legend at 360 XP**. Select the unlocked outfit, cloak, or aura in the panel; titles follow your mastery rank. These rewards are cosmetic and appear in solo campaign and practice. Mastery challenges include a room family suited to each element, unique level clears, routes, and optional objectives. Mastery and its cosmetics are shared across original and NG+ play on the current device.
+
+![Element mastery, cosmetic selection, and challenges](./docs/images/solo-mastery-0.0.11.png)
+
+### Best-time ghosts in practice
+
+Campaign and practice wins can record the player's actual positions for **up to three minutes**. Starting practice on the same level, element, and original/NG+ layout can show your best recorded run as a translucent ghost. It never collides, triggers traps, presses plates, or changes your score. Toggle it immediately from **Mastery and memories → Show the best-time ghost in practice**.
+
+The device retains up to **24 most recently saved best runs**; older recordings are evicted. Longer runs still receive normal records but do not create a ghost. Existing pre-0.0.11 best times have no recording until you finish a run in this version. Ghosts are stored locally and do not take part in the online daily leaderboard.
+
+### Memories and endings
+
+After the guardians of the first nine regions, a short scene offers two decisions: **Free the memory** or **Strengthen the seal**. Your choices lead toward **Freed Memories**, **The New Crown**, or **The Elemental Pact**. You can leave a decision pending and return through Continue; the next room waits while you decide. Your past choices remain visible in Mastery and memories.
+
+Existing campaigns keep their progress and encounter the remaining scenes as they advance. Starting a new original campaign resets that campaign's narrative choices, while mastery and cosmetics remain unlocked. Practice and daily activities do not change narrative decisions. The previous endings remain the fallback for completed runs with no narrative choices.
+
+![A decision between regions](./docs/images/solo-story-0.0.11.png)
+
+### New Game+
+
+Complete the original solo campaign to unlock **Singleplayer → New Game+**. Legacy completed solo saves also unlock it. New Game+ adds faster patrols and mechanisms, crosswinds, and reforged guardians with faster, altered attack patterns. It has its own save, deaths, reached levels, campaign/practice records, ghost recordings, and narrative choices. The original campaign save remains intact. Coins, inventory, and cosmetic mastery stay shared on the device.
+
+The button resumes an existing NG+ campaign. After completing it, its unlocked levels remain available through **Campaign map → Campaign → New Game+** for practice. This release provides one NG+ campaign; it does not add an unlimited cycle system.
+
+![New Game+ with separate progression and altered guardian attacks](./docs/images/solo-ngplus-0.0.11.png)
+
+Version 0.0.11 keeps multiplayer protocol **4**. No new preactivation clues were added to hidden traps. Daily input replay validation and the 0.0.10 online features remain available. The server's game version is read from `package.json`; deploy the current main branch for matching version metadata.
+
+## Previous update: 0.0.10 — Player Mastery Update
 
 - **Responsive movement:** jumping remains available for 110 ms after leaving a ledge. Direction changes accelerate faster, ground braking is firmer, and the existing short-tap jump buffer supports keyboard and touch controls.
 - **Cooperative combos:** activate both elemental powers within 320 world pixels of each other in two-player co-op or Chaos. **Earth + Air** creates a moving, rising platform for four seconds. **Light + Darkness** creates a protective area for three seconds. Each combo has a shared 12-second cooldown; the server synchronizes its creation and remaining duration. Players using other pairings retain their usual powers.
@@ -89,7 +140,7 @@ The guardian preview uses the actual renderer with the third stage selected for 
 
 ### Multiplayer deployment and leaderboard storage
 
-Version **0.0.10** uses multiplayer protocol **4**. Deploy the matching server before playing online. The existing Railway service should track **NyxPjct/Infinity-Castle-Elements → main**, with auto-deploy enabled and no root subdirectory. Use `npm run start:multiplayer` as its start command. After the deployment becomes active, `/health` must report `"version":"0.0.10"` and `"protocolVersion":4`.
+Version **0.0.11** uses multiplayer protocol **4**, retaining 0.0.10 online compatibility. Deploy the current server to update its version metadata. The existing Railway service should track **NyxPjct/Infinity-Castle-Elements → main**, with auto-deploy enabled and no root subdirectory. Use `npm run start:multiplayer` as its start command. After the deployment becomes active, `/health` must report `"version":"0.0.11"` and `"protocolVersion":4`.
 
 **To keep online rankings across Railway deployments, attach a volume to the server service at `/data`.** Railway supplies `RAILWAY_VOLUME_MOUNT_PATH`, which the server uses automatically. Alternatively, set `ICE_DATA_DIR` to a directory on an attached persistent volume. Without a volume, file storage can survive a process restart within the same container but may be lost when Railway replaces that container. Back up `daily-leaderboard.json` from the mounted directory. Multiple replicas do not share in-memory sessions; use one replica for this release.
 
@@ -577,10 +628,12 @@ npm run test:reconnect
 npm run test:updates
 npm run test:mastery
 npm run test:mastery-online
+npm run test:expedition
 # Once, if a system Chrome/Chromium is unavailable:
 npx playwright-core install --with-deps chromium
 npm run test:browser
 npm run test:mastery-browser
+npm run test:expedition-browser
 ```
 
 The first command audits all 1,000 levels. The second tests live Socket.IO multiplayer, Chaos Mode, synchronized traps, death rewards, and protocol compatibility. The third verifies all 20 language catalogs, placeholders, dynamic messages, canvas text, and repeated language switching.
@@ -588,6 +641,8 @@ The first command audits all 1,000 levels. The second tests live Socket.IO multi
 The fourth checks visual effect lifecycles, four-element trails, landing and trap impacts, pause/resume, teleports, reduced motion, canvas state isolation, and memory limits. Feature tests cover deterministic UTC challenges, practice records, input configuration, and WebAudio scheduling. Reconnection tests exercise real 2P/4P sockets and the full 30-second expiry. Chromium tests exercise playable tutorial inputs, campaign save isolation, boss practice, saved controls and audio, offline activities, touch input, and disconnect/reload recovery. Set `CHROMIUM_PATH` to select an installed Chrome or Chromium executable.
 
 The 0.0.10 mastery tests check coyote-time boundaries, moving-platform carry, protective areas, adaptive graphics, three-stage online bosses, replay validation against real completed runs, forged-score rejection, persistent ranking order, and exact browser/server physics parity. Browser diagnostics and quality persistence are also exercised.
+
+The expedition tests audit/render all 40 authored layouts, traverse their main routes with the real physics for all four elements in original and NG+ mode (enemy damage disabled for this traversal check), verify all four powered side routes, and check one-time XP, ghost storage limits, story decisions, and altered NG+ boss patterns. Chromium checks real keyboard route activation, save migration, reward isolation, cosmetic selection, ghost playback toggling, pending-story recovery, and independent NG+ progression.
 
 Game translations are bundled in `public/translations.js`; keep the Portuguese source keys and numbered placeholders when refining a translation.
 

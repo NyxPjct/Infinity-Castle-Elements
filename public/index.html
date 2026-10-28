@@ -61,10 +61,10 @@
           <button id="menuChaosBtn" class="menu-choice chaos-choice"><span class="menu-index">03</span><span><b>Modo Caos</b><small>4 jogadores · 4 elementos · uma campanha sem misericórdia.</small></span><em>⚡</em></button>
           <button id="menuSettingsBtn" class="menu-choice"><span class="menu-index">04</span><span><b>Configurações</b><small>Visual, movimento e tela cheia.</small></span><em>›</em></button>
           <button id="menuChronicleBtn" class="menu-choice chronicle-choice"><span class="menu-index">05</span><span><b>Crônicas do Castelo</b><small>Conquistas, relíquias, fragmentos e estatísticas.</small></span><em>◈</em></button>
-          <button id="menuUpdatesBtn" class="menu-choice updates-choice"><span class="menu-index">06</span><span><b>Atualizações</b><small id="menuUpdatesStatus">Versão 0.0.10 · verificando novidades...</small></span><em id="menuUpdatesIcon">↻</em></button>
+          <button id="menuUpdatesBtn" class="menu-choice updates-choice"><span class="menu-index">06</span><span><b>Atualizações</b><small id="menuUpdatesStatus">Versão 0.0.11 · verificando novidades...</small></span><em id="menuUpdatesIcon">↻</em></button>
           <button id="menuExitBtn" class="menu-choice danger-choice"><span class="menu-index">07</span><span><b>Sair</b><small>Fuja enquanto ainda consegue.</small></span><em>›</em></button>
         </nav>
-        <div class="menu-footer"><button id="menuConnectionPill" class="connection-trigger" type="button" title="Diagnóstico da conexão">● Conectando</button><span>INSANITY <b data-app-version>0.0.10</b></span></div>
+        <div class="menu-footer"><button id="menuConnectionPill" class="connection-trigger" type="button" title="Diagnóstico da conexão">● Conectando</button><span>INSANITY <b data-app-version>0.0.11</b></span></div>
       </aside>
       <div class="menu-story-card">
         <p id="menuCastleState">O CASTELO DESPERTOU</p>
@@ -91,7 +91,7 @@
         <div class="brand-mark">✦</div>
         <div>
           <h1>INFINITY CASTLE <span>ELEMENTS</span></h1>
-          <p>INSANITY <span data-app-version>0.0.10</span> · 1000 FASES · SOLO · CO-OP · MODO CAOS 4P</p>
+          <p>INSANITY <span data-app-version>0.0.11</span> · 1000 FASES · SOLO · CO-OP · MODO CAOS 4P</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -169,6 +169,7 @@
           <button id="continueSoloBtn" class="ghost hidden">↻ Continuar solo</button>
           <p class="fine">No solo você joga com <b>apenas o elemento escolhido</b>. Portas e chefes se adaptam para continuarem possíveis com um único personagem.</p>
           <div class="journey-launch"><button id="menuTutorialBtn" type="button">Tutorial</button><button id="menuMapBtn" type="button">Mapa da campanha</button><button id="menuDailyBtn" type="button">Desafio diário</button></div>
+          <div class="expedition-launch"><button id="masteryBtn" type="button">Maestria e memórias</button><button id="ngplusBtn" type="button" disabled>Novo Jogo+</button></div><p id="ngplusHelp" class="fine"></p>
         </div>
 
         <div id="multiSetup" class="hidden">
@@ -360,7 +361,7 @@
   <div id="chronicleModal" class="shop-modal hidden chronicle-modal" role="dialog" aria-modal="true" aria-labelledby="chronicleTitle">
     <div class="shop-card chronicle-card">
       <div class="shop-head">
-        <div><p class="eyebrow">ARQUIVO PROIBIDO · INSANITY 0.0.10</p><h2 id="chronicleTitle">Crônicas do Castelo</h2></div>
+        <div><p class="eyebrow">ARQUIVO PROIBIDO · INSANITY 0.0.11</p><h2 id="chronicleTitle">Crônicas do Castelo</h2></div>
         <button id="closeChronicleBtn" class="small" type="button">✕</button>
       </div>
       <p id="chronicleStats" class="chronicle-stats">Mortes: 0 · Segredos: 0 · Guardiões: 0 · Melhor rank: —</p>
@@ -387,7 +388,7 @@
       <div id="updateRequiredBanner" class="update-required-banner hidden">⚠ ATUALIZAÇÃO OBRIGATÓRIA PARA O MULTIPLAYER</div>
 
       <div class="update-version-line update-version-grid">
-        <span>INSTALADA <b id="updateCurrentVersion" data-app-version>0.0.10</b></span>
+        <span>INSTALADA <b id="updateCurrentVersion" data-app-version>0.0.11</b></span>
         <i>→</i>
         <span>DISPONÍVEL <b id="updateLatestVersion">—</b></span>
         <small id="updateSizeText">Tamanho: —</small>
@@ -439,7 +440,7 @@
         <button id="pauseMainMenuBtn" class="menu-choice pause-choice" type="button"><span class="menu-index">03</span><span><b>Sair para o menu</b><small>Volta para o menu principal.</small></span><em>›</em></button>
         <button id="pauseDesktopBtn" class="menu-choice pause-choice danger-choice" type="button"><span class="menu-index">04</span><span><b>Sair para desktop</b><small>Fecha o Infinity Castle Elements.</small></span><em>›</em></button>
       </div>
-      <button id="pauseConnectionBtn" type="button">Diagnóstico da conexão</button><p id="pauseMessage" class="pause-message"></p>
+      <button id="pauseMasteryBtn" type="button">Maestria e memórias</button><button id="pauseConnectionBtn" type="button">Diagnóstico da conexão</button><p id="pauseMessage" class="pause-message"></p>
     </div>
   </div>
 
@@ -447,7 +448,7 @@
   <div id="activityStatus" class="activity-status hidden"><b id="activityTitle"></b><span id="activityHint"></span><button id="activityExitBtn" type="button">Voltar ao menu</button></div>
   <div id="journeyModal" class="shop-modal hidden" role="dialog" aria-modal="true" aria-labelledby="journeyTitle">
     <div class="shop-card journey-card"><div class="shop-head"><h2 id="journeyTitle">Mapa da campanha</h2><button id="journeyCloseBtn" type="button" aria-label="Fechar">✕</button></div>
-      <div id="journeyMapView"><label>Região <select id="mapRegion"></select></label><p>Escolha uma fase liberada para treinar. Seu progresso da campanha será preservado.</p><label>Elemento <select id="journeyRole"><option value="earth">Terra</option><option value="air">Ar</option><option value="light">Luz</option><option value="darkness">Escuridão</option></select></label><div id="mapLevels" class="map-levels"></div><p id="mapSelection" role="status"></p><button id="mapPlayBtn" type="button">Treinar fase</button></div>
+      <div id="journeyMapView"><label>Campanha <select id="mapCampaign"><option value="campaign">Campanha original</option><option value="ngplus">Novo Jogo+</option></select></label><label>Região <select id="mapRegion"></select></label><p>Escolha uma fase liberada para treinar. Seu progresso da campanha será preservado.</p><label>Elemento <select id="journeyRole"><option value="earth">Terra</option><option value="air">Ar</option><option value="light">Luz</option><option value="darkness">Escuridão</option></select></label><div id="mapLevels" class="map-levels"></div><p id="mapSelection" role="status"></p><button id="mapPlayBtn" type="button">Treinar fase</button></div>
       <div id="journeyDailyView" class="hidden"><p>Uma fase e um elemento iguais para todos. O desafio muda à meia-noite UTC.</p><p id="dailyDescription"></p><p>Sem relíquias, bônus ou armadilhas adaptativas.</p><p id="dailyBest"></p><button id="dailyPlayBtn" type="button">Começar desafio</button><section class="daily-ranking"><h3>Ranking online</h3><label>Apelido público <input id="rankingName" maxlength="24" autocomplete="nickname" /></label><button id="rankedDailyBtn" type="button">Jogar com ranking</button><button id="refreshBoardBtn" type="button">Atualizar ranking</button><p id="rankingStatus" role="status" aria-live="polite"></p><p>Classificação por mortes e tempo. Escolha um apelido público.</p><ol id="dailyBoard"></ol></section></div>
       <div id="journeyResultView" class="hidden"><p id="activityResult"></p><p id="rankingResult" role="status" aria-live="polite"></p><div class="journey-result-actions"><button id="activityRetryBtn" type="button">Tentar novamente</button><button id="activityMenuBtn" type="button">Voltar ao menu</button></div></div>
     </div>
@@ -456,6 +457,12 @@
     <div class="shop-card connection-card"><div class="shop-head"><h2 id="connectionTitle">Diagnóstico da conexão</h2><button id="connectionCloseBtn" type="button" aria-label="Fechar">✕</button></div>
     <dl><dt>Estado</dt><dd id="connectionState"></dd><dt>Versão do jogo</dt><dd id="connectionClient" data-i18n-ignore></dd><dt>Versão do servidor</dt><dd id="connectionServer" data-i18n-ignore></dd><dt>Protocolo</dt><dd id="connectionProtocol" data-i18n-ignore></dd><dt>Latência</dt><dd id="connectionLatency" data-i18n-ignore></dd><dt>Sala</dt><dd id="connectionRoom" data-i18n-ignore></dd></dl><p id="connectionMessage" role="status"></p><div class="journey-result-actions"><button id="connectionRefreshBtn" type="button">Verificar conexão</button><button id="connectionReconnectBtn" type="button">Reconectar</button></div></div>
   </div>
+  <details id="soloObjectives" class="solo-objectives hidden" open><summary>Objetivos opcionais</summary><p id="soloObjectiveLines"></p></details>
+  <div id="expeditionModal" class="shop-modal hidden" role="dialog" aria-modal="true" aria-labelledby="expeditionTitle"><div class="shop-card expedition-card"><div class="shop-head"><h2 id="expeditionTitle">Maestria e memórias</h2><button id="expeditionCloseBtn" type="button" aria-label="Fechar">✕</button></div>
+    <p>Conquiste títulos, trajes e auras com seus elementos. As recompensas são visuais.</p><label>Elemento <select id="expeditionRole"><option value="earth">Terra</option><option value="air">Ar</option><option value="light">Luz</option><option value="darkness">Escuridão</option></select></label><h3 id="masterySummary"></h3><progress id="masteryProgress" max="60" value="0"></progress><p>Iniciado: 60 XP · Guardião: 180 XP · Lenda: 360 XP</p><div id="masteryLooks" class="mastery-looks"></div><h3>Desafios de maestria</h3><ul id="masteryMissions"></ul>
+    <label><input id="ghostEnabled" type="checkbox" checked /> Mostrar o fantasma do melhor tempo no treino</label><p>Gravações de até três minutos. Os 24 melhores percursos mais recentes ficam neste dispositivo.</p><h3>Memórias da jornada</h3><label>Campanha <select id="expeditionStoryCampaign"><option value="campaign">Campanha original</option><option value="ngplus">Novo Jogo+</option></select></label><ol id="storyHistory"></ol>
+  </div></div>
+  <div id="expeditionStoryModal" class="shop-modal hidden" role="dialog" aria-modal="true" aria-labelledby="expeditionStoryTitle"><div class="shop-card expedition-story"><p class="eyebrow">MEMÓRIA DO CASTELO</p><h2 id="expeditionStoryTitle"></h2><p id="expeditionStoryText"></p><p>Suas decisões mudam o destino do castelo.</p><div class="story-choices"><button id="storyFreeBtn" type="button">Libertar a memória</button><button id="storySealBtn" type="button">Reforçar o selo</button></div><button id="storyLeaveBtn" type="button">Escolher depois e voltar ao menu</button></div></div>
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
   <script src="/translations.js"></script>
   <script src="/i18n.js"></script>
@@ -465,9 +472,11 @@
   <script src="/audio.js"></script>
   <script src="/mechanics.js"></script>
   <script src="/daily-run.js"></script>
+  <script src="/solo.js"></script>
   <script src="/game.js"></script>
   <script src="/journey-ui.js"></script>
   <script src="/update010-ui.js"></script>
+  <script src="/solo-ui.js"></script>
   <script>
     if ('serviceWorker' in navigator && !window.electronAPI) {
       const hadController=!!navigator.serviceWorker.controller;let refreshing=false;

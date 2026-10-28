@@ -71,6 +71,10 @@ jobs:
         shell: pwsh
         run: npm run test:reconnect
 
+      - name: Test solo expedition rooms and progression
+        shell: pwsh
+        run: npm run test:expedition
+
       - name: Test game localization
         shell: pwsh
         run: npm run test:i18n

@@ -1,8 +1,8 @@
 {
   "name": "infinity-castle-elements",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "private": true,
-  "description": "Infinity Castle Elements — INSANITY 0.0.10. Precision movement, cooperative elemental combos, three-stage bosses and verified daily rankings.",
+  "description": "Infinity Castle Elements \u2014 INSANITY 0.0.11. Authored solo rooms, elemental routes, mastery, best-time ghosts, branching memories and New Game+.",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.js",
@@ -23,7 +23,9 @@
     "test:mastery-browser": "node tools/test-mastery-browser.js",
     "mobile:add:android": "npx cap add android",
     "mobile:sync": "npx cap sync android",
-    "mobile:android": "npx cap open android"
+    "mobile:android": "npx cap open android",
+    "test:expedition": "node tools/test-expedition.js",
+    "test:expedition-browser": "node tools/test-expedition-browser.js"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -44,7 +46,7 @@
   "build": {
     "appId": "com.nyxprojectr.infinitycastleelements",
     "productName": "Infinity Castle Elements",
-    "copyright": "Copyright © 2026 NYX PROJECT R",
+    "copyright": "Copyright \u00a9 2026 NYX PROJECT R",
     "directories": {
       "output": "dist",
       "buildResources": "build"

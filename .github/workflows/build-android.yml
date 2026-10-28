@@ -43,6 +43,9 @@ jobs:
       - name: Test activities, controls and audio
         run: npm run test:features
 
+      - name: Test solo expedition rooms and progression
+        run: npm run test:expedition
+
       - name: Test multiplayer reconnection
         run: npm run test:reconnect
 

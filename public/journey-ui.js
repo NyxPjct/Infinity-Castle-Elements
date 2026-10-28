@@ -13,6 +13,7 @@
     modal.classList.remove('hidden');$('#journeyCloseBtn').focus();
   }
   function campaignProgress(){
+    if($('#mapCampaign')?.value==='ngplus'&&profile.solo){profile.solo.ngProgress=ICEJourney.progress(profile.solo.ngProgress,loadNGSave()?.level||1);return profile.solo.ngProgress;}
     profile.progress=ICEJourney.progress(profile.progress,savedCampaignLevel());return profile.progress;
   }
   function bestLabel(record){return record?`${Number(record.time).toFixed(2)}s · ${record.deaths} mortes`:'—';}
@@ -40,13 +41,13 @@
     const d=ICEJourney.daily();text('#dailyDescription',`${d.date} UTC · Fase ${d.level} · ${ELEMENTS[d.role].name}`);
     text('#dailyBest','Melhor resultado: '+bestLabel(profile.daily?.[d.date]));show('daily');window.ICE010UI?.loadBoard();
   }
-  function start(type,level,role,ranking=null){
-    if(type==='practice'&&Number(level)>campaignProgress().unlocked)return false;
+  function start(type,level,role,ranking=null,ngplus=false){
+    if(type==='practice'){const progress=ngplus?ICEJourney.progress(profile.solo?.ngProgress,loadNGSave()?.level||1):ICEJourney.progress(profile.progress,savedCampaignLevel());if(Number(level)>progress.unlocked)return false;}
     leaveMultiplayerSession();closePauseMenu(false);closeSettings(false);hide();hideCinematicScreens();appShell.classList.remove('hidden');
-    state.dailyRun=null;state.dailyClock=null;state.dailyAbilityQueued=state.dailyRestartQueued=false;
+    state.ngplus=type==='practice'&&!!ngplus;state.dailyRun=null;state.dailyClock=null;state.dailyAbilityQueued=state.dailyRestartQueued=false;
     let daily=null;if(type==='daily'){daily=ranking?.spec||ICEJourney.daily();level=daily.level;role=daily.role;}
     state.activity={type,level:type==='tutorial'?1:Number(level)||1,role:ELEMENTS[role]?role:state.selectedRole,stage:0,power:false,coop:false,date:daily?.date,ranking,complete:false};
-    lastActivity={...state.activity};state.mode='singleplayer';state.id='solo';state.slot=0;state.room=null;state.roomCode=null;state.networkPaused=false;state.deaths=0;
+    lastActivity={...state.activity,ngplus:state.ngplus};state.mode='singleplayer';state.id='solo';state.slot=0;state.room=null;state.roomCode=null;state.networkPaused=false;state.deaths=0;
     state.role=state.activity.role;state.levelAttempts=new Map();if(type==='daily')createDailyRun(daily,()=>finish());else startLevel(state.activity.level);
     $('#activityStatus').classList.remove('hidden');
     text('#activityTitle',type==='tutorial'?'Tutorial':type==='daily'?'Desafio diário':'Treino');
@@ -68,7 +69,7 @@
     a.complete=true;state.running=false;inputController?.clear();sound?.play('complete',state.role);
     const result={time:Math.max(.01,a.type==='daily'?state.dailyRun.time:elapsed()),deaths:state.deaths};
     if(a.type==='tutorial')profile.tutorialCompleted=true;
-    else if(a.type==='practice'){profile.progress=campaignProgress();ICEJourney.record(profile.progress.practice,a.level,result);}
+    else if(a.type==='practice'){if(state.ngplus){profile.solo.ngProgress=ICEJourney.progress(profile.solo.ngProgress,loadNGSave()?.level||1);ICEJourney.record(profile.solo.ngProgress.practice,a.level,result);}else{profile.progress=ICEJourney.progress(profile.progress,savedCampaignLevel());ICEJourney.record(profile.progress.practice,a.level,result);}window.ICESoloUI?.finishPractice(result);}
     else if(a.type==='daily'){
       profile.daily=profile.daily||{};const old=profile.daily[a.date];
       if(!old||result.deaths<old.deaths||result.deaths===old.deaths&&result.time<old.time)profile.daily[a.date]={...result,level:a.level,role:a.role};
@@ -119,11 +120,12 @@
     }
   }
   $('#menuTutorialBtn').onclick=()=>start('tutorial',1,state.selectedRole);$('#menuMapBtn').onclick=openMap;$('#menuDailyBtn').onclick=openDaily;
-  $('#mapRegion').onchange=renderMap;$('#mapPlayBtn').onclick=()=>start('practice',selected,$('#journeyRole').value);$('#dailyPlayBtn').onclick=()=>start('daily');
+  $('#mapCampaign').onchange=()=>{selected=1;$('#mapRegion').value='0';renderMap();};
+  $('#mapRegion').onchange=renderMap;$('#mapPlayBtn').onclick=()=>start('practice',selected,$('#journeyRole').value,null,$('#mapCampaign').value==='ngplus');$('#dailyPlayBtn').onclick=()=>start('daily');
   $('#journeyCloseBtn').onclick=()=>{hide();if(view==='result')showMainMenu();};modal.addEventListener('click',e=>{if(e.target===modal)$('#journeyCloseBtn').click();});
   $('#activityExitBtn').onclick=pauseToMainMenu;$('#activityMenuBtn').onclick=()=>{hide();showMainMenu();};$('#activityRetryBtn').onclick=()=>{
     if(lastActivity?.ranking){hide();showMainMenu();openDaily();return;}
-    start(lastActivity.type,lastActivity.level,lastActivity.role);
+    start(lastActivity.type,lastActivity.level,lastActivity.role,null,lastActivity.ngplus);
   };
   for(let i=0;i<10;i++){const o=document.createElement('option');o.value=String(i);o.textContent=castleRegion(i*100+1).name;$('#mapRegion').appendChild(o);}
   $('#resetControlsBtn').onclick=()=>{pendingBinding=null;profile.settings.controls=null;profile.settings.touch=null;saveProfile();text('#bindingStatus','Controles restaurados.');};

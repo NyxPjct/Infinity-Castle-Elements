@@ -1,4 +1,4 @@
-const APP_VERSION = String(window.electronAPI?.version || window.ICE_APP_VERSION || '0.0.10').trim() || '0.0.10';
+const APP_VERSION = String(window.electronAPI?.version || window.ICE_APP_VERSION || '0.0.11').trim() || '0.0.11';
 const MULTIPLAYER_PROTOCOL = 4;
 const UPDATE_NOTICE_KEY = 'infinity-castle-elements-update-notified-v1';
 const UPDATE_WELCOME_KEY = 'infinity-castle-elements-update-welcome-v1';
@@ -89,11 +89,12 @@ const state = {
 };
 
 const SOLO_SAVE_KEY = 'infinity-castle-elements-solo-v1';
+const NG_SAVE_KEY = 'infinity-castle-elements-ngplus-v1';
 const MULTI_SAVE_KEY = 'infinity-castle-elements-multiplayer-v1';
 const CHAOS_SAVE_KEY = 'infinity-castle-elements-chaos-v1';
 const LEGACY_SOLO_SAVE_KEY = 'terra-ar-castelo-infinito-solo-v1';
 const PROFILE_KEY = 'infinity-castle-elements-profile-v1';
-const SAVE_SCHEMA_VERSION = 3;
+const SAVE_SCHEMA_VERSION = 4;
 
 function persistentGet(key){
   try{
@@ -389,6 +390,7 @@ function showTitleScreen(){
   setTimeout(()=>{studioSplash?.classList.add('hidden');studioSplash?.classList.remove('leaving');titleScreen.classList.remove('hidden');},260);
 }
 function showMainMenu(){
+  window.ICESoloUI?.hide();state.ngplus=false;state.expeditionRun=null;state.expeditionGhost=null;
   state.activity=null;state.dailyRun=null;state.dailyClock=null;$('#activityStatus')?.classList.add('hidden');
   clearTimeout(splashTimer);state.running=false;state.mode='menu';state.shopOpen=false;closeShop();
   if(typeof closePauseMenu==='function')closePauseMenu(false);if(typeof closeSettings==='function')closeSettings(false);
@@ -558,7 +560,7 @@ function defaultProfile(){return {
   relics:{owned:{},active:null},
   lore:[],
   stats:{deaths:0,jokers:0,secrets:0,bosses:0,finished:0,bestRank:null},
-  progress:{unlocked:1,records:{},practice:{}},daily:{},tutorialCompleted:false
+  progress:{unlocked:1,records:{},practice:{}},daily:{},tutorialCompleted:false,solo:window.ICEExpedition?.blank()||null
 };}
 const UI_SOURCE = {
   "single": "Singleplayer",
@@ -607,7 +609,8 @@ function loadProfile(){
       achievements:{...(raw.achievements||{})},
       relics:{...base.relics,...(raw.relics||{}),owned:{...(raw.relics?.owned||{})}},
       lore:Array.isArray(raw.lore)?raw.lore:[],
-      stats:{...base.stats,...(raw.stats||{})}
+      stats:{...base.stats,...(raw.stats||{})},
+      solo:window.ICEExpedition?.normalize(raw.solo)||raw.solo||null
     };
     if(Number(raw.schemaVersion||1)!==SAVE_SCHEMA_VERSION)persistentSet(PROFILE_KEY,JSON.stringify(migrated));
     return migrated;
@@ -620,7 +623,7 @@ const qualityController=window.ICEMechanics?.qualityController(profile.settings.
 function graphicsQuality(){return qualityController?.config||{particles:220,trailPoints:28,fx:true,shadows:true};}
 const shadowDescriptor=typeof CanvasRenderingContext2D!=='undefined'?Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,'shadowBlur'):null;
 if(shadowDescriptor?.set&&shadowDescriptor?.get)Object.defineProperty(ctx,'shadowBlur',{get(){return shadowDescriptor.get.call(this);},set(value){shadowDescriptor.set.call(this,graphicsQuality().shadows?value:0);}});
-function saveProfile(){profile.schemaVersion=SAVE_SCHEMA_VERSION;profile.selectedRole=state.selectedRole;persistentSet(PROFILE_KEY,JSON.stringify(profile));refreshEconomyUI();applySettings();}
+function saveProfile(){profile.schemaVersion=SAVE_SCHEMA_VERSION;profile.selectedRole=state.selectedRole;persistentSet(PROFILE_KEY,JSON.stringify(profile));refreshEconomyUI();applySettings();window.ICESoloUI?.refresh();}
 function addCoins(n){
   if(state.activity)return;
   const mult=profile.relics?.active==='greedEye'?1.25:1;
@@ -676,7 +679,10 @@ function calculateSufferingRank(){
 }
 function finalizeLevelStats(level){
   const result=calculateSufferingRank();
-  if(window.ICEJourney&&!state.activity){profile.progress=window.ICEJourney.progress(profile.progress,savedCampaignLevel());window.ICEJourney.record(profile.progress.records,level,result);profile.progress.unlocked=Math.min(1000,Math.max(profile.progress.unlocked,level+1));}
+  if(window.ICEJourney&&!state.activity){
+    if(state.mode==='singleplayer'&&state.ngplus&&profile.solo){const progress=window.ICEJourney.progress(profile.solo.ngProgress,loadNGSave()?.level||1);window.ICEJourney.record(progress.records,level,result);progress.unlocked=Math.min(1000,Math.max(progress.unlocked,level+1));profile.solo.ngProgress=progress;}
+    else{profile.progress=window.ICEJourney.progress(profile.progress,savedCampaignLevel());window.ICEJourney.record(profile.progress.records,level,result);profile.progress.unlocked=Math.min(1000,Math.max(profile.progress.unlocked,level+1));}
+  }
   profile.stats=profile.stats||{};
   if(!profile.stats.bestRank||rankValue(result.rank)<rankValue(profile.stats.bestRank))profile.stats.bestRank=result.rank;
   if(state.levelData?.joker){profile.stats.jokers=(profile.stats.jokers||0)+1;if(result.deaths===0)unlockAchievement('jokerClean');}
@@ -685,6 +691,7 @@ function finalizeLevelStats(level){
   saveProfile();refreshChronicle();return result;
 }
 function endingForRun(){
+  if(state.mode==='singleplayer'&&!state.activity&&window.ICEExpedition&&profile.solo){const narrative=window.ICEExpedition.ending(profile.solo[state.ngplus?'ngStory':'story']);if(narrative)return narrative;}
   const lore=profile.lore?.length||0,ach=Object.keys(profile.achievements||{}).length;
   if(lore>=8&&ach>=6)return {name:'FINAL VERDADEIRO · O CASTELO LEMBRA',text:'Você não escapou apenas das salas. Você descobriu por que elas estavam esperando por você.'};
   if(state.deaths>=500)return {name:'FINAL AMALDIÇOADO · VOCÊ VIROU PARTE DELE',text:'A porta abriu. O castelo também. Alguma coisa saiu com você.'};
@@ -1075,8 +1082,17 @@ function loadSoloSave(){
 function saveSoloProgress(completed=false){
   if(state.activity)return;
   if(state.mode!=='singleplayer')return;
-  persistentSet(SOLO_SAVE_KEY,JSON.stringify({schemaVersion:SAVE_SCHEMA_VERSION,level:state.level,deaths:state.deaths,role:state.role,completed,updatedAt:Date.now()}));
+  persistentSet(state.ngplus?NG_SAVE_KEY:SOLO_SAVE_KEY,JSON.stringify({schemaVersion:SAVE_SCHEMA_VERSION,level:state.level,deaths:state.deaths,role:state.role,completed,updatedAt:Date.now()}));
   refreshSoloSaveButton();refreshMenuVisualProgress();
+}
+function loadNGSave(){try{return migrateCampaignSave(JSON.parse(persistentGet(NG_SAVE_KEY)||'null'),NG_SAVE_KEY);}catch{return null;}}
+function startNGPlus(){
+  if(!window.ICESoloUI?.unlocked())return;
+  const save=loadNGSave();if(save?.completed)return;
+  leaveMultiplayerSession();state.activity=null;state.dailyRun=null;state.dailyClock=null;state.ngplus=true;state.networkPaused=false;state.levelAttempts=new Map();
+  hideCinematicScreens();appShell.classList.remove('hidden');state.mode='singleplayer';state.id='solo';state.slot=0;state.room=null;state.roomCode=null;state.remotePlayers.clear();
+  state.level=save?.level||1;state.deaths=save?.deaths||0;state.role=ELEMENTS[save?.role]?save.role:state.selectedRole;
+  $('#activityStatus')?.classList.add('hidden');lobby.classList.add('hidden');roomEl.classList.add('hidden');$('#backToMenuBtn').style.display='none';saveSoloProgress(false);startLevel(state.level);
 }
 function refreshSoloSaveButton(){
   const btn=$('#continueSoloBtn');if(!btn)return;
@@ -1144,6 +1160,8 @@ function saveOnlineProgress(completed=false){
   else if(state.mode==='multiplayer')saveMultiplayerProgress(completed);
 }
 function startSolo(useSave){
+  state.ngplus=false;state.dailyRun=null;state.dailyClock=null;
+  if(!useSave&&profile.solo)profile.solo.story={choices:{},pending:null};
   state.activity=null;state.networkPaused=false;$('#activityStatus')?.classList.add('hidden');
   state.levelAttempts=new Map();
   const save=useSave?loadSoloSave():null;
@@ -1200,7 +1218,7 @@ function handleJoin(res){
     return;
   }
   state.mode=res.mode==='chaos'?'chaos':'multiplayer';state.id=res.id;state.roomCode=res.code;state.role=res.role;state.slot=res.slot||0;state.level=res.level;state.deaths=Number(res.deaths)||0;state.remotePlayers.clear();
-  state.activity=null;
+  state.activity=null;state.ngplus=false;window.ICESoloUI?.hide();
   if(res.token){networkSession={code:res.code,token:res.token};try{sessionStorage.setItem('ice-network-session',JSON.stringify(networkSession));}catch{}}
   $('#errorText').textContent='';document.body?.classList.remove('setup-active');document.body?.classList.toggle('chaos-active',state.mode==='chaos');lobby.classList.add('hidden');roomEl.classList.remove('hidden');roomEl.classList.toggle('chaos-room',state.mode==='chaos');$('#backToMenuBtn').style.display='none';
   $('#roomCode').textContent=res.code;
@@ -1355,9 +1373,13 @@ function startLevel(level){
   state.soloResetPending=false;state.soloTransition=false;state.replayBuffer=[];state.deathReplay=null;state.relicGuardUsed=false;state.pursuer=null;state.runStats={jumps:0,trapTriggers:0,secrets:0};state.fxBursts=[];state.cameraZoom=1;
   level=Math.max(1,Math.min(1000,Number(level)||1));state.level=level;
   state.attempt=(state.levelAttempts.get(level)||0)+1;state.levelAttempts.set(level,state.attempt);if(state.attempt===1)state.levelDeathsAtStart=state.deaths;
-  state.levelData=state.activity?.type==='tutorial'?window.ICEJourney.tutorialLevel():safeGenerateLevel(level);if(state.mode==='chaos')applyChaosMutators(state.levelData,level);if(!state.restoringSession&&!state.activity)applyAttemptBoosts();else state.activeBoosts={shield:false,speed:false,jump:false};closeShop();
+  state.levelData=state.activity?.type==='tutorial'?window.ICEJourney.tutorialLevel():safeGenerateLevel(level);
+  if(window.ICEExpedition)state.levelData=window.ICEExpedition.decorate(state.levelData,{mode:state.mode,activity:state.activity?.type,ngplus:!!state.ngplus});
+  state.expeditionRun=window.ICEExpedition?.attempt()||null;state.expeditionGhost=null;
+  if(state.mode==='chaos')applyChaosMutators(state.levelData,level);if(!state.restoringSession&&!state.activity)applyAttemptBoosts();else state.activeBoosts={shield:false,speed:false,jump:false};closeShop();
   document.body?.classList.toggle('phase-666',level===666);document.body?.classList.toggle('phase-1000',level===1000);player.reset();if(level===666)unlockAchievement('phase666');
   updateHud();setTimeout(maybeCastleComment,300);
+  window.ICESoloUI?.begin();
   if(state.activity){state.abilityCooldownUntil=0;state.levelDeathsAtStart=state.deaths;window.ICEFeatures?.updateTutorial();return;}
   const enteringZone=((level-1)%100===0)&&state.attempt===1;if(enteringZone)beginRegionTransition();
   if(state.levelData.boss){const be=ELEMENTS[state.levelData.boss.element]||ELEMENTS.darkness;showBossCinematic(`👑 ${state.levelData.boss.name} · ${be.icon} ${be.name.toUpperCase()}`,state.mode==='singleplayer'?'A arena despertou. Mantenha seu elemento em uma runa e sobreviva ao ritual.':state.mode==='chaos'?'A arena despertou. QUATRO RUNAS. QUATRO ELEMENTOS. Sustentem o ritual juntos.':'A arena despertou. Cada jogador segura uma runa enquanto o chefe ataca.',be.color);}
@@ -1365,9 +1387,11 @@ function startLevel(level){
   else if(state.mode==='chaos'&&state.attempt===1)showOverlay('⚡ MODO CAOS',`Fase ${level}: cada elemento precisa ativar seu próprio selo antes da saída.`,1050,'normal','QUATRO ELEMENTOS');
   else if(level===5&&state.attempt===1)showOverlay('😈 AGORA COMEÇA','A partir daqui o castelo deixa de fingir que é seu amigo.',1450,'normal','INSANITY');
   else if(enteringZone){const z=castleRegion(level);showOverlay(`🏰 REGIÃO ${z.index+1}/10 · ${z.name}`,`${z.subtitle} · ${z.mechanics}`,1750,'normal','NOVO SETOR DO CASTELO');}
+  window.ICESoloUI?.pendingStory();
 }
 
 function updateHud(){
+  $('#pauseMasteryBtn')?.classList.toggle('hidden',state.mode!=='singleplayer');
   const e=ELEMENTS[state.role]||ELEMENTS.earth,roleText=`${e.icon} ${e.name.toUpperCase()}`,z=castleRegion(state.level);
   $('#hudRole').textContent=state.mode==='singleplayer'?`SOLO · ${roleText}`:state.mode==='chaos'?`CAOS · ${roleText}`:roleText;
   const icon=$('#hudElementIcon');if(icon)icon.textContent=e.icon;
@@ -1448,6 +1472,7 @@ function activateAbility(){
   const now=gameNow(),rule=ABILITY_RULES[state.role]||ABILITY_RULES.earth;
   if(now<state.abilityCooldownUntil)return;
   sound?.play('ability',state.role);if(state.activity?.type==='tutorial'&&state.activity.stage>=2)state.activity.power=true;
+  if(state.mode==='singleplayer'&&state.expeditionRun)state.expeditionRun.powers++;
   state.abilityStartedAt=now;
   state.abilityUntil=now+rule.duration;
   // O cooldown começa quando o efeito termina: poder forte, mas sem spam.
@@ -1554,6 +1579,7 @@ const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,facing:1,
     if(this.onGround){this.coyoteUntil=gameNow()+110;this.coyoteUsed=false;}
     if(wantsJump&&(this.onGround||!this.coyoteUsed&&gameNow()<=this.coyoteUntil)){this.vy=jumpPower;this.onGround=false;this.coyoteUsed=true;this.coyoteUntil=-Infinity;state.runStats.jumps++;inputController?.consume('jump');sound?.play('jump',state.role);}
     if(state.role==='air'&&ability&&wantsJump&&this.vy>0)this.vy-=900*dt;
+    if(state.mode==='singleplayer'&&state.expeditionRun&&window.ICEExpedition){const events=window.ICEExpedition.step(ld,state.expeditionRun,this,{role:state.role,power:ability,phase:gameNow()<state.abilityPhaseUntil,dt});window.ICESoloUI?.onEvents(events);}
     this.vy+=gravity*dt;this.vy=Math.min(this.vy,900);
     const wasGrounded=this.onGround;applyComboPhysics(this);
     this.x+=this.vx*dt;collideWorld(this,'x');this.y+=this.vy*dt;this.onGround=false;collideWorld(this,'y');
@@ -1562,6 +1588,7 @@ const player={x:90,y:680,w:42,h:56,vx:0,vy:0,onGround:false,dead:false,facing:1,
     recordReplayFrame();processAbilityCombat(gameNow());
     processHazards(this,state.role);processTrolls(this);processSetPieces(this,dt,state.role);processV006Hazards(this,dt);processBoss(dt);processChaosSeal();
     if(state.activity?.type==='tutorial')window.ICEFeatures?.updateTutorial();
+    window.ICESoloUI?.tick();
     const at=goalAccessible()&&overlap(this,currentGoal());
     if(state.mode==='singleplayer'){if(at)completeSoloLevel();return;}
     if(at!==state.lastGoalSent){state.lastGoalSent=at;socket.emit('goal-state',{atGoal:at});}
@@ -1616,13 +1643,13 @@ function completeSoloLevel(){
   if(state.activity){window.ICEFeatures?.finish();return;}
   sound?.play('complete',state.role);
   if(state.soloTransition)return;state.soloTransition=true;
-  const completed=state.level,result=finalizeLevelStats(completed);rewardLevel(completed);
+  const completed=state.level,result=finalizeLevelStats(completed);window.ICESoloUI?.complete(result);rewardLevel(completed);state.running=false;
   if(completed%100===0){profile.stats.bosses=(profile.stats.bosses||0)+1;unlockAchievement('firstBoss');}
   if(completed>=1000){
     state.running=false;profile.stats.finished=(profile.stats.finished||0)+1;unlockAchievement('thousand');saveProfile();saveSoloProgress(true);
     const ending=endingForRun();showOverlay('🏆 1000/1000 · '+ending.name,`${ending.text} · ${ELEMENTS[state.role].name} · ${state.deaths} mortes · rank final ${result.rank}`,0,'rank-overlay '+overlayRankClass(result.rank),'O CORAÇÃO DO CASTELO SILENCIOU');triggerVisualGlitch(700);return;
   }
-  state.level+=1;saveSoloProgress(false);showRankCinematic(result,state.level);setTimeout(()=>startLevel(state.level),810);
+  state.level+=1;saveSoloProgress(false);showRankCinematic(result,state.level);const nextLevel=state.level,nextNG=!!state.ngplus;setTimeout(()=>{if(state.mode==='singleplayer'&&!state.activity&&state.soloTransition&&state.level===nextLevel&&!!state.ngplus===nextNG)startLevel(nextLevel);},810);
 }
 
 function elapsed(){return state.networkPaused?state.networkElapsed||0:Math.max(0,((state.paused&&state.mode==='singleplayer'?state.pauseStartedAt:gameNow())-state.levelStart)/1000);}
@@ -1653,6 +1680,7 @@ function bridgeActiveTile(t){
 }
 function getSolidRects(){
   const ld=state.levelData, solids=[...ld.platforms,...bossArenaPlatforms(),...activeComboPoses().filter(c=>c.type==='earth-air')];
+  if(state.mode==='singleplayer'&&state.expeditionRun&&window.ICEExpedition)solids.push(...window.ICEExpedition.solids(ld,state.expeditionRun,state.role,gameNow()<state.abilityPhaseUntil));
   for(const f of ld.fakeFloors){const t=state.trapState.get('f'+f.id)||0;if(!t||gameNow()-t<650)solids.push(f);}
   for(const t of ld.bridgeTiles||[])if(bridgeActiveTile(t))solids.push(t);
   for(const e of ld.elevators||[])solids.push(dynamicElevator(e));
@@ -1664,7 +1692,7 @@ function getSolidRects(){
 }
 function collideWorld(p,axis){
   for(const s of getSolidRects()){
-    if(s._combo&&(axis==='x'||p.vy<0||p.y+p.h-s.y>Math.max(12,p.vy*.04)))continue;
+    if((s._combo||s._soloOneWay)&&(axis==='x'||p.vy<0||p.y+p.h-s.y>Math.max(12,p.vy*.04)))continue;
     if(!overlap(p,s))continue;
     if(axis==='x'){if(p.vx>0)p.x=s.x-p.w;else if(p.vx<0)p.x=s.x+s.w;p.vx=0;}
     else {if(p.vy>0){p.y=s.y-p.h;p.vy=0;p.onGround=true;}else if(p.vy<0){p.y=s.y+s.h;p.vy=0;}}
@@ -1727,6 +1755,7 @@ function doorOpen(){
   return plates.some(platePressed);
 }
 function goalAccessible(){
+  if(state.levelData.soloSpecial&&window.ICEExpedition&&!window.ICEExpedition.exitOpen(state.levelData,state.expeditionRun))return false;
   if(state.levelData.boss&&!state.bossDefeated)return false;
   if(state.mode==='chaos'&&state.level%100!==0&&((state.room?.chaosSeals||[]).length<4))return false;
   return true;
@@ -1838,7 +1867,8 @@ function bossProjectiles(){
     else if(theme==='light'){x=130+i*(1340/Math.max(1,count-1));y=((t*260+i*140)%760)+40;r=11;}
     else{x=cx+dir*tt*b.projectileSpeed;y=565+Math.sin(tt*3.7+i)*105;}
     if(phase===1){y+=Math.sin(i*1.7+tt*3)*75;x+=dir*tt*75;}
-    if(phase===2){x=90+i*(1420/Math.max(1,count-1));y=40+tt*(350+state.level*.12);r=12;}
+    if(phase===2){x=90+i*(1420/Math.max(1,count-1));y=40+tt*(350+state.level*.12);r=12;if(b.ngVariant)x+=Math.sin(tt*3+i)*90;}
+    if(b.ngVariant&&phase===1)y+=Math.sin(tt*5+i)*45;
     if(x>-40&&x<W+40&&y>-40&&y<H+40)out.push({x,y,r,color});
   }
   return out;
@@ -2347,7 +2377,7 @@ function render(){
       traps:[...falling.map(b=>({...b,id:'fall:'+b.id})),...crushers.map(c=>({...c,id:'crusher:'+c.id}))]});
     visualFx.drawTrails(ctx);visualFx.drawTrapMotion(ctx);
   }
-  for(const p of [...ld.platforms,...bossArenaPlatforms()])drawPlatform(p);drawCombos();for(const h of ld.hazards)drawHazard(h);for(const f of ld.fakeFloors||[])drawFakeFloor(f);for(const t of ld.bridgeTiles||[])drawBridgeTile(t);for(const v of ld.vanishPlatforms||[])drawVanishPlatform(v);for(const e of ld.elevators||[])drawElevator(dynamicElevator(e));for(const b of ld.bookshelves||[])drawBookshelf(dynamicBookshelf(b));
+  for(const p of [...ld.platforms,...bossArenaPlatforms()])drawPlatform(p);drawCombos();window.ICESoloUI?.draw();for(const h of ld.hazards)drawHazard(h);for(const f of ld.fakeFloors||[])drawFakeFloor(f);for(const t of ld.bridgeTiles||[])drawBridgeTile(t);for(const v of ld.vanishPlatforms||[])drawVanishPlatform(v);for(const e of ld.elevators||[])drawElevator(dynamicElevator(e));for(const b of ld.bookshelves||[])drawBookshelf(dynamicBookshelf(b));
   for(const z of ld.windGusts||[])drawWindGust(z);for(const z of ld.reverseZones||[])drawReverseZone(z);if(ld.plate)drawPlate(ld.plate,platePressed(ld.plate));if(ld.plate2)drawPlate(ld.plate2,platePressed(ld.plate2));if(ld.door&&!doorOpen())drawDoor(ld.door);
   drawTrapWarningsV007();
   for(const ch of ld.chandeliers||[])drawChandelier(chandelierRect(ch),!!state.trapState.get('ch'+ch.id));for(const b of falling)drawFallingBlock(b);for(const w of dynamicSlamWalls())drawSlamWall(w);for(const c of crushers)drawCrusher(c);for(const a of ld.armors||[])drawArmor(armorRect(a));for(const g of ld.ghosts||[])drawGhost(ghostRect(g));for(const d of ld.dragons||[])drawDragon(d);for(const fb of dragonFireballs())drawFireball(fb,'#ff8b4b');for(const fd of ld.fakeDoors||[])drawFakeDoor(fd);for(const fg of ld.fakeGoals||[])drawFakeGoal(fg,!!state.trapState.get('fg'+fg.id));for(const sp of activeSpikes())drawSpike(sp);
@@ -2358,7 +2388,7 @@ function render(){
     if(state.activity?.type==='tutorial'&&state.activity.stage>=3)drawCharacter(1254,734,'air',false,false,false,{}, {onGround:true,facing:-1});
     drawActorShadow(player.x,player.y,player.w,player.h,.25);
     if(localAbility)drawElementAbilityFx(player.x,player.y,state.role,abilityProgress(abilityNow),player.facing||1,state.abilityRootFx&&state.abilityRootFx.until>abilityNow?state.abilityRootFx:null);
-    drawCharacter(player.x,player.y,state.role,true,localAbility,false,profile.owned,player,activeRelicId());
+    drawCharacter(player.x,player.y,state.role,true,localAbility,false,profile.owned,player,activeRelicId());window.ICESoloUI?.drawLook();
   }else{
     for(const remote of state.remotePlayers.values())if(remote.level===state.level){drawActorShadow(remote.x,remote.y,42,56,.22);if(remote.ability)drawElementAbilityFx(remote.x,remote.y,remote.role,Number(remote.abilityProgress)||0,remote.facing||1,remote.rootFx||null);drawCharacter(remote.x,remote.y,remote.role,false,remote.ability,false,remote.cosmetics||{},remote,remote.relic||null);}
     drawActorShadow(player.x,player.y,player.w,player.h,.25);if(localAbility)drawElementAbilityFx(player.x,player.y,state.role,abilityProgress(abilityNow),player.facing||1,state.abilityRootFx&&state.abilityRootFx.until>abilityNow?state.abilityRootFx:null);drawCharacter(player.x,player.y,state.role,true,localAbility,false,profile.owned,player,activeRelicId());

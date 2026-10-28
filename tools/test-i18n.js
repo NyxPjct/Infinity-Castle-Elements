@@ -29,6 +29,9 @@ for (const code of expected) {
   }
   i18n.setLanguage(code);
   assert.equal(i18n.translate('Configurações'), catalog['Configurações']);
+  for(const label of ['Campanha','Maestria e memórias','Novo Jogo+','ROTA ELEMENTAL','Aprendiz','Guardião elemental'])assert.equal(i18n.translate(label),catalog[label]);
+  assert.equal(i18n.translate('Maestria +24 XP'),catalog['Maestria +{0} XP'].replace('{0}','24'));
+  assert.equal(i18n.translate('Concluir em até 90s ✓'),catalog['Concluir em até']+' 90s ✓');
   for(const label of ['Diagnóstico da conexão','Qualidade gráfica','Ranking online','PLATAFORMA ELEMENTAL','VÉU PROTETOR'])assert.equal(i18n.translate(label),catalog[label]);
   assert.equal(i18n.translate('Qualidade atual: Alta'),catalog['Qualidade atual: {0}'].replace('{0}',catalog['Alta']));
   assert.equal(i18n.translate('FASE DO CHEFE 3/3 · RITUAL ELEMENTAL'),catalog['FASE DO CHEFE {0}/3 · {1}'].replace('{0}','3').replace('{1}',i18n.translate('RITUAL ELEMENTAL')));

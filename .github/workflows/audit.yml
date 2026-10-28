@@ -36,6 +36,8 @@ jobs:
           node --check public/audio.js
           node --check public/journey-ui.js
           node --check public/update010-ui.js
+          node --check public/solo.js
+          node --check public/solo-ui.js
           node --check public/mechanics.js
           node --check public/daily-run.js
           node --check backend/leaderboard.cjs
@@ -59,6 +61,9 @@ jobs:
       - name: Test activities, controls and audio
         run: npm run test:features
 
+      - name: Test authored solo rooms, routes and progression
+        run: npm run test:expedition
+
       - name: Test real thirty-second multiplayer reconnection
         run: npm run test:reconnect
 
@@ -79,3 +84,6 @@ jobs:
 
       - name: Test graphics settings, diagnostics and browser replay parity
         run: npm run test:mastery-browser
+
+      - name: Test singleplayer mastery, ghosts, story and NG+ in Chromium
+        run: npm run test:expedition-browser
